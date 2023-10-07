@@ -59,12 +59,6 @@
 }
 
 #app-page-content {
-    margin: 0px;
-    margin-top: 0px; /* hide border between header and content */
-    width: 100%;
-    height: auto;
-    min-height: calc(100vh - 60px);
-    position: absolute;
-    top: 60px;
+
 }
 
