@@ -9,6 +9,7 @@ app.layout = html.Div(
         html.Div(
             id='app-header',
             children=[
+                # Dash logo display
                 html.A(
                     id='dash-logo',
                     children=[
@@ -24,9 +25,13 @@ app.layout = html.Div(
                     ],
                     href='https://plotly.com',
                 ),
+
+                # Web app title
                 html.H2(
                     "DNA Sequence Analyser",
                 ),
+
+                # GitHub repo link
                 html.A(
                     id='github-link',
                     children=[
@@ -34,6 +39,8 @@ app.layout = html.Div(
                     ],
                     href='https://github.com/AndreasHiropedi/Dissertation',
                 ),
+
+                # GitHub logo
                 html.Img(
                     src='data:image/png;base64,{}'.format(
                         base64.b64encode(
