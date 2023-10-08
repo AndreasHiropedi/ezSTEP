@@ -74,14 +74,59 @@
     margin-left: 10px;
 }
 
+#user-guide p {
+    font-size: 14pt;
+    font-family: 'Times';
+    margin-left: 10px;
+}
+
+#info-wrapper {
+    margin-left: 10px;
+}
+
+#general-info {
+
+}
+
+#model-input {
+
+}
+
+#file-upload {
+
+}
+
+#model-output {
+
+}
+
 #tabs-container {
-    top: 80px !important;
+    top: 160px !important;
     width: 90%;
     position: relative;
     margin: auto;
 }
 
-#tab {
+#container {
+    top: 160px !important;
+    width: 90%;
+    position: relative;
+    margin: auto;
+}
+
+#tab-input {
+    height: 60px;
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+#tab-upload {
+    height: 60px;
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+#tab-visualize {
     height: 60px;
     font-weight: bold;
     font-size: 14pt;

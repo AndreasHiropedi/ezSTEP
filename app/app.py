@@ -65,7 +65,48 @@ app.layout = html.Div(
                 html.Div(
                     id='user-guide',
                     children=[
-                        html.H1("User Guidelines")
+                        html.H1("User Guidelines"),
+                        html.P(
+                            "Below are some general guidelines and information about how the DNA Sequence Analyser "
+                            "works. It includes some general information about the structure and layout of the app, "
+                            "as well as some more specific information about the individual tools available."
+                        ),
+                        html.Div(
+                            id='info-wrapper',
+                            children=[
+                                # General information
+                                html.Div(
+                                    id='general-info',
+                                    children=[
+
+                                    ]
+                                ),
+
+                                # Model input parameters
+                                html.Div(
+                                    id='model-input',
+                                    children=[
+
+                                    ]
+                                ),
+
+                                # File upload
+                                html.Div(
+                                    id='file-upload',
+                                    children=[
+
+                                    ]
+                                ),
+
+                                # Model output visualisations
+                                html.Div(
+                                    id='model-output',
+                                    children=[
+
+                                    ]
+                                ),
+                            ]
+                        )
                     ]
                 ),
 
@@ -74,21 +115,21 @@ app.layout = html.Div(
                     id='tabs-container',
                     children=[
                         dcc.Tabs(
-                            id='tabs-container',
+                            id='container',
                             value="model input parameters",
                             children=[
                                 dcc.Tab(
-                                    id='tab',
+                                    id='tab-input',
                                     label="Model input parameters",
                                     value="model input parameters"
                                 ),
                                 dcc.Tab(
-                                    id='tab',
+                                    id='tab-upload',
                                     label="Upload datasets",
                                     value="upload datasets"
                                 ),
                                 dcc.Tab(
-                                    id='tab',
+                                    id='tab-visualize',
                                     label="Visualize model outputs",
                                     value="visualize model outputs"
                                 )
@@ -106,7 +147,7 @@ app.layout = html.Div(
 
 
 @callback(Output('tabs-content', 'children'),
-          Input('tabs-container', 'value'))
+          Input('container', 'value'))
 def render_content(tab):
     if tab == 'model input parameters':
         return html.Div([
