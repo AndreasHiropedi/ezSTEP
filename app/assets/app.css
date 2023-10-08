@@ -58,13 +58,24 @@
     margin-left: 0px;
 }
 
+#app-contents {
+    top: 60px;
+    width: 100%;
+}
+
 #user-guide {
-    font-size: 12pt;
-    top:60px;
+    position: absolute;
+    top: 70px !important;
+}
+
+#user-guide h1 {
+    font-size: 24pt;
+    font-family: 'Times';
+    margin-left: 10px;
 }
 
 #tabs-container {
-    top: 80px;
+    top: 80px !important;
     width: 90%;
     position: relative;
     margin: auto;

@@ -6,7 +6,7 @@ app = Dash(__name__, suppress_callback_exceptions=True)
 app.layout = html.Div(
     children=[
         # Web app header
-        html.Div(
+        html.Header(
             id='app-header',
             children=[
                 # Dash logo display
@@ -59,41 +59,46 @@ app.layout = html.Div(
 
         # Main page content
         html.Div(
+            id='app-contents',
             children=[
                 # Text part explaining how the app works
                 html.Div(
                     id='user-guide',
                     children=[
-                        html.H3("Here is how to use the app")
+                        html.H1("User Guidelines")
                     ]
                 ),
 
                 # Input tabs
-                dcc.Tabs(
+                html.Div(
                     id='tabs-container',
-                    className='tabs-container',
-                    value="model input parameters",
                     children=[
-                        dcc.Tab(
-                            id='tab',
-                            label="Model input parameters",
-                            value="model input parameters"
+                        dcc.Tabs(
+                            id='tabs-container',
+                            value="model input parameters",
+                            children=[
+                                dcc.Tab(
+                                    id='tab',
+                                    label="Model input parameters",
+                                    value="model input parameters"
+                                ),
+                                dcc.Tab(
+                                    id='tab',
+                                    label="Upload datasets",
+                                    value="upload datasets"
+                                ),
+                                dcc.Tab(
+                                    id='tab',
+                                    label="Visualize model outputs",
+                                    value="visualize model outputs"
+                                )
+                            ]
                         ),
-                        dcc.Tab(
-                            id='tab',
-                            label="Upload datasets",
-                            value="upload datasets"
-                        ),
-                        dcc.Tab(
-                            id='tab',
-                            label="Visualize model outputs",
-                            value="visualize model outputs"
-                        )
-                    ]
-                ),
 
-                # Output of the tabs
-                html.Div(id='tabs-content')
+                        # Output of the tabs
+                        html.Div(id='tabs-content')
+                    ]
+                )
             ],
         )
     ],
