@@ -208,7 +208,7 @@
 
 #tabs-container {
     top: 20px;
-    width: 95%;
+    width: 100%;
     position: relative;
     margin: auto;
 }
@@ -243,13 +243,35 @@
 
 #tabs-content {
     font-size: 12pt;
-    color: white;
     position: relative;
     top: 20px;
+    width: 100%;
+    padding-bottom: 50px;
 }
 
 #app-footer {
+    height: 50px !important;
+    position: relative;
     width: 100%;
-    position: absolute;
-    bottom: 5px;
+    bottom: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#app-footer img {
+    height: 40px !important;
+    float: left;
+    margin-left: 200px;
+}
+
+#app-footer h3 {
+    font-size: 10pt;
+    font-family: 'Times';
+    font-weight: 400;
+    letter-spacing: 1px;
+    display: inline-block;
+    float: right;
+    text-align: center;
+    margin-right: 200px;
 }

@@ -107,7 +107,7 @@ app.layout = html.Div(
                                     style={
                                         'background': '#f8d7da',
                                         'color': '#721c24',
-                                        'border-color': '#f5c6cb'
+                                        'borderColor': '#f5c6cb'
                                     }
                                 ),
 
@@ -132,7 +132,7 @@ app.layout = html.Div(
                                     style={
                                         'background': '#cce5ff',
                                         'color': '#004085',
-                                        'border-color': '#b8daff'
+                                        'borderColor': '#b8daff'
                                     }
                                 ),
 
@@ -156,7 +156,7 @@ app.layout = html.Div(
                                     style={
                                         'background': '#e2e3e5',
                                         'color': '#383d41',
-                                        'border-color': '#d6d8db'
+                                        'borderColor': '#d6d8db'
                                     }
                                 ),
 
@@ -178,7 +178,7 @@ app.layout = html.Div(
                                     style={
                                         'background': '#fff3cd',
                                         'color': '#856404',
-                                        'border-color': '#ffeeba'
+                                        'borderColor': '#ffeeba'
                                     }
                                 ),
                             ]
@@ -214,14 +214,35 @@ app.layout = html.Div(
 
                         # Output of the tabs
                         html.Div(
-                            id='tabs-content',
+                            id='content',
+                        ),
+
+                        # Web app footer
+                        html.Footer(
+                            id='app-footer',
                             children=[
-                                html.Div(
-                                    id='content'
-                                )
-                            ]
+                                # University logo
+                                html.Img(
+                                    src='data:image/png;base64,{}'.format(
+                                        base64.b64encode(
+                                            open(
+                                                './assets/eduni-logo.png', 'rb'
+                                            ).read()
+                                        ).decode()
+                                    ),
+                                ),
+
+                                # Copyright
+                                html.H3(
+                                    "Biomolecular Control Group ©2024",
+                                ),
+                            ],
+                            style={
+                                'background': '#2E2B2A',
+                                'color': 'white'
+                            }
                         )
-                    ]
+                    ],
                 )
             ],
             style={
@@ -229,18 +250,6 @@ app.layout = html.Div(
                 'color': 'white'
             }
         ),
-
-        # Web app footer
-        html.Footer(
-            id='app-footer',
-            children=[
-
-            ],
-            style={
-                'background': '#2E2B2A',
-                'color': 'white'
-            }
-        )
     ],
 )
 
@@ -249,11 +258,41 @@ app.layout = html.Div(
           Input('container', 'value'))
 def render_content(tab):
     if tab == 'model input parameters':
-        return html.H3('User input tabs')
+        return html.Div(
+            id='tabs-content',
+            children=[
+                html.H3('User input tabs'),
+                html.P('This is where the user inputs data')
+            ],
+            style={
+                'background': '#2E2B2A',
+                'color': 'white'
+            }
+        )
     elif tab == 'upload datasets':
-        return html.H3('Upload boxes for datasets')
+        return html.Div(
+            id='tabs-content',
+            children=[
+                html.H3('Upload boxes for datasets'),
+                html.P('This is where the user uploads datasets')
+            ],
+            style={
+                'background': '#2E2B2A',
+                'color': 'white'
+            }
+        )
     elif tab == "visualise model outputs":
-        return html.H3('Model outputs')
+        return html.Div(
+            id='tabs-content',
+            children=[
+                html.H3('Model outputs'),
+                html.P('This is where the user visualises model outputs')
+            ],
+            style={
+                'background': '#2E2B2A',
+                'color': 'white'
+            }
+        )
     else:
         return 'No content available.'
 
