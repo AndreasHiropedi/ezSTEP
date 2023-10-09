@@ -232,7 +232,14 @@ app.layout = html.Div(
 
         # Web app footer
         html.Footer(
+            id='app-footer',
+            children=[
 
+            ],
+            style={
+                'background': '#2E2B2A',
+                'color': 'white'
+            }
         )
     ],
 )
