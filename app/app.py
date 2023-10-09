@@ -257,6 +257,7 @@ app.layout = html.Div(
 @callback(Output('content', 'children'),
           Input('container', 'value'))
 def render_content(tab):
+    # Model inputs
     if tab == 'model input parameters':
         return html.Div(
             id='tabs-content',
@@ -269,6 +270,8 @@ def render_content(tab):
                 'color': 'white'
             }
         )
+
+    # File upload
     elif tab == 'upload datasets':
         return html.Div(
             id='tabs-content',
@@ -281,6 +284,8 @@ def render_content(tab):
                 'color': 'white'
             }
         )
+
+    # Model outputs
     elif tab == "visualise model outputs":
         return html.Div(
             id='tabs-content',
@@ -293,6 +298,8 @@ def render_content(tab):
                 'color': 'white'
             }
         )
+
+    # Safety check
     else:
         return 'No content available.'
 
