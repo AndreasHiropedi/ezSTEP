@@ -281,6 +281,7 @@ def render_content(tab):
             id='tabs-content',
             children=[
                 dbc.Card(
+                    id='card',
                     children=[
                         dbc.CardHeader(
                             id='card-header',
@@ -299,6 +300,10 @@ def render_content(tab):
                         'border': '1px solid black',
                         'margin-left': '180px'
                     }
+                ),
+                html.Button(
+                    'Add a new model',
+                    id='button'
                 )
             ]
         )
@@ -308,8 +313,188 @@ def render_content(tab):
         return html.Div(
             id='tabs-content',
             children=[
-                html.H3('Upload boxes for datasets'),
-                html.P('This is where the user uploads datasets')
+                # Training Data
+                dbc.Card(
+                    id='card',
+                    children=[
+                        dbc.CardHeader(
+                            id='card-header',
+                            children=["Training data"],
+                        ),
+                        dbc.CardBody(
+                            id='card-body',
+                            children=[
+                                html.P(
+                                    "Upload your training data",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Upload(
+                                    children=[
+                                        html.Div(
+                                            id='box-text',
+                                            children=[
+                                                'Drag and Drop or ',
+                                                html.A('Select Files', style={'font-weight': 'bold'})
+                                            ],
+                                        )
+                                    ],
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '80px',
+                                        'textAlign': 'center',
+                                        'border': '2px dashed black'
+                                    }
+                                ),
+                                html.P(
+                                    "or paste it in the box below",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Textarea(
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '100px'
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                    style={
+                        'background': 'white',
+                        'color': 'black',
+                        'width': '65%',
+                        'margin-top': '30px',
+                        'border': '1px solid black',
+                        'margin-left': '270px',
+                    }
+                ),
+
+                # Testing Data
+                dbc.Card(
+                    id='card',
+                    children=[
+                        dbc.CardHeader(
+                            id='card-header',
+                            children=["Testing data"],
+                        ),
+                        dbc.CardBody(
+                            id='card-body',
+                            children=[
+                                html.P(
+                                    "Upload your testing data",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Upload(
+                                    children=[
+                                        html.Div(
+                                            id='box-text',
+                                            children=[
+                                                'Drag and Drop or ',
+                                                html.A('Select Files', style={'font-weight': 'bold'})
+                                            ],
+                                        )
+                                    ],
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '80px',
+                                        'textAlign': 'center',
+                                        'border': '2px dashed black'
+                                    }
+                                ),
+                                html.P(
+                                    "or paste it in the box below",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Textarea(
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '100px'
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                    style={
+                        'background': 'white',
+                        'color': 'black',
+                        'width': '65%',
+                        'margin-top': '30px',
+                        'border': '1px solid black',
+                        'margin-left': '270px',
+                    }
+                ),
+
+                # Querying Data
+                dbc.Card(
+                    id='card',
+                    children=[
+                        dbc.CardHeader(
+                            id='card-header',
+                            children=["Model querying data (optional)"],
+                        ),
+                        dbc.CardBody(
+                            id='card-body',
+                            children=[
+                                html.P(
+                                    "Upload your model querying data",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Upload(
+                                    children=[
+                                        html.Div(
+                                            id='box-text',
+                                            children=[
+                                                'Drag and Drop or ',
+                                                html.A('Select Files', style={'font-weight': 'bold'})
+                                            ],
+                                        )
+                                    ],
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '80px',
+                                        'textAlign': 'center',
+                                        'border': '2px dashed black'
+                                    }
+                                ),
+                                html.P(
+                                    "or paste it in the box below",
+                                    style={
+                                        'text-align': 'center',
+                                        'font-size': '16pt'
+                                    }
+                                ),
+                                dcc.Textarea(
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '100px'
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                    style={
+                        'background': 'white',
+                        'color': 'black',
+                        'width': '65%',
+                        'margin-top': '30px',
+                        'border': '1px solid black',
+                        'margin-left': '270px',
+                    }
+                ),
             ],
             style={
                 'background': 'white',
@@ -339,7 +524,7 @@ def render_content(tab):
                         'width': '65%',
                         'margin-top': '30px',
                         'border': '1px solid black',
-                        'margin-left': '210px',
+                        'margin-left': '270px',
                     }
                 )
             ]
