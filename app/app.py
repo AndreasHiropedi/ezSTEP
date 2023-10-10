@@ -222,20 +222,25 @@ app.layout = html.Div(
                             id='app-footer',
                             children=[
                                 # University logo
-                                html.Img(
-                                    src='data:image/png;base64,{}'.format(
-                                        base64.b64encode(
-                                            open(
-                                                './assets/eduni-logo.png', 'rb'
-                                            ).read()
-                                        ).decode()
-                                    ),
+                                html.A(
+                                    children=[
+                                        html.Img(
+                                            src='data:image/png;base64,{}'.format(
+                                                base64.b64encode(
+                                                    open(
+                                                        './assets/eduni-logo.png', 'rb'
+                                                    ).read()
+                                                ).decode()
+                                            ),
+                                        )
+                                    ],
+                                    href='https://homepages.inf.ed.ac.uk/doyarzun/'
                                 ),
 
                                 # Copyright
                                 html.H3(
                                     "Biomolecular Control Group ©2024",
-                                ),
+                                )
                             ],
                             style={
                                 'background': '#2E2B2A',

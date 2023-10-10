@@ -260,10 +260,14 @@
     padding-bottom: 15px;
 }
 
-#app-footer img {
+#app-footer > a > img {
     height: 40px !important;
     float: left;
     margin-left: 200px;
+}
+
+#app-footer > a > img:hover {
+    filter: brightness(2);
 }
 
 #app-footer h3 {
