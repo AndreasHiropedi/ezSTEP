@@ -1,4 +1,5 @@
 import base64
+import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, Input, Output, callback
 
 app = Dash(__name__, suppress_callback_exceptions=True)
@@ -197,17 +198,29 @@ app.layout = html.Div(
                                 dcc.Tab(
                                     id='tab-input',
                                     label="Model input parameters",
-                                    value="model input parameters"
+                                    value="model input parameters",
+                                    selected_style={
+                                        'background': 'grey',
+                                        'color': 'white'
+                                    }
                                 ),
                                 dcc.Tab(
                                     id='tab-upload',
                                     label="Upload datasets",
-                                    value="upload datasets"
+                                    value="upload datasets",
+                                    selected_style={
+                                        'background': 'grey',
+                                        'color': 'white'
+                                    }
                                 ),
                                 dcc.Tab(
                                     id='tab-visualise',
                                     label="Visualise model outputs",
-                                    value="visualise model outputs"
+                                    value="visualise model outputs",
+                                    selected_style={
+                                        'background': 'grey',
+                                        'color': 'white'
+                                    }
                                 )
                             ]
                         ),
@@ -243,16 +256,16 @@ app.layout = html.Div(
                                 )
                             ],
                             style={
-                                'background': '#2E2B2A',
-                                'color': 'white'
+                                'background': 'white',
+                                'color': 'black'
                             }
                         )
                     ],
                 )
             ],
             style={
-                'background': '#2E2B2A',
-                'color': 'white'
+                'background': 'white',
+                'color': 'black'
             }
         ),
     ],
@@ -264,16 +277,30 @@ app.layout = html.Div(
 def render_content(tab):
     # Model inputs
     if tab == 'model input parameters':
-        return html.Div(
+        return dbc.Row(
             id='tabs-content',
             children=[
-                html.H3('User input tabs'),
-                html.P('This is where the user inputs data')
-            ],
-            style={
-                'background': '#2E2B2A',
-                'color': 'white'
-            }
+                dbc.Card(
+                    children=[
+                        dbc.CardHeader(
+                            id='card-header',
+                            children=["Model 1 parameters"]
+                        ),
+                        dbc.CardBody(
+                            id='card-body',
+                            children=["To fill in with input parameters"]
+                        )
+                    ],
+                    style={
+                        'background': 'white',
+                        'color': 'black',
+                        'width': '40%',
+                        'margin-top': '30px',
+                        'border': '1px solid black',
+                        'margin-left': '180px'
+                    }
+                )
+            ]
         )
 
     # File upload
@@ -285,23 +312,37 @@ def render_content(tab):
                 html.P('This is where the user uploads datasets')
             ],
             style={
-                'background': '#2E2B2A',
-                'color': 'white'
+                'background': 'white',
+                'color': 'black'
             }
         )
 
     # Model outputs
     elif tab == "visualise model outputs":
-        return html.Div(
+        return dbc.Row(
             id='tabs-content',
             children=[
-                html.H3('Model outputs'),
-                html.P('This is where the user visualises model outputs')
-            ],
-            style={
-                'background': '#2E2B2A',
-                'color': 'white'
-            }
+                dbc.Card(
+                    children=[
+                        dbc.CardHeader(
+                            id='card-header',
+                            children=["Model 1 output"]
+                        ),
+                        dbc.CardBody(
+                            id='card-body',
+                            children=["To fill in with output visualisations"]
+                        )
+                    ],
+                    style={
+                        'background': 'white',
+                        'color': 'black',
+                        'width': '65%',
+                        'margin-top': '30px',
+                        'border': '1px solid black',
+                        'margin-left': '210px',
+                    }
+                )
+            ]
         )
 
     # Safety check

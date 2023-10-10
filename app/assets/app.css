@@ -225,6 +225,8 @@
     font-weight: bold;
     font-size: 14pt;
     color: black;
+    border: 2px solid black;
+    border-right: 1px solid black;
 }
 
 #tab-upload {
@@ -232,6 +234,9 @@
     font-weight: bold;
     font-size: 14pt;
     color: black;
+    border: 2px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
 }
 
 #tab-visualise {
@@ -239,6 +244,8 @@
     font-weight: bold;
     font-size: 14pt;
     color: black;
+    border: 2px solid black;
+    border-left: 1px solid black;
 }
 
 #tabs-content {
@@ -247,6 +254,21 @@
     top: 20px;
     width: 100%;
     padding-bottom: 50px;
+}
+
+#card-header {
+    font-weight: bold;
+    text-align: center;
+    font-size: large;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-body {
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    text-size: 12pt;
 }
 
 #app-footer {
