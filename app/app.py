@@ -86,10 +86,10 @@ app.layout = html.Div(
                                                 "The app consists of three sections: ",
                                                 html.Br(),
                                                 html.Br(),
-                                                "   1. Model input parameters",
+                                                "   1. File upload",
                                                 html.Br(),
                                                 html.Br(),
-                                                "   2. File upload",
+                                                "   2. Model input parameters",
                                                 html.Br(),
                                                 html.Br(),
                                                 "   3. Model output visualisations",
@@ -112,11 +112,47 @@ app.layout = html.Div(
                                     }
                                 ),
 
+                                # File upload
+                                html.Div(
+                                    id='file-upload',
+                                    children=[
+                                        html.H4("2. File upload"),
+                                        html.Hr(),
+                                        html.P(
+                                            "This section contains three upload boxes, one of which is a required "
+                                            "field, and two optional fields. The required field is for uploading "
+                                            "the training data (in order to train the selected model). The optional "
+                                            "fields are for uploading the testing data (in case the user doesn't wish "
+                                            "to split the training dataset) and for uploading a dataset for querying "
+                                            "the model on new unseen data that was not part of the training or testing "
+                                            "dataset. If the user has added more than one model, then for each model "
+                                            "they added, they can select if they wish to use the same datasets, "
+                                            "or upload new ones instead."
+                                        ),
+                                        html.P(
+                                            "For each of the three fields, the user has a choice of how they wish to "
+                                            "upload the data: they can either upload a file, or paste their data in a "
+                                            "textbox. If they choose to upload a file, they must ensure the file "
+                                            "contains at least one column with all the sequence data, and one column "
+                                            "with all the labels information, with these two columns being matched. If "
+                                            "they choose to use the textbox, they must ensure the data is formatted in "
+                                            "the following order: sequence + separator (such as , or | or ;) + label + "
+                                            "new line character. If the user fails to ensure these conditions, then "
+                                            "the app may not be able to process their inputted data."
+                                        )
+                                    ],
+                                    style={
+                                        'background': '#e2e3e5',
+                                        'color': '#383d41',
+                                        'borderColor': '#d6d8db'
+                                    }
+                                ),
+
                                 # Model input parameters
                                 html.Div(
                                     id='model-input',
                                     children=[
-                                        html.H4("2. Model input parameters"),
+                                        html.H4("3. Model input parameters"),
                                         html.Hr(),
                                         html.P(
                                             "In this section, the user gets to select a model and input all the "
@@ -125,39 +161,15 @@ app.layout = html.Div(
                                             "section for more details) in order to train the models and visualise the "
                                             "output (see the 'Model Output Visualisations' section for more). The user "
                                             "will also be able to add more than one model, but will need to input all "
-                                            "the necessary for each model added. There will also be an option that "
-                                            "will allow the user to choose whether or not they wish to optimise the "
-                                            "model's hyperparameters or not."
+                                            "the necessary information for each model added. There will also be an  "
+                                            "option that will allow the user to choose whether or not they wish to  "
+                                            "optimise the model's hyperparameters or not."
                                         )
                                     ],
                                     style={
                                         'background': '#cce5ff',
                                         'color': '#004085',
                                         'borderColor': '#b8daff'
-                                    }
-                                ),
-
-                                # File upload
-                                html.Div(
-                                    id='file-upload',
-                                    children=[
-                                        html.H4("3. File upload"),
-                                        html.Hr(),
-                                        html.P(
-                                            "This section contains three upload boxes, two of which are required "
-                                            "fields, and one optional field. The two required fields are for uploading "
-                                            "the training data (in order to train the selected model) and the testing "
-                                            "data (in order to test the trained model). The optional field is for "
-                                            "uploading a dataset for querying the model on new unseen data that was "
-                                            "not part of the training or testing dataset. If the user has added more "
-                                            "than one model, then for each model they added, they can select if they "
-                                            "wish to use the same datasets, or upload new ones instead."
-                                        )
-                                    ],
-                                    style={
-                                        'background': '#e2e3e5',
-                                        'color': '#383d41',
-                                        'borderColor': '#d6d8db'
                                     }
                                 ),
 
@@ -193,21 +205,21 @@ app.layout = html.Div(
                     children=[
                         dcc.Tabs(
                             id='container',
-                            value="model input parameters",
+                            value="upload datasets",
                             children=[
                                 dcc.Tab(
-                                    id='tab-input',
-                                    label="Model input parameters",
-                                    value="model input parameters",
+                                    id='tab-upload',
+                                    label="Upload datasets",
+                                    value="upload datasets",
                                     selected_style={
                                         'background': 'grey',
                                         'color': 'white'
                                     }
                                 ),
                                 dcc.Tab(
-                                    id='tab-upload',
-                                    label="Upload datasets",
-                                    value="upload datasets",
+                                    id='tab-input',
+                                    label="Model input parameters",
+                                    value="model input parameters",
                                     selected_style={
                                         'background': 'grey',
                                         'color': 'white'
@@ -380,7 +392,7 @@ def render_content(tab):
                     children=[
                         dbc.CardHeader(
                             id='card-header',
-                            children=["Testing data"],
+                            children=["Testing data (optional)"],
                         ),
                         dbc.CardBody(
                             id='card-body',
