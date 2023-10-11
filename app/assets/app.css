@@ -248,7 +248,23 @@
     border-left: 1px solid black;
 }
 
-#tabs-content {
+#tabs-content-input {
+    font-size: 12pt;
+    position: relative;
+    top: 20px;
+    width: 100%;
+    padding-bottom: 50px;
+}
+
+#tabs-content-upload {
+    font-size: 12pt;
+    position: relative;
+    top: 20px;
+    width: 100%;
+    padding-bottom: 50px;
+}
+
+#tabs-content-output {
     font-size: 12pt;
     position: relative;
     top: 20px;
