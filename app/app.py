@@ -456,7 +456,7 @@ def query_data_upload_card():
 
 def initial_model_input_parameters_card():
     return dbc.Card(
-        id='card',
+        id='card-input',
         children=[
             dbc.CardHeader(
                 id='card-header',
@@ -466,21 +466,13 @@ def initial_model_input_parameters_card():
                 id='card-body',
                 children=["To fill in with input parameters"]
             )
-        ],
-        style={
-            'background': 'white',
-            'color': 'black',
-            'width': '40%',
-            'margin-top': '30px',
-            'border': '2px solid black',
-            'margin-left': '180px'
-        }
+        ]
     )
 
 
 def extra_model_input_parameters_card(model_count):
     return dbc.Card(
-        id='card',
+        id='card-input',
         children=[
             dbc.CardHeader(
                 id='card-header',
@@ -490,21 +482,32 @@ def extra_model_input_parameters_card(model_count):
                 id='card-body',
                 children=["To fill in with input parameters"]
             )
-        ],
-        style={
-            'background': 'white',
-            'color': 'black',
-            'width': '40%',
-            'margin-top': '30px',
-            'border': '2px solid black',
-            'margin-left': '180px'
-        }
+        ]
     )
 
 
-@callback(Output('content', 'children'),
-          Input('container', 'value'))
-def render_tabs_content(selected_tab):
+def model_output_card(model_count):
+    return dbc.Card(
+        id='card-output',
+        children=[
+            dbc.CardHeader(
+                id='card-header',
+                children=[f"Model {model_count} output"]
+            ),
+            dbc.CardBody(
+                id='card-body',
+                children=["To fill in with output visualisations"]
+            )
+        ]
+    )
+
+
+@callback(
+    Output('content', 'children'),
+    Input('container', 'value'),
+    State('store-model-content', 'data')
+)
+def render_tabs_content(selected_tab, stored_content):
     # File upload tab
     if selected_tab == 'upload datasets':
         return html.Div(
@@ -522,54 +525,36 @@ def render_tabs_content(selected_tab):
 
     # Model inputs tab
     elif selected_tab == 'model input parameters':
-        return dbc.Row(
-            id='tabs-content-input',
-            children=[
-                # This creates the initial layout with one model
-                html.Button(
-                    'Add a new model',
-                    id='button',
-                    n_clicks=1
-                ),
-                initial_model_input_parameters_card(),
-                # This allows more models to be added and stored once added
-                html.Div(
-                    id='button-output',
-                    children=[]
-                ),
-                dcc.Store(
-                    id='store-model-count',
-                    data={'n_clicks': 1}
-                )
-            ]
-        )
+        # If we switch tabs, this restores the previous state (so that all models created are preserved)
+        if stored_content:
+            return dbc.Row(
+                id='tabs-content-input',
+                children=stored_content['children']
+            )
+        # Initial state
+        else:
+            return dbc.Row(
+                id='tabs-content-input',
+                children=[
+                    # This creates the initial layout with one model
+                    html.Button(
+                        'Add a new model',
+                        id='button',
+                        n_clicks=1
+                    ),
+                    # This allows more models to be added and stored once added
+                    html.Div(
+                        id='button-output',
+                        children=[initial_model_input_parameters_card()]
+                    )
+                ]
+            )
 
     # Model outputs
     elif selected_tab == "visualise model outputs":
         return dbc.Row(
             id='tabs-content-output',
-            children=[
-                dbc.Card(
-                    children=[
-                        dbc.CardHeader(
-                            id='card-header',
-                            children=["Model 1 output"]
-                        ),
-                        dbc.CardBody(
-                            id='card-body',
-                            children=["To fill in with output visualisations"]
-                        )
-                    ],
-                    style={
-                        'background': 'white',
-                        'color': 'black',
-                        'width': '65%',
-                        'margin-top': '30px',
-                        'border': '2px solid black',
-                        'margin-left': '250px'
-                    }
-                )
-            ]
+            children=[model_output_card(1)]
         )
 
     # Validation check
@@ -578,24 +563,28 @@ def render_tabs_content(selected_tab):
 
 
 @app.callback(
-    [Output('button-output', 'children'), Output('store-model-count', 'data')],
+    [Output('tabs-content-input', 'children'),
+     Output('store-model-count', 'data'),
+     Output('store-model-content', 'data')
+     ],
     Input('button', 'n_clicks'),
-    State('store-model-count', 'data')
+    [State('tabs-content-input', 'children'),
+     State('store-model-count', 'data'),
+     State('store-model-content', 'data')
+     ]
 )
-def add_new_model(n_clicks, stored_data):
+def add_new_model(n_clicks, current_children, stored_count, stored_content):
     # Check if a new model has been added
-    if n_clicks > stored_data['n_clicks']:
-        stored_data['n_clicks'] = n_clicks
-        children = [extra_model_input_parameters_card(i) for i in range(2, n_clicks+1)]
-        return children, stored_data
-
-    # Restore state when loading the page or switching tabs
-    elif n_clicks == stored_data['n_clicks']:
-        children = [extra_model_input_parameters_card(i) for i in range(2, stored_data['n_clicks'] + 1)]
-        return children, dash.no_update
+    if n_clicks > stored_count['n_clicks']:
+        stored_count['n_clicks'] = n_clicks
+        children = current_children + [extra_model_input_parameters_card(n_clicks)]
+        new_content = {
+            'children': children
+        }
+        return children, stored_count, new_content
 
     # If there has been no new model added
-    return dash.no_update, dash.no_update
+    return dash.no_update, dash.no_update, dash.no_update
 
 
 app.layout = html.Div(
@@ -614,6 +603,14 @@ app.layout = html.Div(
                         # Output of the tabs
                         html.Div(
                             id='content'
+                        ),
+                        dcc.Store(
+                            id='store-model-count',
+                            data={'n_clicks': 1}
+                        ),
+                        dcc.Store(
+                            id='store-model-content',
+                            data={}
                         ),
                         app_footer()
                     ],

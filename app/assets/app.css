@@ -276,6 +276,26 @@
     display: inline-block;
 }
 
+#card-input {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 50%;
+    margin-top: 30px;
+    border: 2px solid black;
+    margin-left: 180px;
+}
+
+#card-output {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 65%;
+    margin-top: 30px;
+    border: 2px solid black;
+    margin-left: 250px;
+}
+
 #card-header {
     font-weight: bold;
     text-align: center;
