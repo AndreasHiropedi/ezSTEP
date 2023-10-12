@@ -505,9 +505,10 @@ def model_output_card(model_count):
 @callback(
     Output('content', 'children'),
     Input('container', 'value'),
-    State('store-model-content', 'data')
+    [State('store-model-content', 'data'),
+     State('store-model-count', 'data')]
 )
-def render_tabs_content(selected_tab, stored_content):
+def render_tabs_content(selected_tab, stored_content, stored_count):
     # File upload tab
     if selected_tab == 'upload datasets':
         return html.Div(
@@ -554,7 +555,7 @@ def render_tabs_content(selected_tab, stored_content):
     elif selected_tab == "visualise model outputs":
         return dbc.Row(
             id='tabs-content-output',
-            children=[model_output_card(1)]
+            children=[model_output_card(i) for i in range(1, stored_count['n_clicks']+1)]
         )
 
     # Validation check
