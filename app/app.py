@@ -454,6 +454,95 @@ def query_data_upload_card():
     )
 
 
+def model_selection_dropdown():
+    return html.Div(
+        id='model-selection',
+        children=[
+            html.H6(
+                "Select the model type:",
+                id='select-model'
+            ),
+            dcc.Dropdown(
+                id='model-type-dropdown',
+                options=[
+                    {'label': 'Random Forest', 'value': 'rf'},
+                    {'label': 'Multi-layer Perceptron', 'value': 'mlp'},
+                    {'label': 'Support Vector Machine', 'value': 'svm'},
+                    {'label': 'Ridge Regressor', 'value': 'rr'}
+                ],
+                value='rf',
+                searchable=False
+            )
+        ]
+    )
+
+
+def feature_descriptor_dropdown():
+    return html.Div(
+        id='feature-descriptor',
+        children=[
+            html.H6(
+                "Select feature descriptor:",
+                id='select-descriptor'
+            ),
+            dcc.Dropdown(
+                id='feature-descriptor-dropdown',
+                options=[
+                    {'label': 'Kmer', 'value': 'kmer'},
+                    {'label': 'Binary', 'value': 'binary'},
+                ],
+                value='kmer',
+                searchable=False
+            )
+        ]
+    )
+
+
+def kmer_size_dropdown():
+    return html.Div(
+        id='kmer-descriptor',
+        children=[
+            html.H6(
+                "Select kmer size:",
+                id='select-kmer'
+            ),
+            dcc.Dropdown(
+                id='kmer-size-dropdown',
+                options=[
+                    {'label': '1', 'value': '1'},
+                    {'label': '2', 'value': '2'},
+                    {'label': '3', 'value': '3'},
+                    {'label': '4', 'value': '4'},
+                    {'label': '5', 'value': '5'},
+                ],
+                value='3',
+                searchable=False
+            )
+        ]
+    )
+
+
+def feature_normalization_dropdown():
+    return html.Div(
+        id='normalization-descriptor',
+        children=[
+            html.H6(
+                "Select feature normalization method:",
+                id='select-normalization'
+            ),
+            dcc.Dropdown(
+                id='feature-normalization-dropdown',
+                options=[
+                    {'label': 'ZScore', 'value': 'zscore'},
+                    {'label': 'MinMax', 'value': 'minmax'},
+                ],
+                value='minmax',
+                searchable=False
+            )
+        ]
+    )
+
+
 def initial_model_input_parameters_card():
     return dbc.Card(
         id='card-input',
@@ -463,8 +552,26 @@ def initial_model_input_parameters_card():
                 children=["Model 1 parameters"]
             ),
             dbc.CardBody(
-                id='card-body',
-                children=["To fill in with input parameters"]
+                id='card-body-input',
+                children=[
+                    html.Div(
+                        id='input-parameters',
+                        children=[
+                            html.H3('Input parameters', id='input-header'),
+                            model_selection_dropdown(),
+                            feature_descriptor_dropdown(),
+                            kmer_size_dropdown(),
+                            feature_normalization_dropdown()
+                        ],
+                    ),
+                    html.Hr(),
+                    html.Div(
+                        id='output-features',
+                        children=[
+                            html.H3('Output features', id='input-header')
+                        ]
+                    )
+                ]
             )
         ]
     )
@@ -479,8 +586,26 @@ def extra_model_input_parameters_card(model_count):
                 children=[f"Model {model_count} parameters"]
             ),
             dbc.CardBody(
-                id='card-body',
-                children=["To fill in with input parameters"]
+                id='card-body-input',
+                children=[
+                    html.Div(
+                        id='input-parameters',
+                        children=[
+                            html.H3('Input parameters', id='input-header'),
+                            model_selection_dropdown(),
+                            feature_descriptor_dropdown(),
+                            kmer_size_dropdown(),
+                            feature_normalization_dropdown()
+                        ],
+                    ),
+                    html.Hr(),
+                    html.Div(
+                        id='output-features',
+                        children=[
+                            html.H3('Output features', id='input-header')
+                        ]
+                    )
+                ]
             )
         ]
     )

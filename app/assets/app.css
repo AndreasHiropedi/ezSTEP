@@ -99,6 +99,7 @@
 }
 
 #general-info h4 {
+    font-size: 14pt;
     font-family: 'Times';
     margin-left: 10px;
 }
@@ -128,6 +129,7 @@
 }
 
 #model-input h4 {
+    font-size: 14pt;
     font-family: 'Times';
     margin-left: 10px;
 }
@@ -157,6 +159,7 @@
 }
 
 #file-upload h4 {
+    font-size: 14pt;
     font-family: 'Times';
     margin-left: 10px;
 }
@@ -186,6 +189,7 @@
 }
 
 #model-output h4 {
+    font-size: 14pt;
     font-family: 'Times';
     margin-left: 10px;
 }
@@ -308,7 +312,108 @@
     margin-top: 15px;
     margin-left: 15px;
     margin-bottom: 15px;
+    margin-right: 15px;
     text-size: 12pt;
+}
+
+#input-parameters {
+    margin-bottom: 10px;
+}
+
+#input-header {
+    font-size: 16pt;
+}
+
+#card-body-input {
+    margin-top: -10px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    text-size: 12pt;
+}
+
+#card-body-input hr {
+    margin-left: -15px;
+    margin-right: -15px;
+    border-top-color: black;
+    border: 0;
+    border-top: 1px solid;
+}
+
+#model-selection {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#select-model {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#model-type-dropdown {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#feature-descriptor {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-descriptor {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#feature-descriptor-dropdown {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#kmer-descriptor {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-kmer {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#kmer-size-dropdown {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#normalization-descriptor {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-normalization {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#feature-normalization-dropdown {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
 }
 
 #button {
