@@ -543,6 +543,72 @@ def feature_normalization_dropdown():
     )
 
 
+def feature_selection_question():
+    return html.Div(
+        id='feature-selection-q',
+        children=[
+            html.H6(
+                "Would you like to enable feature selection?",
+                id='select-feature'
+            ),
+            dcc.RadioItems(
+                id='feature-selection-question',
+                options=[
+                    {'label': 'Yes', 'value': 'yes'},
+                    {'label': 'No', 'value': 'no'},
+                ],
+                value='yes',
+                inline=True,
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+            )
+        ]
+    )
+
+
+def use_same_dataset_question(model_count):
+    return html.Div(
+        id='same-dataset',
+        children=[
+            html.H6(
+                f"Would like to use the same data as for model {model_count - 1}?",
+                id='select-dataset'
+            ),
+            dcc.RadioItems(
+                id='dataset-selection-question',
+                options=[
+                    {'label': 'Yes', 'value': 'yes'},
+                    {'label': 'No', 'value': 'no'},
+                ],
+                value='yes',
+                inline=True,
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+            )
+        ]
+    )
+
+
+def output_statistics_dropdown():
+    return html.Div(
+        id='output-statistics',
+        children=[
+            html.H6(
+                "Select the evaluation statistics about the model that you wish to see in the output (select all that "
+                "apply):",
+                id='select-statistics'
+            ),
+            dcc.Dropdown(
+                id='output-statistics-dropdown',
+                options=[
+                    {'label': 'RMSE', 'value': 'rmse'},
+                    {'label': 'R-squared', 'value': 'r-squared'},
+                ],
+                multi=True,
+                searchable=False
+            )
+        ]
+    )
+
+
 def initial_model_input_parameters_card():
     return dbc.Card(
         id='card-input',
@@ -561,14 +627,23 @@ def initial_model_input_parameters_card():
                             model_selection_dropdown(),
                             feature_descriptor_dropdown(),
                             kmer_size_dropdown(),
-                            feature_normalization_dropdown()
+                            feature_normalization_dropdown(),
+                            feature_selection_question()
                         ],
                     ),
                     html.Hr(),
                     html.Div(
                         id='output-features',
                         children=[
-                            html.H3('Output features', id='input-header')
+                            html.H3('Output statistics', id='input-header'),
+                            output_statistics_dropdown()
+                        ]
+                    ),
+                    html.Hr(),
+                    html.Div(
+                        id='feature-selection',
+                        children=[
+                            html.H3('Feature selection', id='input-header')
                         ]
                     )
                 ]
@@ -595,14 +670,25 @@ def extra_model_input_parameters_card(model_count):
                             model_selection_dropdown(),
                             feature_descriptor_dropdown(),
                             kmer_size_dropdown(),
-                            feature_normalization_dropdown()
+                            feature_normalization_dropdown(),
+                            feature_selection_question(),
+                            use_same_dataset_question(model_count),
+                            html.P("Note that if the answer is no, then a new dataset must be uploaded")
                         ],
                     ),
                     html.Hr(),
                     html.Div(
                         id='output-features',
                         children=[
-                            html.H3('Output features', id='input-header')
+                            html.H3('Output statistics', id='input-header'),
+                            output_statistics_dropdown()
+                        ]
+                    ),
+                    html.Hr(),
+                    html.Div(
+                        id='feature-selection',
+                        children=[
+                            html.H3('Feature selection', id='input-header')
                         ]
                     )
                 ]

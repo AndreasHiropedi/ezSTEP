@@ -320,6 +320,11 @@
     margin-bottom: 10px;
 }
 
+#input-parameters p {
+    font-size: 10pt;
+    margin-top: -40px;
+}
+
 #input-header {
     font-size: 16pt;
 }
@@ -414,6 +419,63 @@
     width: 60%;
     font-size: 14pt;
     text-align: center;
+}
+
+#feature-selection-q {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-feature {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#feature-selection-question {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#same-dataset {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-dataset {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#dataset-selection-question {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#output-statistics {
+    margin-top: -30px;
+}
+
+#select-statistics {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 100%;
+}
+
+#output-statistics-dropdown {
+    margin-top: -20px;
+    width: 80%;
+    font-size: 14pt;
+    text-align: center;
+    margin-left: 60px;
+    margin-bottom: 15px;
 }
 
 #button {
