@@ -1,7 +1,9 @@
 import base64
-import dash_bootstrap_components as dbc
 import dash
-from dash import Dash, html, dcc, callback, Input, Output, State
+import dash_bootstrap_components as dbc
+import plotly.express as px
+
+from dash import Dash, html, dcc, callback, Input, Output, State, MATCH
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -755,11 +757,37 @@ def model_output_card(model_count):
                 id='card-body',
                 children=[
                     # Placeholder
-                    "To fill in with output visualisations"
+                    html.H4('Interactive scatter plot with Iris dataset'),
+                    dcc.Graph(id={'type': 'scatter-plot', 'index': model_count}),
+                    html.P("Filter by petal width:"),
+                    dcc.RangeSlider(
+                        id={'type': 'range-slider', 'index': model_count},
+                        min=0, max=2.5, step=0.1,
+                        marks={0: '0', 2.5: '2.5'},
+                        value=[0.5, 2]
+                    )
                 ]
             )
         ]
     )
+
+
+@callback(
+    Output({'type': 'scatter-plot', 'index': MATCH}, 'figure'),
+    [Input({'type': 'range-slider', 'index': MATCH}, 'value'),
+     Input('store-model-count', 'data')])
+def update_bar_chart(slider_range, model_data):
+    model_count = model_data['n_clicks']
+
+    df = px.data.iris()  # replace with your own data source
+    low, high = slider_range
+    mask = (df['petal_width'] > low) & (df['petal_width'] < high)
+    fig = px.scatter(
+        df[mask], x="sepal_width", y="sepal_length",
+        color="species", size='petal_length',
+        hover_data=['petal_width'])
+
+    return fig
 
 
 @callback(
