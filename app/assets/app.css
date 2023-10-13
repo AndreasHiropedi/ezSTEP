@@ -478,6 +478,44 @@
     margin-bottom: 15px;
 }
 
+#algorithm-descriptor {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#select-algorithm {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#feature-selection-dropdown {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#feature-number {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-feature-number {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#feature-number-input {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
 #button {
     font-size: 14pt;
     font-weight: bold;

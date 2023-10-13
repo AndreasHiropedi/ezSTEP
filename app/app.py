@@ -609,6 +609,48 @@ def output_statistics_dropdown():
     )
 
 
+def feature_selection_algorithm_dropdown():
+    return html.Div(
+        id='algorithm-descriptor',
+        children=[
+            html.H6(
+                "Select feature selection algorithm:",
+                id='select-algorithm'
+            ),
+            dcc.Dropdown(
+                id='feature-selection-dropdown',
+                options=[
+                    {'label': 'Chi-Square', 'value': 'chi'},
+                    {'label': 'Information Gain', 'value': 'gain'},
+                    {'label': 'F-Score', 'value': 'f-score'},
+                    {'label': 'Pearson Correlation', 'value': 'pearson'},
+                    {'label': 'Mutual Information', 'value': 'mutual'},
+                ],
+                searchable=False
+            )
+        ]
+    )
+
+
+def feature_number_input():
+    return html.Div(
+        id='feature-number',
+        children=[
+            html.H6(
+                "Enter number of selected features:",
+                id='select-feature-number'
+            ),
+            dcc.Input(
+                id='feature-number-input',
+                type='number',
+                min=1,
+                max=1000,
+                step=1
+            )
+        ]
+    )
+
+
 def initial_model_input_parameters_card():
     return dbc.Card(
         id='card-input',
@@ -643,7 +685,9 @@ def initial_model_input_parameters_card():
                     html.Div(
                         id='feature-selection',
                         children=[
-                            html.H3('Feature selection', id='input-header')
+                            html.H3('Feature selection', id='input-header'),
+                            feature_selection_algorithm_dropdown(),
+                            feature_number_input()
                         ]
                     )
                 ]
@@ -688,7 +732,9 @@ def extra_model_input_parameters_card(model_count):
                     html.Div(
                         id='feature-selection',
                         children=[
-                            html.H3('Feature selection', id='input-header')
+                            html.H3('Feature selection', id='input-header'),
+                            feature_selection_algorithm_dropdown(),
+                            feature_number_input()
                         ]
                     )
                 ]
@@ -707,7 +753,10 @@ def model_output_card(model_count):
             ),
             dbc.CardBody(
                 id='card-body',
-                children=["To fill in with output visualisations"]
+                children=[
+                    # Placeholder
+                    "To fill in with output visualisations"
+                ]
             )
         ]
     )
