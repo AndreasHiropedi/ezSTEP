@@ -9,7 +9,10 @@ app = Dash(__name__, suppress_callback_exceptions=True)
 
 
 def app_header():
-    # Web app header
+    """
+    This function builds the header for the web app.
+    """
+
     return html.Header(
         id='app-header',
         children=[
@@ -32,7 +35,7 @@ def app_header():
 
             # Web app title
             html.H2(
-                "DNA Sequence Analyser",
+                "GenoCraftBMC",
             ),
 
             # GitHub repo link
@@ -63,7 +66,10 @@ def app_header():
 
 
 def app_footer():
-    # Web app footer
+    """
+    This function builds the footer for the web app.
+    """
+
     return html.Footer(
         id='app-footer',
         children=[
@@ -96,7 +102,12 @@ def app_footer():
 
 
 def user_guide():
-    # User guide explaining how the app works
+    """
+    This function builds the user guidelines section of the web app,
+    which provides detailed information about how the user can interact
+    with the platform.
+    """
+
     return html.Div(
         id='user-guide',
         children=[
@@ -235,6 +246,11 @@ def user_guide():
 
 
 def tabs_container():
+    """
+    This function builds the tab container, which allows the user to switch
+    between available tabs.
+    """
+
     return dcc.Tabs(
         id='container',
         value="upload datasets",
@@ -271,6 +287,10 @@ def tabs_container():
 
 
 def training_data_upload_card():
+    """
+    This function creates the upload boxes for the training data.
+    """
+
     return dbc.Card(
         id='card',
         children=[
@@ -333,6 +353,10 @@ def training_data_upload_card():
 
 
 def testing_data_upload_card():
+    """
+    This function creates the upload boxes for the testing data.
+    """
+
     return dbc.Card(
         id='card',
         children=[
@@ -395,6 +419,10 @@ def testing_data_upload_card():
 
 
 def query_data_upload_card():
+    """
+    This function creates the upload boxes for the model querying data.
+    """
+
     return dbc.Card(
         id='card',
         children=[
@@ -457,6 +485,11 @@ def query_data_upload_card():
 
 
 def model_selection_dropdown():
+    """
+    This function creates the dropdown that allows the user to select
+    the type of model they wish to train.
+    """
+
     return html.Div(
         id='model-selection',
         children=[
@@ -480,6 +513,11 @@ def model_selection_dropdown():
 
 
 def feature_descriptor_dropdown():
+    """
+    This function creates the dropdown that allows the user to select
+    the type of feature descriptor they wish to use.
+    """
+
     return html.Div(
         id='feature-descriptor',
         children=[
@@ -501,6 +539,11 @@ def feature_descriptor_dropdown():
 
 
 def kmer_size_dropdown():
+    """
+    This function creates the dropdown that allows the user to select
+    the kmer size to be used (if kmer is selected as the feature descriptor).
+    """
+
     return html.Div(
         id='kmer-descriptor',
         children=[
@@ -525,6 +568,11 @@ def kmer_size_dropdown():
 
 
 def feature_normalization_dropdown():
+    """
+    This function creates the dropdown that allows the user to select
+    the type of feature normalization algorithm to be used.
+    """
+
     return html.Div(
         id='normalization-descriptor',
         children=[
@@ -546,6 +594,11 @@ def feature_normalization_dropdown():
 
 
 def feature_selection_question():
+    """
+    This function allows the user to enable/ disable feature selection
+    for the model they have selected.
+    """
+
     return html.Div(
         id='feature-selection-q',
         children=[
@@ -568,6 +621,12 @@ def feature_selection_question():
 
 
 def use_same_dataset_question(model_count):
+    """
+    This function allows the user to choose if they wish to use the same
+    dataset used for the previous model (if yes, then they don't need to
+    upload a new dataset).
+    """
+
     return html.Div(
         id='same-dataset',
         children=[
@@ -590,6 +649,11 @@ def use_same_dataset_question(model_count):
 
 
 def output_statistics_dropdown():
+    """
+    This function allows the user to select the types of summary statistics
+    they wish to see regarding the chosen model (such as RMSE, R-squared, etc.).
+    """
+
     return html.Div(
         id='output-statistics',
         children=[
@@ -612,6 +676,11 @@ def output_statistics_dropdown():
 
 
 def feature_selection_algorithm_dropdown():
+    """
+    This function allows the user to choose the feature selection
+    algorithm to be used (in case feature selection is enabled).
+    """
+
     return html.Div(
         id='algorithm-descriptor',
         children=[
@@ -635,6 +704,12 @@ def feature_selection_algorithm_dropdown():
 
 
 def feature_number_input():
+    """
+    This function allows the user to choose the number of features
+    to be used by the feature selection algorithm (in case feature selection
+    is enabled).
+    """
+
     return html.Div(
         id='feature-number',
         children=[
@@ -654,6 +729,10 @@ def feature_number_input():
 
 
 def initial_model_input_parameters_card():
+    """
+    This function creates the original information card for the model inputs.
+    """
+
     return dbc.Card(
         id='card-input',
         children=[
@@ -699,6 +778,11 @@ def initial_model_input_parameters_card():
 
 
 def extra_model_input_parameters_card(model_count):
+    """
+    This function creates all additional information cards for the model inputs
+    (if more than one model is created).
+    """
+
     return dbc.Card(
         id='card-input',
         children=[
@@ -746,6 +830,10 @@ def extra_model_input_parameters_card(model_count):
 
 
 def model_output_card(model_count):
+    """
+    This function creates all information cards for the model outputs.
+    """
+
     return dbc.Card(
         id='card-output',
         children=[
@@ -777,6 +865,11 @@ def model_output_card(model_count):
     [Input({'type': 'range-slider', 'index': MATCH}, 'value'),
      Input('store-model-count', 'data')])
 def update_bar_chart(slider_range, model_data):
+    """
+    This callback function keeps track of the user changes to the
+    displayed graph (as part of the output information cards)
+    """
+
     model_count = model_data['n_clicks']
 
     df = px.data.iris()  # replace with your own data source
@@ -797,6 +890,11 @@ def update_bar_chart(slider_range, model_data):
      State('store-model-count', 'data')]
 )
 def render_tabs_content(selected_tab, stored_content, stored_count):
+    """
+    This callback function keeps track of the user changes to the
+    tabs container (and displays the correct information for each tab)
+    """
+
     # File upload tab
     if selected_tab == 'upload datasets':
         return html.Div(
@@ -863,6 +961,11 @@ def render_tabs_content(selected_tab, stored_content, stored_count):
      ]
 )
 def add_new_model(n_clicks, current_children, stored_count, stored_content):
+    """
+    This callback function keeps track of the user changes to the
+    model inputs tab (when adding new models).
+    """
+
     # Check if a new model has been added
     if n_clicks > stored_count['n_clicks']:
         stored_count['n_clicks'] = n_clicks
@@ -875,7 +978,7 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
     # If there has been no new model added
     return dash.no_update, dash.no_update, dash.no_update
 
-
+# Main layout of the app
 app.layout = html.Div(
     children=[
         app_header(),
