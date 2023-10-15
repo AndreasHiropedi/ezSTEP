@@ -35,7 +35,7 @@ def app_header():
 
             # Web app title
             html.H2(
-                "GenoCraftBMC",
+                "BioNetTrain",
             ),
 
             # GitHub repo link
