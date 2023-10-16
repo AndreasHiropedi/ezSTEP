@@ -44,7 +44,7 @@ def app_header():
                 children=[
                     "View on GitHub"
                 ],
-                href='https://github.com/AndreasHiropedi/Dissertation',
+                href='https://github.com/AndreasHiropedi/BioNetTrain',
             ),
 
             # GitHub logo
