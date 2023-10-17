@@ -421,23 +421,11 @@
     text-align: center;
 }
 
-#feature-selection-q {
-    margin-top: -40px;
-    display: flex;
-    align-items: center;
-}
-
 #select-feature {
     font-weight: normal;
     font-size: 14pt;
     width: 40%;
     margin-right: 10px;
-}
-
-#feature-selection-question {
-    width: 60%;
-    font-size: 14pt;
-    text-align: center;
 }
 
 #same-dataset {
@@ -511,6 +499,51 @@
 }
 
 #feature-number-input {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#use-unsupervised {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#dimension-number {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-dimension-number {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#dimension-number-input {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#dimension-algorithm-descriptor {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#select-dimension-algorithm {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#dimension-reduction-dropdown {
     width: 60%;
     font-size: 14pt;
     text-align: center;

@@ -593,30 +593,40 @@ def feature_normalization_dropdown():
     )
 
 
-def feature_selection_question():
+def feature_selection_question(id_suffix):
     """
     This function allows the user to enable/ disable feature selection
     for the model they have selected.
     """
 
     return html.Div(
-        id='feature-selection-q',
+        id=f'feature-selection-q-{id_suffix}',
         children=[
             html.H6(
                 "Would you like to enable feature selection?",
                 id='select-feature'
             ),
             dcc.RadioItems(
-                id='feature-selection-question',
+                id=f'feature-selection-question-{id_suffix}',
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
-                value='yes',
+                value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                style={
+                    'width': '60%',
+                    'font-size': '14pt',
+                    'text-align': 'center'
+                }
             )
-        ]
+        ],
+        style={
+            'margin-top': '-40px',
+            'display': 'flex',
+            'align-items': 'center'
+        }
     )
 
 
@@ -721,9 +731,127 @@ def feature_number_input():
                 id='feature-number-input',
                 type='number',
                 min=1,
-                max=1000,
+                max=100,
                 step=1
             )
+        ]
+    )
+
+
+def use_unsupervised_learning_question(id_suffix):
+    """
+    This function allows the user to choose if they wish to use unsupervised
+    learning for the visualisations (if yes, the user will need to input some
+    dimensionality reduction parameters).
+    """
+
+    return html.Div(
+        id=f'unsupervised-learning-{id_suffix}',
+        children=[
+            html.H6(
+                f"Would like to use unsupervised learning?",
+                id='use-unsupervised'
+            ),
+            dcc.RadioItems(
+                id=f'unsupervised-learning-question-{id_suffix}',
+                options=[
+                    {'label': 'Yes', 'value': 'yes'},
+                    {'label': 'No', 'value': 'no'},
+                ],
+                value='no',
+                inline=True,
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                style={
+                    'width': '60%',
+                    'font-size': '14pt',
+                    'text-align': 'center'
+                }
+            )
+        ],
+        style={
+            'margin-top': '-40px',
+            'display': 'flex',
+            'align-items': 'center'
+        }
+    )
+
+
+def dimension_reduction_algorithm_dropdown():
+    """
+    This function allows the user to choose the dimension reduction
+    algorithm to be used (in case unsupervised learning is enabled).
+    """
+
+    return html.Div(
+        id='dimension-algorithm-descriptor',
+        children=[
+            html.H6(
+                "Select dimension reduction method:",
+                id='select-dimension-algorithm'
+            ),
+            dcc.Dropdown(
+                id='dimension-reduction-dropdown',
+                options=[
+                    {'label': 'PCA', 'value': 'pca'},
+                    {'label': 'tsne', 'value': 'tsne'},
+                ],
+                searchable=False
+            )
+        ]
+    )
+
+
+def dimension_number_input():
+    """
+    This function allows the user to choose the number of dimensions
+    to be used by the dimensionality reduction algorithm (in case unsupervised learning
+    is enabled).
+    """
+
+    return html.Div(
+        id='dimension-number',
+        children=[
+            html.H6(
+                "Enter number of dimensions:",
+                id='select-dimension-number'
+            ),
+            dcc.Input(
+                id='dimension-number-input',
+                type='number',
+                min=1,
+                max=10,
+                step=1
+            )
+        ]
+    )
+
+
+def feature_selection_section():
+    """
+    This function creates the feature selection section for the model inputs.
+    """
+
+    return html.Div(
+        id='feature-selection',
+        children=[
+            html.H3('Feature selection', id='input-header'),
+            feature_selection_algorithm_dropdown(),
+            feature_number_input()
+        ]
+    )
+
+
+def dimension_reduction_section():
+    """
+    This function creates the dimension reduction section for the model inputs.
+    """
+
+    return html.Div(
+        id='dimension-reduction',
+        children=[
+            html.H3('Dimension reduction', id='input-header'),
+            dimension_reduction_algorithm_dropdown(),
+            dimension_number_input()
         ]
     )
 
@@ -751,7 +879,8 @@ def initial_model_input_parameters_card():
                             feature_descriptor_dropdown(),
                             kmer_size_dropdown(),
                             feature_normalization_dropdown(),
-                            feature_selection_question()
+                            feature_selection_question("1"),
+                            use_unsupervised_learning_question("1")
                         ],
                     ),
                     html.Hr(),
@@ -762,14 +891,21 @@ def initial_model_input_parameters_card():
                             output_statistics_dropdown()
                         ]
                     ),
-                    html.Hr(),
                     html.Div(
-                        id='feature-selection',
+                        id={'type': 'feature-selection-section', 'index': '1'},
                         children=[
-                            html.H3('Feature selection', id='input-header'),
-                            feature_selection_algorithm_dropdown(),
-                            feature_number_input()
-                        ]
+                            html.Hr(),
+                            feature_selection_section()
+                        ],
+                        style={'display': 'none'}
+                    ),
+                    html.Div(
+                        id={'type': 'dimension-reduction-section', 'index': '1'},
+                        children=[
+                            html.Hr(),
+                            dimension_reduction_section()
+                        ],
+                        style={'display': 'none'}
                     )
                 ]
             )
@@ -801,9 +937,10 @@ def extra_model_input_parameters_card(model_count):
                             feature_descriptor_dropdown(),
                             kmer_size_dropdown(),
                             feature_normalization_dropdown(),
-                            feature_selection_question(),
+                            feature_selection_question(str(model_count)),
+                            use_unsupervised_learning_question(str(model_count)),
                             use_same_dataset_question(model_count),
-                            html.P("Note that if the answer is no, then a new dataset must be uploaded")
+                            html.P("Note that if the answer is no, then a new dataset must be uploaded"),
                         ],
                     ),
                     html.Hr(),
@@ -814,14 +951,21 @@ def extra_model_input_parameters_card(model_count):
                             output_statistics_dropdown()
                         ]
                     ),
-                    html.Hr(),
                     html.Div(
-                        id='feature-selection',
+                        id={'type': 'feature-selection-section', 'index': str(model_count)},
                         children=[
-                            html.H3('Feature selection', id='input-header'),
-                            feature_selection_algorithm_dropdown(),
-                            feature_number_input()
-                        ]
+                            html.Hr(),
+                            feature_selection_section()
+                        ],
+                        style={'display': 'none'}
+                    ),
+                    html.Div(
+                        id={'type': 'dimension-reduction-section', 'index': str(model_count)},
+                        children=[
+                            html.Hr(),
+                            dimension_reduction_section()
+                        ],
+                        style={'display': 'none'}
                     )
                 ]
             )
@@ -858,6 +1002,40 @@ def model_output_card(model_count):
             )
         ]
     )
+
+
+@app.callback(
+    Output({'type': 'feature-selection-section', 'index': MATCH}, 'style'),
+    Input({'type': 'feature-selection-question', 'index': MATCH}, 'value')
+)
+def update_feature_selection(value):
+    """
+    This callback function displays (or doesn't) the feature selection
+    section on the model input card based on user's input.
+    """
+
+    if value == 'yes':
+        return {'display': 'block'}
+
+    elif value == 'no':
+        return {'display': 'none'}
+
+
+@callback(
+    Output({'type': 'dimension-reduction-section', 'index': MATCH}, 'style'),
+    Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value')
+)
+def update_unsupervised_learning(value):
+    """
+    This callback function displays (or doesn't) the dimension reduction
+    section on the model input card based on user's input.
+    """
+
+    if value == 'yes':
+        return {'display': 'block'}
+
+    elif value == 'no':
+        return {'display': 'none'}
 
 
 @callback(
@@ -978,6 +1156,7 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
     # If there has been no new model added
     return dash.no_update, dash.no_update, dash.no_update
 
+
 # Main layout of the app
 app.layout = html.Div(
     children=[
@@ -1002,6 +1181,10 @@ app.layout = html.Div(
                         ),
                         dcc.Store(
                             id='store-model-content',
+                            data={}
+                        ),
+                        dcc.Store(
+                            id='card-states',
                             data={}
                         ),
                         app_footer()
