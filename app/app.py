@@ -1,6 +1,7 @@
 import base64
 import dash
 import dash_bootstrap_components as dbc
+import flask
 import pandas as pd
 import plotly.express as px
 
@@ -1034,7 +1035,7 @@ def model_input_ref(model_count):
     model input (for each model created).
     """
 
-    return html.A(
+    return dcc.Link(
         children=[
             html.H4(
                 f"Model {model_count} input parameters",
@@ -1051,7 +1052,7 @@ def model_output_ref(model_count):
     model output (for each model created).
     """
 
-    return html.A(
+    return dcc.Link(
         children=[
             html.H4(
                 f"Model {model_count} output",
@@ -1278,43 +1279,50 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
     return dash.no_update, dash.no_update, dash.no_update
 
 
-# Main layout of the app
-app.layout = html.Div(
-    children=[
-        app_header(),
-        # Body of the page
-        html.Div(
-            id='app-contents',
-            children=[
-                user_guide(),
-                # Tabs
-                html.Div(
-                    id='tabs-container',
-                    children=[
-                        tabs_container(),
-                        # Output of the tabs
-                        html.Div(
-                            id='content'
-                        ),
-                        dcc.Store(
-                            id='store-model-count',
-                            data={'n_clicks': 1}
-                        ),
-                        dcc.Store(
-                            id='store-model-content',
-                            data={}
-                        ),
-                        app_footer()
-                    ],
-                )
-            ],
-            style={
-                'background': 'white',
-                'color': 'black'
-            }
-        ),
-    ],
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname'),
 )
+def display_page(pathname):
+    """
+
+    """
+
+    if pathname.startswith('/model-input/'):
+        # If a model inputs tab is selected, return the card for that input
+        try:
+            model_num = int(pathname.split('/')[-1][-1])
+            return model_input_parameters_card(model_num)
+        except ValueError:
+            return html.Div('Invalid model number.')
+
+    else:
+        # Return normal app layout
+        return [
+            app_header(),
+            html.Div(
+                id='app-contents',
+                children=[
+                    user_guide(),
+                    html.Div(
+                        id='tabs-container',
+                        children=[
+                            tabs_container(),
+                            html.Div(id='content'),
+                            dcc.Store(id='store-model-count', data={'n_clicks': 1}),
+                            dcc.Store(id='store-model-content', data={}),
+                            app_footer()
+                        ]
+                    )
+                ]
+            )
+        ]
+
+
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
 
 if __name__ == '__main__':
     app.run_server()
