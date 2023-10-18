@@ -276,6 +276,37 @@
     padding-bottom: 50px;
 }
 
+#card-row {
+    display: flex;
+    width: 100%;
+}
+
+#model-inputs-ref {
+    margin-left: 150px;
+    margin-top: 30px;
+    font-size: 16pt;
+    border: 2px solid black;
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+    border-radius: 2px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#model-outputs-ref {
+    margin-left: 150px;
+    margin-top: 30px;
+    font-size: 16pt;
+    border: 2px solid black;
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+    border-radius: 2px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 #card {
     display: inline-block;
 }
@@ -428,25 +459,6 @@
     margin-right: 10px;
 }
 
-#same-dataset {
-    margin-top: -40px;
-    display: flex;
-    align-items: center;
-}
-
-#select-dataset {
-    font-weight: normal;
-    font-size: 14pt;
-    width: 40%;
-    margin-right: 10px;
-}
-
-#dataset-selection-question {
-    width: 60%;
-    font-size: 14pt;
-    text-align: center;
-}
-
 #output-statistics {
     margin-top: -30px;
 }
@@ -505,6 +517,20 @@
 }
 
 #use-unsupervised {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#use-cross-validation {
+    font-weight: normal;
+    font-size: 14pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#use-hyper-opt {
     font-weight: normal;
     font-size: 14pt;
     width: 40%;
