@@ -292,6 +292,7 @@
     border-radius: 2px;
     padding-top: 5px;
     padding-bottom: 5px;
+    margin-right: 50px;
 }
 
 #model-outputs-ref {
@@ -586,7 +587,7 @@
     float: right;
     margin-right: 150px;
     display: inline-block;
-    margin-top: 50px;
+    margin-top: 70px;
 }
 
 #button:hover {

@@ -1,9 +1,10 @@
 import base64
 import dash
 import dash_bootstrap_components as dbc
+import pandas as pd
 import plotly.express as px
 
-from dash import Dash, html, dcc, callback, Input, Output, State, MATCH
+from dash import Dash, html, dcc, callback, Input, Output, State, MATCH, dash_table
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -208,6 +209,13 @@ def user_guide():
                                 "the necessary information for each model added. There will also be an  "
                                 "option that will allow the user to choose whether or not they wish to  "
                                 "optimise the model's hyperparameters or not."
+                            ),
+                            html.P(
+                                "Under this tab, the user will see one (or more) hyperlink(s) depending on "
+                                "the number of models they have added. In order to input all the necessary "
+                                "information, the user will need to click on these hyperlinks individually, "
+                                "which will prompt them to a new page where they can input all the data for a "
+                                "specific model."
                             )
                         ],
                         style={
@@ -230,6 +238,17 @@ def user_guide():
                                 "If the user has added several models, then the visualisations for each "
                                 "model will be displayed in the model's own container, and a table showing "
                                 "all models and their performance statistics will be generated."
+                            ),
+                            html.P(
+                                "Similar to the model inputs, in order to see the visualisations for each "
+                                "individual model created, the user will need to click on the appropriate "
+                                "hyperlink, which will prompt them to the correct page. However, it is worth "
+                                "noting that the table containing all the models and their respective performance "
+                                "statistics will be displayed on the main page (note: only the summary statistics "
+                                "that have been selected for all models will be displayed in this table, i.e. if "
+                                "the user has selected RMSE for model 1 and RMSE and R-squared for model 2, then "
+                                "only the RMSE statistic will be displayed in this table; however, the user can still "
+                                "see the value of the R-squared statistic on the model's individual output page)."
                             )
                         ],
                         style={
@@ -1043,6 +1062,47 @@ def model_output_ref(model_count):
     )
 
 
+def model_output_performance_statistics_table(model_count):
+    """
+    This function displays the output summary statistics table
+    for the models selected by the user (contains only the summary statistics
+    selected for all models).
+    """
+
+    # Create a dataframe of all the model output statistics
+    df = pd.DataFrame({
+        'Model number': [f'Model {i}' for i in range(1, int(model_count)+1)],
+        'RMSE': [f'Model {i} RMSE' for i in range(1, int(model_count)+1)],
+        'R-squared': [f'Model {i} R-squared' for i in range(1, int(model_count)+1)]
+    })
+
+    return dash_table.DataTable(
+        id='table',
+        columns=[{"Model number": i, "id": i} for i in df.columns],
+        data=df.to_dict('records'),
+        style_data={
+            'text-align': 'center',
+            'font-size': '12pt',
+            'font-family': 'Times',
+            'border': '1px solid black'
+        },
+        style_table={
+            'width': '80%',
+            'margin-top': '40px',
+            'margin-left': '180px'
+        },
+        style_header={
+            'text-align': 'center',
+            'font-size': '12pt',
+            'font-family': 'Times',
+            'font-weight': 'bold',
+            'background': '#5F276A',
+            'color': 'white',
+            'border': '1px solid black'
+        }
+    )
+
+
 @app.callback(
     Output({'type': 'feature-selection-section', 'index': MATCH}, 'style'),
     Input({'type': 'feature-selection-question', 'index': MATCH}, 'value')
@@ -1179,7 +1239,8 @@ def render_tabs_content(selected_tab, stored_content, stored_count):
     elif selected_tab == "visualise model outputs":
         return dbc.Row(
             id='tabs-content-output',
-            children=[model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
+            children=[model_output_performance_statistics_table(stored_count['n_clicks'])] +
+            [model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
         )
 
     # Validation check
