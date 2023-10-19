@@ -1281,9 +1281,11 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
 
 @app.callback(
     Output('page-content', 'children'),
-    Input('url', 'href')
+    Input('url', 'href'),
+    State('store-model-count', 'data'),
+    State('store-model-content', 'data'),
 )
-def display_page(href):
+def display_page(href, stored_count, stored_content):
     """
     This callback allows for switching between tabs when choosing to view
     individual model inputs/ outputs.
@@ -1292,6 +1294,10 @@ def display_page(href):
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
     pathname = parsed_url.path
+
+    # Instead of always setting the initial data, check if data exists
+    initial_count_data = {'n_clicks': 1} if not stored_count else stored_count
+    initial_content_data = {} if not stored_content else stored_content
 
     if pathname.startswith('/model-input/'):
         # If a model inputs tab is selected, return the card for that input
@@ -1320,8 +1326,8 @@ def display_page(href):
                     children=[
                         tabs_container(),
                         html.Div(id='content'),
-                        dcc.Store(id='store-model-count', data={'n_clicks': 1}),
-                        dcc.Store(id='store-model-content', data={}),
+                        dcc.Store(id='store-model-count', data=initial_count_data),
+                        dcc.Store(id='store-model-content', data=initial_content_data),
                         app_footer()
                     ]
                 )
@@ -1345,8 +1351,8 @@ app.layout = html.Div([
                         children=[
                             tabs_container(),
                             html.Div(id='content'),
-                            dcc.Store(id='store-model-count', data={'n_clicks': 1}),
-                            dcc.Store(id='store-model-content', data={}),
+                            dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
+                            dcc.Store(id='store-model-content', data={}, storage_type='session'),
                             app_footer()
                         ]
                     )
