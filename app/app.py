@@ -1,11 +1,11 @@
 import base64
 import dash
 import dash_bootstrap_components as dbc
-import flask
 import pandas as pd
 import plotly.express as px
 
 from dash import Dash, html, dcc, callback, Input, Output, State, MATCH, dash_table
+from urllib.parse import urlparse
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -940,7 +940,7 @@ def model_input_parameters_card(model_count):
         id='card-input',
         children=[
             dbc.CardHeader(
-                id='card-header',
+                id='card-header-input',
                 children=[f"Model {model_count} parameters"]
             ),
             dbc.CardBody(
@@ -1007,7 +1007,7 @@ def model_output_card(model_count):
         id='card-output',
         children=[
             dbc.CardHeader(
-                id='card-header',
+                id='card-header-output',
                 children=[f"Model {model_count} output"]
             ),
             dbc.CardBody(
@@ -1281,12 +1281,17 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
 
 @app.callback(
     Output('page-content', 'children'),
-    Input('url', 'pathname'),
+    Input('url', 'href')
 )
-def display_page(pathname):
+def display_page(href):
+    """
+    This callback allows for switching between tabs when choosing to view
+    individual model inputs/ outputs.
     """
 
-    """
+    # Extract pathname from the full URL (href)
+    parsed_url = urlparse(href)
+    pathname = parsed_url.path
 
     if pathname.startswith('/model-input/'):
         # If a model inputs tab is selected, return the card for that input
@@ -1296,9 +1301,40 @@ def display_page(pathname):
         except ValueError:
             return html.Div('Invalid model number.')
 
-    else:
-        # Return normal app layout
-        return [
+    elif pathname.startswith('/model-output/'):
+        # If a model output tab is selected, return the card for that output
+        try:
+            model_num = int(pathname.split('/')[-1][-1])
+            return model_output_card(model_num)
+        except ValueError:
+            return html.Div('Invalid model number.')
+
+    return [
+        app_header(),
+        html.Div(
+            id='app-contents',
+            children=[
+                user_guide(),
+                html.Div(
+                    id='tabs-container',
+                    children=[
+                        tabs_container(),
+                        html.Div(id='content'),
+                        dcc.Store(id='store-model-count', data={'n_clicks': 1}),
+                        dcc.Store(id='store-model-content', data={}),
+                        app_footer()
+                    ]
+                )
+            ]
+        )
+    ]
+
+
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(
+        id='page-content',
+        children=[
             app_header(),
             html.Div(
                 id='app-contents',
@@ -1317,11 +1353,7 @@ def display_page(pathname):
                 ]
             )
         ]
-
-
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
+    )
 ])
 
 if __name__ == '__main__':

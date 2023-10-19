@@ -317,9 +317,9 @@
     background: white;
     color: black;
     width: 50%;
-    margin-top: 30px;
+    margin-top: 2px;
     border: 2px solid black;
-    margin-left: 180px;
+    margin-left: 330px;
 }
 
 #card-output {
@@ -327,7 +327,7 @@
     background: white;
     color: black;
     width: 65%;
-    margin-top: 30px;
+    margin-top: 2px;
     border: 2px solid black;
     margin-left: 250px;
 }
@@ -336,6 +336,22 @@
     font-weight: bold;
     text-align: center;
     font-size: 18pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-input {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-output {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
     background: rgb(228, 228, 228);
     padding: 0.75rem 1.25rem;
 }
@@ -375,6 +391,7 @@
     border-top-color: black;
     border: 0;
     border-top: 1px solid;
+    margin-top: -30px;
 }
 
 #model-selection {
@@ -385,14 +402,14 @@
 
 #select-model {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #model-type-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
@@ -404,14 +421,14 @@
 
 #select-descriptor {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #feature-descriptor-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
@@ -423,14 +440,14 @@
 
 #select-kmer {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #kmer-size-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
@@ -442,20 +459,20 @@
 
 #select-normalization {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #feature-normalization-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
 #select-feature {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
@@ -466,14 +483,14 @@
 
 #select-statistics {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 100%;
 }
 
 #output-statistics-dropdown {
     margin-top: -20px;
     width: 80%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
     margin-left: 60px;
     margin-bottom: 15px;
@@ -487,14 +504,14 @@
 
 #select-algorithm {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #feature-selection-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
@@ -506,34 +523,34 @@
 
 #select-feature-number {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #feature-number-input {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
 #use-unsupervised {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #use-cross-validation {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #use-hyper-opt {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
@@ -546,14 +563,14 @@
 
 #select-dimension-number {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #dimension-number-input {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
@@ -565,14 +582,14 @@
 
 #select-dimension-algorithm {
     font-weight: normal;
-    font-size: 14pt;
+    font-size: 12pt;
     width: 40%;
     margin-right: 10px;
 }
 
 #dimension-reduction-dropdown {
     width: 60%;
-    font-size: 14pt;
+    font-size: 12pt;
     text-align: center;
 }
 
