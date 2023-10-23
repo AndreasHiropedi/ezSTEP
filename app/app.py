@@ -3,11 +3,14 @@ import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
+import os
 
 from dash import Dash, html, dcc, callback, Input, Output, State, MATCH, dash_table
+from flask import Flask
 from urllib.parse import urlparse
 
-app = Dash(__name__, suppress_callback_exceptions=True)
+server = Flask(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True, server=server)
 
 
 def app_header():
@@ -203,7 +206,7 @@ def user_guide():
                             html.P(
                                 "In this section, the user gets to select a model and input all the "
                                 "necessary information in order to train and test that model. This "
-                                "information will be used together with the datasets uploaded (see next "
+                                "information will be used together with the datasets uploaded (see the previous "
                                 "section for more details) in order to train the models and visualise the "
                                 "output (see the 'Model Output Visualisations' section for more). The user "
                                 "will also be able to add more than one model, but will need to input all "
@@ -360,16 +363,7 @@ def training_data_upload_card():
                 ]
             )
         ],
-        style={
-            'background': 'white',
-            'color': 'black',
-            'margin-top': '30px',
-            'border': '2px solid black',
-            'width': '70%',
-            'margin-left': '30px',
-            'display': 'block',
-            'float': 'left'
-        }
+        className="mx-auto"
     )
 
 
@@ -428,15 +422,7 @@ def testing_data_upload_card():
                 ]
             )
         ],
-        style={
-            'background': 'white',
-            'color': 'black',
-            'margin-top': '30px',
-            'border': '2px solid black',
-            'width': '70%',
-            'display': 'block',
-            'float': 'center'
-        }
+        className="mx-auto"
     )
 
 
@@ -450,7 +436,7 @@ def query_data_upload_card():
         children=[
             dbc.CardHeader(
                 id='card-header',
-                children=["Model querying data (optional)"],
+                children=["Querying data (optional)"],
             ),
             dbc.CardBody(
                 id='card-body',
@@ -495,12 +481,7 @@ def query_data_upload_card():
                 ]
             )
         ],
-        style={
-            'background': 'white',
-            'color': 'black',
-            'margin-top': '30px',
-            'border': '2px solid black'
-        }
+        className="mx-auto"
     )
 
 
@@ -1175,7 +1156,7 @@ def render_tabs_content(selected_tab, stored_content, stored_count):
 
     # File upload tab
     if selected_tab == 'upload datasets':
-        return html.Div(
+        return dbc.Container(
             id='tabs-content-upload',
             children=[
                 dbc.Row(
@@ -1183,34 +1164,37 @@ def render_tabs_content(selected_tab, stored_content, stored_count):
                     children=[
                         dbc.Col(
                             children=[training_data_upload_card()],
+                            md=3,
                             style={
-                                'width': '40%',
-                                'margin-left': '30px',
-                                'float': 'left'
+                                'margin-left': '50px',
+                                'margin-right': '50px'
                             }
                         ),
                         dbc.Col(
                             children=[testing_data_upload_card()],
+                            md=5,
                             style={
-                                'width': '40%'
+                                'margin-left': '50px',
+                                'margin-right': '50px'
                             }
                         ),
                         dbc.Col(
                             children=[query_data_upload_card()],
+                            md=3,
                             style={
-                                'width': '30%',
-                                'margin-right': '30px',
-                                'float': 'right'
+                                'margin-left': '80px',
+                                'margin-right': '80px'
                             }
                         )
-                    ]
+                    ],
+                    justify="center"
                 )
             ],
             style={
                 'background': 'white',
-                'color': 'black',
-                'margin-right': '0px'
-            }
+                'color': 'black'
+            },
+            fluid=True
         )
 
     # Model inputs tab
@@ -1363,4 +1347,4 @@ app.layout = html.Div([
 ])
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=int(os.environ.get("PORT", 8050)))
