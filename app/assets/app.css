@@ -398,7 +398,6 @@
     border-top-color: black;
     border: 0;
     border-top: 1px solid;
-    margin-top: -30px;
 }
 
 #model-selection {
@@ -595,6 +594,25 @@
 }
 
 #dimension-reduction-dropdown {
+    width: 60%;
+    font-size: 12pt;
+    text-align: center;
+}
+
+#loop-number {
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+}
+
+#select-iteration-number {
+    font-weight: normal;
+    font-size: 12pt;
+    width: 40%;
+    margin-right: 10px;
+}
+
+#iteration-number-input {
     width: 60%;
     font-size: 12pt;
     text-align: center;
