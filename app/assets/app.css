@@ -243,7 +243,7 @@
     border-right: 1px solid black;
 }
 
-#tab-visualise {
+#tab-output {
     height: 70px;
     font-weight: bold;
     font-size: 14pt;
@@ -319,14 +319,305 @@
     margin-right: 30px;
 }
 
-#card-input {
+#input-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#input-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#input-page-contents {
+    top: 80px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
+
+#input-user-guide {
+    position: relative;
+}
+
+#input-user-guide h2 {
+    font-size: 16pt;
+    font-family: 'Times';
+    margin-left: 20px;
+}
+
+#input-user-guide p {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#input-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-left: 10px;
+    margin-left: 10px;
+    gap: 2rem;
+}
+
+#hyper-opt-guidelines {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 10px;
+    margin-right: 15px;
+    padding: 0.75rem 1.25rem;
+}
+
+#hyper-opt-guidelines h4 {
+    font-size: 14pt;
+    font-family: 'Times';
+    margin-left: 10px;
+}
+
+#hyper-opt-guidelines hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-color: #ffe8a1;
+    border: 0;
+    border-top: 1px solid;
+}
+
+#hyper-opt-guidelines p {
+    font-size: 12pt;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#unsupervised-learning-guidelines {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 10px;
+    margin-right: 15px;
+    padding: 0.75rem 1.25rem;
+}
+
+#unsupervised-learning-guidelines h4 {
+    font-size: 14pt;
+    font-family: 'Times';
+    margin-left: 10px;
+}
+
+#unsupervised-learning-guidelines hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-color: #9fcdff;
+    border: 0;
+    border-top: 1px solid;
+}
+
+#unsupervised-learning-guidelines p {
+    font-size: 12pt;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#input-params-guidelines {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 10px;
+    margin-right: 15px;
+    padding: 0.75rem 1.25rem;
+}
+
+#input-params-guidelines h4 {
+    font-size: 14pt;
+    font-family: 'Times';
+    margin-left: 10px;
+}
+
+#input-params-guidelines hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-color: #f1b0b7;
+    border: 0;
+    border-top: 1px solid;
+}
+
+#input-params-guidelines p {
+    font-size: 12pt;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#feature-selection-guidelines {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 10px;
+    margin-right: 15px;
+    padding: 0.75rem 1.25rem;
+}
+
+#feature-selection-guidelines h4 {
+    font-size: 14pt;
+    font-family: 'Times';
+    margin-left: 10px;
+}
+
+#feature-selection-guidelines hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top-color: #c8cbcf;
+    border: 0;
+    border-top: 1px solid;
+}
+
+#feature-selection-guidelines p {
+    font-size: 12pt;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#parameters-card {
     display: inline-block;
     background: white;
     color: black;
-    width: 50%;
-    margin-top: 2px;
+    width: 40%;
+    margin-top: 20px;
     border: 2px solid black;
-    margin-left: 330px;
+    margin-left: 30px;
+}
+
+#feature-card {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 40%;
+    margin-top: 20px;
+    border: 2px solid black;
+    margin-left: 30px;
+}
+
+#unsupervised-card {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 40%;
+    margin-top: 20px;
+    border: 2px solid black;
+    margin-left: 30px;
+}
+
+#hyperparameters-card {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 40%;
+    margin-top: 20px;
+    border: 2px solid black;
+    margin-left: 30px;
+}
+
+#button-wrapper {
+    width: 100%;
+    bottom: 0px;
+    padding-bottom: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+#input-page-button {
+    margin-top: 40px;
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    color: white;
+    background: blue;
+    margin-left: 600px;
+    padding: 0.75rem 1.25rem;
+}
+
+#input-page-button:hover {
+    color: white;
+    background: black;
+}
+
+#output-statistics-card {
+    display: inline-block;
+    background: white;
+    color: black;
+    width: 60%;
+    margin-top: 20px;
+    border: 2px solid black;
+    margin-left: 300px;
+}
+
+#output-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#output-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#output-page-contents {
+    top: 80px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
+
+#feature-selection-q {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#feature-selection-question {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#unsupervised-learning-q {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#unsupervised-learning-question {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#hyper-opt-q {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+}
+
+#hyper-opt-question {
+    width: 60%;
+    font-size: 14pt;
+    text-align: center;
 }
 
 #card-output {
@@ -334,17 +625,9 @@
     background: white;
     color: black;
     width: 65%;
-    margin-top: 2px;
+    margin-top: 20px;
     border: 2px solid black;
     margin-left: 250px;
-}
-
-#card-header {
-    font-weight: bold;
-    text-align: center;
-    font-size: 18pt;
-    background: rgb(228, 228, 228);
-    padding: 0.75rem 1.25rem;
 }
 
 #card-header-input {
@@ -356,6 +639,14 @@
 }
 
 #card-header-output {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header {
     font-weight: bold;
     text-align: center;
     font-size: 16pt;
@@ -401,7 +692,7 @@
 }
 
 #model-selection {
-    margin-top: -30px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
 }
@@ -420,7 +711,7 @@
 }
 
 #feature-descriptor {
-    margin-top: -40px;
+    margin-top: -20px;
     display: flex;
     align-items: center;
 }
@@ -439,7 +730,7 @@
 }
 
 #kmer-descriptor {
-    margin-top: -40px;
+    margin-top: -30px;
     display: flex;
     align-items: center;
 }
@@ -458,7 +749,7 @@
 }
 
 #normalization-descriptor {
-    margin-top: -40px;
+    margin-top: -30px;
     display: flex;
     align-items: center;
 }
@@ -489,21 +780,23 @@
 
 #select-statistics {
     font-weight: normal;
-    font-size: 12pt;
+    font-size: 14pt;
     width: 100%;
+    margin-top: 45px;
+    margin-left: 20px;
 }
 
 #output-statistics-dropdown {
-    margin-top: -20px;
+    margin-top: -10px;
     width: 80%;
-    font-size: 12pt;
+    font-size: 14pt;
     text-align: center;
-    margin-left: 60px;
+    margin-left: 80px;
     margin-bottom: 15px;
 }
 
 #algorithm-descriptor {
-    margin-top: -30px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
 }
@@ -522,7 +815,7 @@
 }
 
 #feature-number {
-    margin-top: -40px;
+    margin-top: -30px;
     display: flex;
     align-items: center;
 }
@@ -547,13 +840,6 @@
     margin-right: 10px;
 }
 
-#use-cross-validation {
-    font-weight: normal;
-    font-size: 12pt;
-    width: 40%;
-    margin-right: 10px;
-}
-
 #use-hyper-opt {
     font-weight: normal;
     font-size: 12pt;
@@ -562,7 +848,7 @@
 }
 
 #dimension-number {
-    margin-top: -40px;
+    margin-top: -30px;
     display: flex;
     align-items: center;
 }
@@ -581,7 +867,7 @@
 }
 
 #dimension-algorithm-descriptor {
-    margin-top: -30px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
 }
@@ -600,7 +886,7 @@
 }
 
 #loop-number {
-    margin-top: -40px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
 }

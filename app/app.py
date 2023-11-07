@@ -143,14 +143,14 @@ def user_guide():
                                     "   2. Model input parameters",
                                     html.Br(),
                                     html.Br(),
-                                    "   3. Model output visualisations",
+                                    "   3. Model outputs",
                                     html.Br(),
                                     html.Br(),
                                     "In order for the user to see the model output, their inputted "
                                     "parameters for the selected model, as well as their uploaded "
                                     "dataset, must be first validated and then processed. Once these "
                                     "steps have occurred, the user will be able to visualise the model "
-                                    "output (see more in the 'Model output visualisations' section). For "
+                                    "output (see more in the 'Model outputs' section). For "
                                     "more detailed information on each specific subsection, see the "
                                     "information below. "
                                 ]
@@ -189,6 +189,10 @@ def user_guide():
                                 "the following order: sequence + separator (such as , or | or ;) + label + "
                                 "new line character. If the user fails to ensure these conditions, then "
                                 "the app may not be able to process their inputted data."
+                            ),
+                            html.P(
+                                "NOTE: for the training process, we always perform 5-fold cross validation on the "
+                                "uploaded training dataset."
                             )
                         ],
                         style={
@@ -209,7 +213,7 @@ def user_guide():
                                 "necessary information in order to train and test that model. This "
                                 "information will be used together with the datasets uploaded (see the previous "
                                 "section for more details) in order to train the models and visualise the "
-                                "output (see the 'Model Output Visualisations' section for more). The user "
+                                "output (see the 'Model Outputs' section for more). The user "
                                 "will also be able to add more than one model, but will need to input all "
                                 "the necessary information for each model added. There will also be an  "
                                 "option that will allow the user to choose whether or not they wish to  "
@@ -234,26 +238,29 @@ def user_guide():
                     html.Div(
                         id='model-output',
                         children=[
-                            html.H4("4. Model output visualisations"),
+                            html.H4("4. Model outputs"),
                             html.Hr(),
                             html.P(
                                 "Once the data has been uploaded and the user has set all the input "
                                 "parameters, the visualisations for the specific model, along with some "
-                                "statistics (such as the root mean squared error (RMSE)) are displayed. "
+                                "statistics (such as the root mean squared error (RMSE)) are generated. "
                                 "If the user has added several models, then the visualisations for each "
-                                "model will be displayed in the model's own container, and a table showing "
-                                "all models and their performance statistics will be generated."
+                                "model will be displayed on the model's own page, and a table showing "
+                                "all models and their performance statistics will be displayed on the main page. "
+                                "The user will be able to select the summary statistics to be displayed in the table."
                             ),
                             html.P(
                                 "Similar to the model inputs, in order to see the visualisations for each "
                                 "individual model created, the user will need to click on the appropriate "
                                 "hyperlink, which will prompt them to the correct page. However, it is worth "
-                                "noting that the table containing all the models and their respective performance "
-                                "statistics will be displayed on the main page (note: only the summary statistics "
-                                "that have been selected for all models will be displayed in this table, i.e. if "
-                                "the user has selected RMSE for model 1 and RMSE and R-squared for model 2, then "
-                                "only the RMSE statistic will be displayed in this table; however, the user can still "
-                                "see the value of the R-squared statistic on the model's individual output page)."
+                                "noting that the table containing all the models and the selected performance "
+                                "statistics will be displayed on the main page."
+                            ),
+                            html.P(
+                                "If the user has uploaded a querying dataset, the output of the model on that "
+                                "dataset will also be made available on the individual hyperlink pages. This will be "
+                                "in the form of a hyperlink that will allow users to download a CSV file containing "
+                                "the model's output on the querying dataset."
                             )
                         ],
                         style={
@@ -297,9 +304,9 @@ def tabs_container():
                 }
             ),
             dcc.Tab(
-                id='tab-visualise',
-                label="Visualise model outputs",
-                value="visualise model outputs",
+                id='tab-output',
+                label="Model outputs",
+                value="model outputs",
                 selected_style={
                     'background': 'grey',
                     'color': 'white'
@@ -309,13 +316,10 @@ def tabs_container():
     )
 
 
-def training_data_upload_card(stored_name):
+def training_data_upload_card(stored_name=None):
     """
     This function creates the upload boxes for the training data.
     """
-
-    upload_children = None
-    success_message = None
 
     if stored_name:
         upload_children = html.Div(
@@ -337,6 +341,63 @@ def training_data_upload_card(stored_name):
             }
         )
 
+        return dbc.Card(
+            id='card',
+            children=[
+                dbc.CardHeader(
+                    id='card-header',
+                    children=["Training data (required)"],
+                ),
+                dbc.CardBody(
+                    id='card-body',
+                    children=[
+                        html.P(
+                            "Upload your training data",
+                            style={
+                                'text-align': 'center',
+                                'font-size': '14pt'
+                            }
+                        ),
+                        html.Div(
+                            id='upload-container',
+                            children=[
+                                dcc.Upload(
+                                    id='upload-training-data',
+                                    children=[
+                                        html.Div(
+                                            id='box-text',
+                                            children=[html.Div([upload_children, success_message])],
+                                        )
+                                    ],
+                                    multiple=False,
+                                    style={
+                                        'width': '97.5%',
+                                        'height': '80px',
+                                        'textAlign': 'center',
+                                        'border': '2px dashed black'
+                                    }
+                                )
+                            ]
+                        ),
+                        html.P(
+                            "or paste it in the box below",
+                            style={
+                                'text-align': 'center',
+                                'font-size': '14pt'
+                            }
+                        ),
+                        dcc.Textarea(
+                            style={
+                                'width': '97.5%',
+                                'height': '100px'
+                            }
+                        )
+                    ]
+                )
+            ],
+            className="mx-auto"
+        )
+
     return dbc.Card(
         id='card',
         children=[
@@ -354,25 +415,29 @@ def training_data_upload_card(stored_name):
                             'font-size': '14pt'
                         }
                     ),
-                    dcc.Upload(
-                        id='upload-training-data',
-                        children=[html.Div([upload_children, success_message])] if stored_name else
-                        [
-                            html.Div(
-                                id='box-text',
+                    html.Div(
+                        id='upload-container',
+                        children=[
+                            dcc.Upload(
+                                id='upload-training-data',
                                 children=[
-                                    'Drag and Drop or ',
-                                    html.A('Select Files', style={'font-weight': 'bold'})
+                                    html.Div(
+                                        id='box-text',
+                                        children=[
+                                            'Drag and Drop or ',
+                                            html.A('Select Files', style={'font-weight': 'bold'})
+                                        ],
+                                    )
                                 ],
+                                multiple=False,
+                                style={
+                                    'width': '97.5%',
+                                    'height': '80px',
+                                    'textAlign': 'center',
+                                    'border': '2px dashed black'
+                                }
                             )
-                        ],
-                        multiple=False,
-                        style={
-                            'width': '97.5%',
-                            'height': '80px',
-                            'textAlign': 'center',
-                            'border': '2px dashed black'
-                        }
+                        ]
                     ),
                     html.P(
                         "or paste it in the box below",
@@ -669,40 +734,30 @@ def feature_normalization_dropdown():
     )
 
 
-def feature_selection_question(id_suffix):
+def feature_selection_question():
     """
     This function allows the user to enable/ disable feature selection
     for the model they have selected.
     """
 
     return html.Div(
-        id=f'feature-selection-q-{id_suffix}',
+        id='feature-selection-q',
         children=[
             html.H6(
                 "Would you like to enable feature selection?",
                 id='select-feature'
             ),
             dcc.RadioItems(
-                id=f'feature-selection-question-{id_suffix}',
+                id='feature-selection-question',
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
-                style={
-                    'width': '60%',
-                    'font-size': '14pt',
-                    'text-align': 'center'
-                }
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
             )
-        ],
-        style={
-            'margin-top': '-40px',
-            'display': 'flex',
-            'align-items': 'center'
-        }
+        ]
     )
 
 
@@ -725,6 +780,8 @@ def output_statistics_dropdown():
                 options=[
                     {'label': 'RMSE', 'value': 'rmse'},
                     {'label': 'R-squared', 'value': 'r-squared'},
+                    {'label': 'MAE', 'value': 'mae'},
+                    {'label': '% within 2-fold error', 'value': 'fold-error'},
                 ],
                 multi=True,
                 searchable=False
@@ -786,7 +843,7 @@ def feature_number_input():
     )
 
 
-def use_unsupervised_learning_question(id_suffix):
+def use_unsupervised_learning_question():
     """
     This function allows the user to choose if they wish to use unsupervised
     learning for the visualisations (if yes, the user will need to input some
@@ -794,33 +851,23 @@ def use_unsupervised_learning_question(id_suffix):
     """
 
     return html.Div(
-        id=f'unsupervised-learning-{id_suffix}',
+        id=f'unsupervised-learning-q',
         children=[
             html.H6(
                 f"Would like to use unsupervised learning?",
                 id='use-unsupervised'
             ),
             dcc.RadioItems(
-                id=f'unsupervised-learning-question-{id_suffix}',
+                id=f'unsupervised-learning-question',
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
-                style={
-                    'width': '60%',
-                    'font-size': '14pt',
-                    'text-align': 'center'
-                }
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
             )
-        ],
-        style={
-            'margin-top': '-40px',
-            'display': 'flex',
-            'align-items': 'center'
-        }
+        ]
     )
 
 
@@ -874,77 +921,30 @@ def dimension_number_input():
     )
 
 
-def use_cross_validation_question(id_suffix):
-    """
-    This function allows the user to choose if they wish to use cross-validation
-    on the training dataset, hence overriding the default setting.
-    """
-
-    return html.Div(
-        id=f'cross-validation-{id_suffix}',
-        children=[
-            html.H6(
-                f"Would like to perform cross-validation on the training dataset?",
-                id='use-cross-validation'
-            ),
-            dcc.RadioItems(
-                id=f'cross-validation-question-{id_suffix}',
-                options=[
-                    {'label': 'Yes', 'value': 'yes'},
-                    {'label': 'No', 'value': 'no'},
-                ],
-                value='no',
-                inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
-                style={
-                    'width': '60%',
-                    'font-size': '14pt',
-                    'text-align': 'center'
-                }
-            )
-        ],
-        style={
-            'margin-top': '-40px',
-            'display': 'flex',
-            'align-items': 'center'
-        }
-    )
-
-
-def hyperparameter_optimisation_question(id_suffix):
+def hyperparameter_optimisation_question():
     """
     This function allows the user to choose if they wish to use hyperparameter
     optimisation for the selected model.
     """
 
     return html.Div(
-        id=f'hyper-opt-{id_suffix}',
+        id='hyper-opt-q',
         children=[
             html.H6(
                 f"Would like to use hyperparameter optimisation?",
                 id='use-hyper-opt'
             ),
             dcc.RadioItems(
-                id=f'hyper-opt-question-{id_suffix}',
+                id='hyper-opt-question',
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
-                style={
-                    'width': '60%',
-                    'font-size': '14pt',
-                    'text-align': 'center'
-                }
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
             )
-        ],
-        style={
-            'margin-top': '-40px',
-            'display': 'flex',
-            'align-items': 'center'
-        }
+        ]
     )
 
 
@@ -973,120 +973,215 @@ def hyperparameter_optimisation_number_input():
     )
 
 
-def feature_selection_section():
+def model_input_guidelines():
     """
-    This function creates the feature selection section for the model inputs.
-    """
-
-    return html.Div(
-        id='feature-selection',
-        children=[
-            html.H3('Feature selection', id='input-header'),
-            feature_selection_algorithm_dropdown(),
-            feature_number_input()
-        ]
-    )
-
-
-def dimension_reduction_section():
-    """
-    This function creates the dimension reduction section for the model inputs.
+    This function handles the user guidelines for the model inputs page.
     """
 
     return html.Div(
-        id='dimension-reduction',
+        id='input-user-guide',
         children=[
-            html.H3('Dimension reduction', id='input-header'),
-            dimension_reduction_algorithm_dropdown(),
-            dimension_number_input()
-        ]
-    )
-
-
-def hyperparameter_optimisation_section():
-    """
-    This function creates the hyperparameter optimisation section for the model inputs.
-    """
-
-    return html.Div(
-        id='hyperparameter-optimisation',
-        children=[
-            html.H3('Hyperparameter optimisation', id='input-header'),
-            hyperparameter_optimisation_number_input()
-        ]
-    )
-
-
-def model_input_parameters_card(model_count):
-    """
-    This function creates all information cards for the model inputs.
-    """
-
-    return dbc.Card(
-        id='card-input',
-        children=[
-            dbc.CardHeader(
-                id='card-header-input',
-                children=[f"Model {model_count} parameters"]
+            html.H2("User Guidelines"),
+            html.P(
+                "Below are some guidelines and information about the functionality of the model inputs page,"
+                "and some specific information about the individual selection tools available. "
             ),
-            dbc.CardBody(
-                id='card-body-input',
+            html.Div(
+                id='input-info-wrapper',
                 children=[
                     html.Div(
-                        id='input-parameters',
+                        id='input-params-guidelines',
                         children=[
-                            html.H3('Input parameters', id='input-header'),
-                            model_selection_dropdown(),
-                            feature_descriptor_dropdown(),
-                            kmer_size_dropdown(),
-                            feature_normalization_dropdown(),
-                            feature_selection_question(str(model_count)),
-                            use_unsupervised_learning_question(str(model_count)),
-                            use_cross_validation_question(str(model_count)),
-                            hyperparameter_optimisation_question(str(model_count))
-                        ],
-                    ),
-                    html.Hr(),
-                    html.Div(
-                        id='output-features',
-                        children=[
-                            html.H3('Output statistics', id='input-header'),
-                            output_statistics_dropdown()
-                        ]
-                    ),
-                    html.Div(
-                        id={'type': 'feature-selection-section', 'index': str(model_count)},
-                        children=[
+                            html.H4("1. Input parameters"),
                             html.Hr(),
-                            feature_selection_section()
+                            html.P(
+                                "Here the user selects all the necessary information to create a model (to train and "
+                                "test). This includes information such as the model type, the feature descriptor, "
+                                "the kmer size (if kmer is selected as a feature descriptor), and the feature "
+                                "normalisation algorithm. In addition, the user can opt to enable feature selection, "
+                                "unsupervised learning, and hyperparameter optimisation, which would then prompt them "
+                                "to input more information (see the sections below)."
+                            )
                         ],
-                        style={'display': 'block'} # change this to none
+                        style={
+                            'background': '#f8d7da',
+                            'color': '#721c24',
+                            'borderColor': '#f5c6cb'
+                        }
                     ),
                     html.Div(
-                        id={'type': 'dimension-reduction-section', 'index': str(model_count)},
+                        id='feature-selection-guidelines',
                         children=[
+                            html.H4("2. Feature selection"),
                             html.Hr(),
-                            dimension_reduction_section()
+                            html.P(
+                                "If the user enables feature selection, they will then need to choose a "
+                                "feature selection algorithm, as well as the number of features in the selected model "
+                                "to be used by the feature selection algorithm. "
+                            )
                         ],
-                        style={'display': 'block'} # change this to none
+                        style={
+                            'background': '#e2e3e5',
+                            'color': '#383d41',
+                            'borderColor': '#d6d8db'
+                        }
                     ),
                     html.Div(
-                        id={'type': 'hyper-opt-section', 'index': str(model_count)},
+                        id='unsupervised-learning-guidelines',
                         children=[
+                            html.H4("3. Unsupervised learning"),
                             html.Hr(),
-                            hyperparameter_optimisation_section()
+                            html.P(
+                                "If the user enables unsupervised learning, they will then need to choose a "
+                                "dimensionality reduction algorithm, as well as the number of dimensions of "
+                                "dimensions to be used by the dimensionality reduction algorithm. "
+                            )
                         ],
-                        style={'display': 'block'} # change this to none
+                        style={
+                            'background': '#cce5ff',
+                            'color': '#004085',
+                            'borderColor': '#b8daff'
+                        }
                     ),
+                    html.Div(
+                        id='hyper-opt-guidelines',
+                        children=[
+                            html.H4("4. Hyperparameter optimisation"),
+                            html.Hr(),
+                            html.P(
+                                "If the user enables hyperparameter optimisation, they will then need to input the "
+                                "number of iterations for which they wish to run the Bayesian-Opt hyperparameter "
+                                "optimisation algorithm. "
+                            )
+                        ],
+                        style={
+                            'background': '#fff3cd',
+                            'color': '#856404',
+                            'borderColor': '#ffeeba'
+                        }
+                    )
                 ]
             )
         ]
     )
 
 
-def model_output_card(model_count):
+def model_input_parameters_card(model_count):
     """
-    This function creates all information cards for the model outputs.
+    This function creates the input parameters card
+    """
+
+    return dbc.Card(
+        id='parameters-card',
+        children=[
+            dbc.CardHeader(
+                id='card-header-input',
+                children=["Input parameters"]
+            ),
+            dbc.CardBody(
+                id='card-body-input',
+                children=[
+                    model_selection_dropdown(),
+                    feature_descriptor_dropdown(),
+                    feature_normalization_dropdown(),
+                    feature_selection_question(),
+                    use_unsupervised_learning_question(),
+                    hyperparameter_optimisation_question()
+                ]
+            )
+        ]
+    )
+
+
+def model_input_feature_selection_card():
+    """
+    This function creates the feature selection card
+    """
+
+    return dbc.Card(
+        id='feature-card',
+        children=[
+            dbc.CardHeader(
+                id='card-header-input',
+                children=['Feature selection']
+            ),
+            dbc.CardBody(
+                id='card-body-input',
+                children=[
+                    feature_selection_algorithm_dropdown(),
+                    feature_number_input()
+                ]
+            )
+        ]
+    )
+
+
+def model_input_unsupervised_learning_card():
+    """
+    This function creates the feature selection card
+    """
+
+    return dbc.Card(
+        id='unsupervised-card',
+        children=[
+            dbc.CardHeader(
+                id='card-header-input',
+                children=['Unsupervised learning']
+            ),
+            dbc.CardBody(
+                id='card-body-input',
+                children=[
+                    dimension_reduction_algorithm_dropdown(),
+                    dimension_number_input()
+                ]
+            )
+        ]
+    )
+
+
+def model_input_hyperparameter_optimisation_card():
+    """
+    This function creates the hyperparameter optimisation card
+    """
+
+    return dbc.Card(
+        id='hyperparameters-card',
+        children=[
+            dbc.CardHeader(
+                id='card-header-input',
+                children=['Hyperparameter optimisation']
+            ),
+            dbc.CardBody(
+                id='card-body-input',
+                children=[hyperparameter_optimisation_number_input()]
+            )
+        ]
+    )
+
+
+def output_statistics_card():
+    """
+    This function creates the card with the output statistics dropdown
+    """
+
+    return dbc.Card(
+        id='output-statistics-card',
+        children=[
+            dbc.CardHeader(
+                id='card-header-output',
+                children=['Output statistics']
+            ),
+            dbc.CardBody(
+                id='card-body-output',
+                children=[output_statistics_dropdown()]
+            )
+        ]
+    )
+
+
+def output_graph_placeholder_card(model_count):
+    """
+    This function creates the card with the placeholder output graph
     """
 
     return dbc.Card(
@@ -1094,13 +1189,12 @@ def model_output_card(model_count):
         children=[
             dbc.CardHeader(
                 id='card-header-output',
-                children=[f"Model {model_count} output"]
+                children=["Interactive scatter plot with Iris dataset"]
             ),
             dbc.CardBody(
-                id='card-body',
+                id='card-body-output',
                 children=[
                     # Placeholder
-                    html.H4('Interactive scatter plot with Iris dataset'),
                     dcc.Graph(id={'type': 'scatter-plot', 'index': model_count}),
                     html.P("Filter by petal width:"),
                     dcc.RangeSlider(
@@ -1109,6 +1203,72 @@ def model_output_card(model_count):
                         marks={0: '0', 2.5: '2.5'},
                         value=[0.5, 2]
                     )
+                ]
+            )
+        ]
+    )
+
+
+def model_input_parameters_page(model_count):
+    """
+    This function creates all pages for the model inputs.
+    """
+
+    return html.Div(
+        id='input-page',
+        children=[
+            html.Div(
+                id='input-page-header',
+                children=[
+                    html.H1(
+                        children=[f"Model {model_count} parameters"]
+                    )
+                ]
+            ),
+            html.Div(
+                id='input-page-contents',
+                children=[
+                    model_input_guidelines(),
+                    model_input_parameters_card(model_count),
+                    model_input_feature_selection_card(),
+                    model_input_unsupervised_learning_card(),
+                    model_input_hyperparameter_optimisation_card(),
+                    html.Div(
+                        id='button-wrapper',
+                        children=[
+                            html.Button(
+                                'Submit model selection',
+                                id='input-page-button',
+                                n_clicks=0
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
+
+
+def model_output_page(model_count):
+    """
+    This function creates all pages for the model outputs.
+    """
+
+    return html.Div(
+        id='output-page',
+        children=[
+            html.Div(
+                id='output-page-header',
+                children=[
+                    html.H1(
+                        children=[f"Model {model_count} output"]
+                    )
+                ]
+            ),
+            html.Div(
+                id='output-page-contents',
+                children=[
+                    output_graph_placeholder_card(model_count)
                 ]
             )
         ]
@@ -1191,7 +1351,7 @@ def model_output_performance_statistics_table(model_count):
 
 
 @app.callback(
-    [Output('upload-training-data', 'children'),
+    [Output('upload-container', 'children'),
      Output('store-uploaded-train-file', 'data')],
     Input('upload-training-data', 'contents'),
     State('upload-training-data', 'filename')
@@ -1231,18 +1391,70 @@ def update_training_output(content, name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
-            return final_display, {'filename': name}
+            return [
+               dcc.Upload(
+                   id='upload-training-data',
+                   children=[
+                       html.Div(
+                           id='box-text',
+                           children=[final_display],
+                       )
+                   ],
+                   multiple=False,
+                   style={
+                       'width': '97.5%',
+                       'height': '80px',
+                       'textAlign': 'center',
+                       'border': '2px dashed black'
+                   }
+               )
+            ], {'filename': name}
 
         # If non-CSV, you can just return the name and a message or other placeholder
         final_display = html.Div([upload_children, failed_message])
-        return final_display, None
+        return [
+           dcc.Upload(
+               id='upload-training-data',
+               children=[
+                   html.Div(
+                       id='box-text',
+                       children=[final_display],
+                   )
+               ],
+               multiple=False,
+               style={
+                   'width': '97.5%',
+                   'height': '80px',
+                   'textAlign': 'center',
+                   'border': '2px dashed black'
+               }
+           )
+        ], None
 
     # If no content, revert to original children for dcc.Upload
-    return html.Div(
-        id='box-text',
-        children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+    return [
+       dcc.Upload(
+           id='upload-training-data',
+           children=[
+               html.Div(
+                   id='box-text',
+                   children=[
+                       'Drag and Drop or ',
+                       html.A('Select Files', style={'font-weight': 'bold'})
+                   ],
+               )
+           ],
+           multiple=False,
+           style={
+               'width': '97.5%',
+               'height': '80px',
+               'textAlign': 'center',
+               'border': '2px dashed black'
+           }
+       )
+    ], None
 
 
 @app.callback(
@@ -1355,40 +1567,6 @@ def update_querying_output(content, name):
         children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
 
 
-@app.callback(
-    Output({'type': 'feature-selection-section', 'index': MATCH}, 'style'),
-    Input({'type': 'feature-selection-question', 'index': MATCH}, 'value')
-)
-def update_feature_selection(value):
-    """
-    This callback function displays (or doesn't) the feature selection
-    section on the model input card based on user's input.
-    """
-
-    if value == 'yes':
-        return {'display': 'block'}
-
-    elif value == 'no':
-        return {'display': 'none'}
-
-
-@callback(
-    Output({'type': 'dimension-reduction-section', 'index': MATCH}, 'style'),
-    Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value')
-)
-def update_unsupervised_learning(value):
-    """
-    This callback function displays (or doesn't) the dimension reduction
-    section on the model input card based on user's input.
-    """
-
-    if value == 'yes':
-        return {'display': 'block'}
-
-    elif value == 'no':
-        return {'display': 'none'}
-
-
 @callback(
     Output({'type': 'scatter-plot', 'index': MATCH}, 'figure'),
     [Input({'type': 'range-slider', 'index': MATCH}, 'value'),
@@ -1399,7 +1577,7 @@ def update_bar_chart(slider_range, model_data):
     displayed graph (as part of the output information cards)
     """
 
-    model_count = model_data['n_clicks']
+    _model_count = model_data['n_clicks']
 
     df = px.data.iris()  # replace with your own data source
     low, high = slider_range
@@ -1506,11 +1684,12 @@ def render_tabs_content(
             )
 
     # Model outputs
-    elif selected_tab == "visualise model outputs":
+    elif selected_tab == "model outputs":
         return dbc.Row(
             id='tabs-content-output',
-            children=[model_output_performance_statistics_table(stored_count['n_clicks'])] +
-            [model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
+            children=[output_statistics_card()] +
+                     [model_output_performance_statistics_table(stored_count['n_clicks'])] +
+                     [model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
         )
 
     # Validation check
@@ -1529,7 +1708,7 @@ def render_tabs_content(
      State('store-model-content', 'data')
      ]
 )
-def add_new_model(n_clicks, current_children, stored_count, stored_content):
+def add_new_model(n_clicks, current_children, stored_count, _stored_content):
     """
     This callback function keeps track of the user changes to the
     model inputs tab (when adding new models).
@@ -1550,14 +1729,9 @@ def add_new_model(n_clicks, current_children, stored_count, stored_content):
 
 @app.callback(
     Output('page-content', 'children'),
-    Input('url', 'href'),
-    State('store-model-count', 'data'),
-    State('store-model-content', 'data'),
-    State('store-uploaded-train-file', 'data'),
-    State('store-uploaded-test-file', 'data'),
-    State('store-uploaded-query-file', 'data')
+    Input('url', 'href')
 )
-def display_page(href, stored_count, stored_content, stored_train_file, stored_test_file,  stored_query_file):
+def display_page(href):
     """
     This callback allows for switching between tabs when choosing to view
     individual model inputs/ outputs.
@@ -1567,18 +1741,11 @@ def display_page(href, stored_count, stored_content, stored_train_file, stored_t
     parsed_url = urlparse(href)
     pathname = parsed_url.path
 
-    # Instead of always setting the initial data, check if data exists
-    initial_count_data = {'n_clicks': 1} if not stored_count else stored_count
-    initial_content_data = {} if not stored_content else stored_content
-    initial_train_file = {} if not stored_train_file else stored_train_file
-    initial_test_file = {} if not stored_test_file else stored_test_file
-    initial_query_file = {} if not stored_query_file else stored_query_file
-
     if pathname.startswith('/model-input/'):
         # If a model inputs tab is selected, return the card for that input
         try:
             model_num = int(pathname.split('/')[-1][-1])
-            return model_input_parameters_card(model_num)
+            return model_input_parameters_page(model_num)
         except ValueError:
             return html.Div('Invalid model number.')
 
@@ -1586,7 +1753,7 @@ def display_page(href, stored_count, stored_content, stored_train_file, stored_t
         # If a model output tab is selected, return the card for that output
         try:
             model_num = int(pathname.split('/')[-1][-1])
-            return model_output_card(model_num)
+            return model_output_page(model_num)
         except ValueError:
             return html.Div('Invalid model number.')
 
@@ -1601,11 +1768,6 @@ def display_page(href, stored_count, stored_content, stored_train_file, stored_t
                     children=[
                         tabs_container(),
                         html.Div(id='content'),
-                        dcc.Store(id='store-model-count', data=initial_count_data),
-                        dcc.Store(id='store-model-content', data=initial_content_data),
-                        dcc.Store(id='store-uploaded-train-file', data=initial_train_file),
-                        dcc.Store(id='store-uploaded-test-file', data=initial_test_file),
-                        dcc.Store(id='store-uploaded-query-file', data=initial_query_file),
                         app_footer()
                     ]
                 )
@@ -1616,31 +1778,12 @@ def display_page(href, stored_count, stored_content, stored_train_file, stored_t
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(
-        id='page-content',
-        children=[
-            app_header(),
-            html.Div(
-                id='app-contents',
-                children=[
-                    user_guide(),
-                    html.Div(
-                        id='tabs-container',
-                        children=[
-                            tabs_container(),
-                            html.Div(id='content'),
-                            dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
-                            dcc.Store(id='store-model-content', data={}, storage_type='session'),
-                            dcc.Store(id='store-uploaded-train-file', storage_type='session'),
-                            dcc.Store(id='store-uploaded-test-file', storage_type='session'),
-                            dcc.Store(id='store-uploaded-query-file', storage_type='session'),
-                            app_footer()
-                        ]
-                    )
-                ]
-            )
-        ]
-    )
+    html.Div(id='page-content'),
+    dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
+    dcc.Store(id='store-model-content', storage_type='session'),
+    dcc.Store(id='store-uploaded-train-file', storage_type='session'),
+    dcc.Store(id='store-uploaded-test-file', storage_type='session'),
+    dcc.Store(id='store-uploaded-query-file', storage_type='session')
 ])
 
 if __name__ == '__main__':
