@@ -487,14 +487,20 @@
     margin-right: 10px;
 }
 
+#input-cards-container {
+    width: 100%;
+    display: flex;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
 #parameters-card {
-    display: inline-block;
+    display: block;
     background: white;
     color: black;
-    width: 40%;
-    margin-top: 20px;
+    width: 100%;
+    margin-top: 80px;
     border: 2px solid black;
-    margin-left: 30px;
 }
 
 #button-wrapper {
@@ -555,19 +561,19 @@
 }
 
 #feature-selection-q {
-    margin-top: -30px;
+    margin-top: -10px;
     display: flex;
     align-items: center;
 }
 
 #unsupervised-learning-q {
-    margin-top: -30px;
+    margin-top: -10px;
     display: flex;
     align-items: center;
 }
 
 #hyper-opt-q {
-    margin-top: -30px;
+    margin-top: -10px;
     display: flex;
     align-items: center;
 }
@@ -675,18 +681,6 @@
     margin-right: 10px;
 }
 
-#feature-descriptor-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
-#kmer-descriptor {
-    margin-top: -30px;
-    display: flex;
-    align-items: center;
-}
-
 #select-kmer {
     font-weight: normal;
     font-size: 12pt;
@@ -701,7 +695,7 @@
 }
 
 #normalization-descriptor {
-    margin-top: -30px;
+    margin-top: -10px;
     display: flex;
     align-items: center;
 }

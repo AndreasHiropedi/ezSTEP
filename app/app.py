@@ -675,7 +675,7 @@ def model_selection_dropdown():
     )
 
 
-def feature_descriptor_dropdown():
+def feature_descriptor_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
     the type of feature descriptor they wish to use.
@@ -689,25 +689,31 @@ def feature_descriptor_dropdown():
                 id='select-descriptor'
             ),
             dcc.Dropdown(
-                id='feature-descriptor-dropdown',
+                id={'type': 'feature-descriptor-dropdown', 'index': model_count},
                 options=[
                     {'label': 'Kmer', 'value': 'kmer'},
                     {'label': 'Binary', 'value': 'binary'},
                 ],
-                searchable=False
+                searchable=False,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                }
             )
         ]
     )
 
 
-def kmer_size_dropdown():
+def kmer_size_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
     the kmer size to be used (if kmer is selected as the feature descriptor).
     """
 
     return html.Div(
-        id='kmer-descriptor',
+        id={'type': 'kmer-descriptor', 'index': model_count},
         children=[
             html.H6(
                 "Select kmer size:",
@@ -724,7 +730,8 @@ def kmer_size_dropdown():
                 ],
                 searchable=False
             )
-        ]
+        ],
+        style={'display': 'none'}
     )
 
 
@@ -1117,7 +1124,8 @@ def model_input_parameters_card(model_count):
                 id='card-body-input',
                 children=[
                     model_selection_dropdown(),
-                    feature_descriptor_dropdown(),
+                    feature_descriptor_dropdown(model_count),
+                    kmer_size_dropdown(model_count),
                     feature_normalization_dropdown(),
                     feature_selection_question(model_count),
                     use_unsupervised_learning_question(model_count),
@@ -1267,10 +1275,25 @@ def model_input_parameters_page(model_count):
                 id='input-page-contents',
                 children=[
                     model_input_guidelines(),
-                    model_input_parameters_card(model_count),
-                    model_input_feature_selection_card(model_count),
-                    model_input_unsupervised_learning_card(model_count),
-                    model_input_hyperparameter_optimisation_card(model_count),
+                    html.Div(
+                        id='input-cards-container',
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    model_input_parameters_card(model_count)
+                                ],
+                                style={'width': '40%', 'margin-left': '30px'}
+                            ),
+                            dbc.Col(
+                                children=[
+                                    model_input_feature_selection_card(model_count),
+                                    model_input_unsupervised_learning_card(model_count),
+                                    model_input_hyperparameter_optimisation_card(model_count),
+                                ],
+                                style={'width': '30%', 'margin-left': '200px'}
+                            )
+                        ]
+                    ),
                     html.Div(
                         id='button-wrapper',
                         children=[
@@ -1622,13 +1645,12 @@ def enable_feature_selection(answer, model_data):
 
     if answer == 'yes':
         return {
-            'display': 'inline-block',
+            'display': 'block',
             'background': 'white',
             'color': 'black',
-            'width': '40%',
+            'width': '100%',
             'margin-top': '20px',
             'border': '2px solid black',
-            'margin-left': '30px'
         }
 
     elif answer == 'no':
@@ -1650,13 +1672,12 @@ def enable_unsupervised(answer, model_data):
 
     if answer == 'yes':
         return {
-            'display': 'inline-block',
+            'display': 'block',
             'background': 'white',
             'color': 'black',
-            'width': '40%',
+            'width': '100%',
             'margin-top': '20px',
             'border': '2px solid black',
-            'margin-left': '30px'
         }
 
     elif answer == 'no':
@@ -1678,17 +1699,39 @@ def enable_hyperopt(answer, model_data):
 
     if answer == 'yes':
         return {
-            'display': 'inline-block',
+            'display': 'block',
             'background': 'white',
             'color': 'black',
-            'width': '40%',
+            'width': '100%',
             'margin-top': '20px',
             'border': '2px solid black',
-            'margin-left': '30px'
         }
 
     elif answer == 'no':
         return {'display': 'none'}
+
+
+@callback(
+    Output({'type': 'kmer-descriptor', 'index': MATCH}, 'style'),
+    [Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value'),
+     Input('store-model-count', 'data')]
+)
+def show_kmer_dropdown(value, model_data):
+    """
+    This callback function ensures the correct functionality
+    for enabling/ disabling Kmer usage for feature description.
+    """
+
+    _model_count = model_data['n_clicks']
+
+    if value == 'kmer':
+        return {
+            'margin-top': '-10px',
+            'display': 'flex',
+            'align-items': 'center'
+        }
+
+    return {'display': 'none'}
 
 
 @callback(
