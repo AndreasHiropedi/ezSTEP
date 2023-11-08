@@ -497,36 +497,6 @@
     margin-left: 30px;
 }
 
-#feature-card {
-    display: inline-block;
-    background: white;
-    color: black;
-    width: 40%;
-    margin-top: 20px;
-    border: 2px solid black;
-    margin-left: 30px;
-}
-
-#unsupervised-card {
-    display: inline-block;
-    background: white;
-    color: black;
-    width: 40%;
-    margin-top: 20px;
-    border: 2px solid black;
-    margin-left: 30px;
-}
-
-#hyperparameters-card {
-    display: inline-block;
-    background: white;
-    color: black;
-    width: 40%;
-    margin-top: 20px;
-    border: 2px solid black;
-    margin-left: 30px;
-}
-
 #button-wrapper {
     width: 100%;
     bottom: 0px;
@@ -590,34 +560,16 @@
     align-items: center;
 }
 
-#feature-selection-question {
-    width: 60%;
-    font-size: 14pt;
-    text-align: center;
-}
-
 #unsupervised-learning-q {
     margin-top: -30px;
     display: flex;
     align-items: center;
 }
 
-#unsupervised-learning-question {
-    width: 60%;
-    font-size: 14pt;
-    text-align: center;
-}
-
 #hyper-opt-q {
     margin-top: -30px;
     display: flex;
     align-items: center;
-}
-
-#hyper-opt-question {
-    width: 60%;
-    font-size: 14pt;
-    text-align: center;
 }
 
 #card-output {

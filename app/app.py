@@ -247,7 +247,6 @@ def user_guide():
                                 "If the user has added several models, then the visualisations for each "
                                 "model will be displayed on the model's own page, and a table showing "
                                 "all models and their performance statistics will be displayed on the main page. "
-                                "The user will be able to select the summary statistics to be displayed in the table."
                             ),
                             html.P(
                                 "Similar to the model inputs, in order to see the visualisations for each "
@@ -261,6 +260,26 @@ def user_guide():
                                 "dataset will also be made available on the individual hyperlink pages. This will be "
                                 "in the form of a hyperlink that will allow users to download a CSV file containing "
                                 "the model's output on the querying dataset."
+                            ),
+                            html.P(
+                                children=[
+                                    "The user will be able to select the summary statistics to be displayed in the table. "
+                                    "The four main summary statistics available are: ",
+                                    html.Br(),
+                                    html.Br(),
+                                    "1. Root Mean Squared Error (RMSE)",
+                                    html.Br(),
+                                    html.Br(),
+                                    "2. R-squared ",
+                                    html.Br(),
+                                    html.Br(),
+                                    "3. Mean Absolute Error (MAE)",
+                                    html.Br(),
+                                    html.Br(),
+                                    "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
+                                    " data that are within the 2-fold error interval: 1/2 × correct value ≤ "
+                                    "predicted value ≤ 2 × correct value)"
+                                ]
                             )
                         ],
                         style={
@@ -734,7 +753,7 @@ def feature_normalization_dropdown():
     )
 
 
-def feature_selection_question():
+def feature_selection_question(model_count):
     """
     This function allows the user to enable/ disable feature selection
     for the model they have selected.
@@ -748,14 +767,19 @@ def feature_selection_question():
                 id='select-feature'
             ),
             dcc.RadioItems(
-                id='feature-selection-question',
+                id={'type': 'feature-selection-question', 'index': model_count},
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                style={
+                    'width': '60%',
+                    'font-size': '14pt',
+                    'text-align': 'center'
+                }
             )
         ]
     )
@@ -843,7 +867,7 @@ def feature_number_input():
     )
 
 
-def use_unsupervised_learning_question():
+def use_unsupervised_learning_question(model_count):
     """
     This function allows the user to choose if they wish to use unsupervised
     learning for the visualisations (if yes, the user will need to input some
@@ -851,21 +875,26 @@ def use_unsupervised_learning_question():
     """
 
     return html.Div(
-        id=f'unsupervised-learning-q',
+        id='unsupervised-learning-q',
         children=[
             html.H6(
-                f"Would like to use unsupervised learning?",
+                "Would like to use unsupervised learning?",
                 id='use-unsupervised'
             ),
             dcc.RadioItems(
-                id=f'unsupervised-learning-question',
+                id={'type': 'unsupervised-learning-question', 'index': model_count},
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                style={
+                    'width': '60%',
+                    'font-size': '14pt',
+                    'text-align': 'center'
+                }
             )
         ]
     )
@@ -921,7 +950,7 @@ def dimension_number_input():
     )
 
 
-def hyperparameter_optimisation_question():
+def hyperparameter_optimisation_question(model_count):
     """
     This function allows the user to choose if they wish to use hyperparameter
     optimisation for the selected model.
@@ -935,14 +964,19 @@ def hyperparameter_optimisation_question():
                 id='use-hyper-opt'
             ),
             dcc.RadioItems(
-                id='hyper-opt-question',
+                id={'type': 'hyper-opt-question', 'index': model_count},
                 options=[
                     {'label': 'Yes', 'value': 'yes'},
                     {'label': 'No', 'value': 'no'},
                 ],
                 value='no',
                 inline=True,
-                labelStyle={'margin-right': '50px', 'margin-left': '50px'}
+                labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                style={
+                    'width': '60%',
+                    'font-size': '14pt',
+                    'text-align': 'center'
+                }
             )
         ]
     )
@@ -1084,22 +1118,22 @@ def model_input_parameters_card(model_count):
                     model_selection_dropdown(),
                     feature_descriptor_dropdown(),
                     feature_normalization_dropdown(),
-                    feature_selection_question(),
-                    use_unsupervised_learning_question(),
-                    hyperparameter_optimisation_question()
+                    feature_selection_question(model_count),
+                    use_unsupervised_learning_question(model_count),
+                    hyperparameter_optimisation_question(model_count)
                 ]
             )
         ]
     )
 
 
-def model_input_feature_selection_card():
+def model_input_feature_selection_card(model_count):
     """
     This function creates the feature selection card
     """
 
     return dbc.Card(
-        id='feature-card',
+        id={'type': 'feature-card', 'index': model_count},
         children=[
             dbc.CardHeader(
                 id='card-header-input',
@@ -1112,17 +1146,18 @@ def model_input_feature_selection_card():
                     feature_number_input()
                 ]
             )
-        ]
+        ],
+        style={'display': 'none'}
     )
 
 
-def model_input_unsupervised_learning_card():
+def model_input_unsupervised_learning_card(model_count):
     """
     This function creates the feature selection card
     """
 
     return dbc.Card(
-        id='unsupervised-card',
+        id={'type': 'unsupervised-card', 'index': model_count},
         children=[
             dbc.CardHeader(
                 id='card-header-input',
@@ -1135,17 +1170,18 @@ def model_input_unsupervised_learning_card():
                     dimension_number_input()
                 ]
             )
-        ]
+        ],
+        style={'display': 'none'}
     )
 
 
-def model_input_hyperparameter_optimisation_card():
+def model_input_hyperparameter_optimisation_card(model_count):
     """
     This function creates the hyperparameter optimisation card
     """
 
     return dbc.Card(
-        id='hyperparameters-card',
+        id={'type': 'hyperparameters-card', 'index': model_count},
         children=[
             dbc.CardHeader(
                 id='card-header-input',
@@ -1155,7 +1191,8 @@ def model_input_hyperparameter_optimisation_card():
                 id='card-body-input',
                 children=[hyperparameter_optimisation_number_input()]
             )
-        ]
+        ],
+        style={'display': 'none'}
     )
 
 
@@ -1230,9 +1267,9 @@ def model_input_parameters_page(model_count):
                 children=[
                     model_input_guidelines(),
                     model_input_parameters_card(model_count),
-                    model_input_feature_selection_card(),
-                    model_input_unsupervised_learning_card(),
-                    model_input_hyperparameter_optimisation_card(),
+                    model_input_feature_selection_card(model_count),
+                    model_input_unsupervised_learning_card(model_count),
+                    model_input_hyperparameter_optimisation_card(model_count),
                     html.Div(
                         id='button-wrapper',
                         children=[
@@ -1565,6 +1602,90 @@ def update_querying_output(content, name):
     return html.Div(
         id='box-text',
         children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+
+
+@callback(
+    Output({'type': 'feature-card', 'index': MATCH}, 'style'),
+    [Input({'type': 'feature-selection-question', 'index': MATCH}, 'value'),
+     Input('store-model-count', 'data')]
+)
+def enable_feature_selection(answer, model_data):
+    """
+    This callback function ensures the correct functionality
+    for enabling/ disabling feature selection.
+    """
+
+    _model_count = model_data['n_clicks']
+
+    if answer == 'yes':
+        return {
+            'display': 'inline-block',
+            'background': 'white',
+            'color': 'black',
+            'width': '40%',
+            'margin-top': '20px',
+            'border': '2px solid black',
+            'margin-left': '30px'
+        }
+
+    elif answer == 'no':
+        return {'display': 'none'}
+
+
+@callback(
+    Output({'type': 'unsupervised-card', 'index': MATCH}, 'style'),
+    [Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value'),
+     Input('store-model-count', 'data')]
+)
+def enable_unsupervised(answer, model_data):
+    """
+    This callback function ensures the correct functionality
+    for enabling/ disabling unsupervised learning.
+    """
+
+    _model_count = model_data['n_clicks']
+
+    if answer == 'yes':
+        return {
+            'display': 'inline-block',
+            'background': 'white',
+            'color': 'black',
+            'width': '40%',
+            'margin-top': '20px',
+            'border': '2px solid black',
+            'margin-left': '30px'
+        }
+
+    elif answer == 'no':
+        return {'display': 'none'}
+
+
+@callback(
+    Output({'type': 'hyperparameters-card', 'index': MATCH}, 'style'),
+    [Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value'),
+     Input('store-model-count', 'data')]
+)
+def enable_hyperopt(answer, model_data):
+    """
+    This callback function ensures the correct functionality
+    for enabling/ disabling hyperparameter optimisation.
+    """
+
+    _model_count = model_data['n_clicks']
+
+    if answer == 'yes':
+        return {
+            'display': 'inline-block',
+            'background': 'white',
+            'color': 'black',
+            'width': '40%',
+            'margin-top': '20px',
+            'border': '2px solid black',
+            'margin-left': '30px'
+        }
+
+    elif answer == 'no':
+        return {'display': 'none'}
 
 
 @callback(
