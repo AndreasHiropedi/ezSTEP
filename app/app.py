@@ -802,11 +802,12 @@ def output_statistics_dropdown():
             dcc.Dropdown(
                 id='output-statistics-dropdown',
                 options=[
-                    {'label': 'RMSE', 'value': 'rmse'},
-                    {'label': 'R-squared', 'value': 'r-squared'},
-                    {'label': 'MAE', 'value': 'mae'},
-                    {'label': '% within 2-fold error', 'value': 'fold-error'},
+                    {'label': 'RMSE', 'value': 'RMSE'},
+                    {'label': 'R-squared', 'value': 'R-squared'},
+                    {'label': 'MAE', 'value': 'MAE'},
+                    {'label': 'Percentage within 2-fold error', 'value': 'Percentage within 2-fold error'},
                 ],
+                value=[],
                 multi=True,
                 searchable=False
             )
@@ -1346,7 +1347,7 @@ def model_output_ref(model_count):
     )
 
 
-def model_output_performance_statistics_table(model_count):
+def model_output_performance_statistics_table(model_count, values_list):
     """
     This function displays the output summary statistics table
     for the models selected by the user (contains only the summary statistics
@@ -1354,11 +1355,13 @@ def model_output_performance_statistics_table(model_count):
     """
 
     # Create a dataframe of all the model output statistics
-    df = pd.DataFrame({
-        'Model number': [f'Model {i}' for i in range(1, int(model_count)+1)],
-        'RMSE': [f'Model {i} RMSE' for i in range(1, int(model_count)+1)],
-        'R-squared': [f'Model {i} R-squared' for i in range(1, int(model_count)+1)]
-    })
+    data_dict = {'Model number': [f'Model {i}' for i in range(1, int(model_count)+1)]}
+
+    for value in values_list:
+        data_dict[value] = [f'Model {i} {value}' for i in range(1, int(model_count)+1)]
+
+    # Create a dataframe of all the model output statistics
+    df = pd.DataFrame(data=data_dict)
 
     return dash_table.DataTable(
         id='table',
@@ -1689,6 +1692,25 @@ def enable_hyperopt(answer, model_data):
 
 
 @callback(
+    Output('table-container', 'children'),
+    [Input('output-statistics-dropdown', 'value'),
+     Input('store-model-count', 'data')]
+)
+def generate_table(values_list, model_data):
+    """
+    This callback function generates the summary statistics table
+    based on the user inputs in the dropdown.
+    """
+
+    model_count = model_data['n_clicks']
+
+    if values_list:
+        return model_output_performance_statistics_table(model_count, values_list)
+
+    return []
+
+
+@callback(
     Output({'type': 'scatter-plot', 'index': MATCH}, 'figure'),
     [Input({'type': 'range-slider', 'index': MATCH}, 'value'),
      Input('store-model-count', 'data')])
@@ -1808,8 +1830,7 @@ def render_tabs_content(
     elif selected_tab == "model outputs":
         return dbc.Row(
             id='tabs-content-output',
-            children=[output_statistics_card()] +
-                     [model_output_performance_statistics_table(stored_count['n_clicks'])] +
+            children=[output_statistics_card(), html.Div(id='table-container')] +
                      [model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
         )
 
