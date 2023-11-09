@@ -662,12 +662,6 @@
     margin-right: 10px;
 }
 
-#model-type-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
 #feature-descriptor {
     margin-top: -20px;
     display: flex;
@@ -705,12 +699,6 @@
     font-size: 12pt;
     width: 40%;
     margin-right: 10px;
-}
-
-#feature-normalization-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
 }
 
 #select-feature {
@@ -754,12 +742,6 @@
     margin-right: 10px;
 }
 
-#feature-selection-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
 #feature-number {
     margin-top: -30px;
     display: flex;
@@ -771,12 +753,6 @@
     font-size: 12pt;
     width: 40%;
     margin-right: 10px;
-}
-
-#feature-number-input {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
 }
 
 #use-unsupervised {
@@ -806,12 +782,6 @@
     margin-right: 10px;
 }
 
-#dimension-number-input {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
 #dimension-algorithm-descriptor {
     margin-top: 20px;
     display: flex;
@@ -825,12 +795,6 @@
     margin-right: 10px;
 }
 
-#dimension-reduction-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
 #loop-number {
     margin-top: 20px;
     display: flex;
@@ -842,12 +806,6 @@
     font-size: 12pt;
     width: 40%;
     margin-right: 10px;
-}
-
-#iteration-number-input {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
 }
 
 #button {

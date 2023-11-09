@@ -648,7 +648,7 @@ def query_data_upload_card(stored_name):
     )
 
 
-def model_selection_dropdown():
+def model_selection_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
     the type of model they wish to train.
@@ -662,14 +662,21 @@ def model_selection_dropdown():
                 id='select-model'
             ),
             dcc.Dropdown(
-                id='model-type-dropdown',
+                id={'type': 'model-type-dropdown', 'index': model_count},
                 options=[
                     {'label': 'Random Forest', 'value': 'rf'},
                     {'label': 'Multi-layer Perceptron', 'value': 'mlp'},
                     {'label': 'Support Vector Machine', 'value': 'svm'},
                     {'label': 'Ridge Regressor', 'value': 'rr'}
                 ],
-                searchable=False
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                },
+                searchable=False,
+                persistence=True
             )
         ]
     )
@@ -700,7 +707,8 @@ def feature_descriptor_dropdown(model_count):
                     'font-size': '12pt',
                     'text-align': 'center',
                     'margin-left': '32px'
-                }
+                },
+                persistence=True
             )
         ]
     )
@@ -728,14 +736,15 @@ def kmer_size_dropdown(model_count):
                     {'label': '4', 'value': '4'},
                     {'label': '5', 'value': '5'},
                 ],
-                searchable=False
+                searchable=False,
+                persistence=True
             )
         ],
         style={'display': 'none'}
     )
 
 
-def feature_normalization_dropdown():
+def feature_normalization_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
     the type of feature normalization algorithm to be used.
@@ -749,12 +758,19 @@ def feature_normalization_dropdown():
                 id='select-normalization'
             ),
             dcc.Dropdown(
-                id='feature-normalization-dropdown',
+                id={'type': 'feature-normalization-dropdown', 'index': model_count},
                 options=[
                     {'label': 'ZScore', 'value': 'zscore'},
                     {'label': 'MinMax', 'value': 'minmax'},
                 ],
-                searchable=False
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                },
+                searchable=False,
+                persistence=True
             )
         ]
     )
@@ -786,7 +802,8 @@ def feature_selection_question(model_count):
                     'width': '60%',
                     'font-size': '14pt',
                     'text-align': 'center'
-                }
+                },
+                persistence=True
             )
         ]
     )
@@ -824,7 +841,7 @@ def output_statistics_dropdown():
     )
 
 
-def feature_selection_algorithm_dropdown():
+def feature_selection_algorithm_dropdown(model_count):
     """
     This function allows the user to choose the feature selection
     algorithm to be used (in case feature selection is enabled).
@@ -838,7 +855,7 @@ def feature_selection_algorithm_dropdown():
                 id='select-algorithm'
             ),
             dcc.Dropdown(
-                id='feature-selection-dropdown',
+                id={'type': 'feature-selection-dropdown', 'index': model_count},
                 options=[
                     {'label': 'Chi-Square', 'value': 'chi'},
                     {'label': 'Information Gain', 'value': 'gain'},
@@ -846,13 +863,20 @@ def feature_selection_algorithm_dropdown():
                     {'label': 'Pearson Correlation', 'value': 'pearson'},
                     {'label': 'Mutual Information', 'value': 'mutual'},
                 ],
-                searchable=False
+                searchable=False,
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '20px'
+                }
             )
         ]
     )
 
 
-def feature_number_input():
+def feature_number_input(model_count):
     """
     This function allows the user to choose the number of features
     to be used by the feature selection algorithm (in case feature selection
@@ -867,11 +891,18 @@ def feature_number_input():
                 id='select-feature-number'
             ),
             dcc.Input(
-                id='feature-number-input',
+                id={'type': 'feature-number-input', 'index': model_count},
                 type='number',
                 min=1,
                 max=100,
-                step=1
+                step=1,
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                }
             )
         ]
     )
@@ -904,13 +935,14 @@ def use_unsupervised_learning_question(model_count):
                     'width': '60%',
                     'font-size': '14pt',
                     'text-align': 'center'
-                }
+                },
+                persistence=True
             )
         ]
     )
 
 
-def dimension_reduction_algorithm_dropdown():
+def dimension_reduction_algorithm_dropdown(model_count):
     """
     This function allows the user to choose the dimension reduction
     algorithm to be used (in case unsupervised learning is enabled).
@@ -924,18 +956,25 @@ def dimension_reduction_algorithm_dropdown():
                 id='select-dimension-algorithm'
             ),
             dcc.Dropdown(
-                id='dimension-reduction-dropdown',
+                id={'type': 'dimension-reduction-dropdown', 'index': model_count},
                 options=[
                     {'label': 'PCA', 'value': 'pca'},
                     {'label': 'tsne', 'value': 'tsne'},
                 ],
-                searchable=False
+                searchable=False,
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '20px'
+                }
             )
         ]
     )
 
 
-def dimension_number_input():
+def dimension_number_input(model_count):
     """
     This function allows the user to choose the number of dimensions
     to be used by the dimensionality reduction algorithm (in case unsupervised learning
@@ -950,11 +989,18 @@ def dimension_number_input():
                 id='select-dimension-number'
             ),
             dcc.Input(
-                id='dimension-number-input',
+                id={'type': 'dimension-number-input', 'index': model_count},
                 type='number',
                 min=1,
                 max=10,
-                step=1
+                step=1,
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                }
             )
         ]
     )
@@ -986,13 +1032,14 @@ def hyperparameter_optimisation_question(model_count):
                     'width': '60%',
                     'font-size': '14pt',
                     'text-align': 'center'
-                }
+                },
+                persistence=True
             )
         ]
     )
 
 
-def hyperparameter_optimisation_number_input():
+def hyperparameter_optimisation_number_input(model_count):
     """
     This function allows the user to choose the number of iterations
     to be used by the hyperparameter optimisation algorithm (in case hyperparameter
@@ -1007,11 +1054,18 @@ def hyperparameter_optimisation_number_input():
                 id='select-iteration-number'
             ),
             dcc.Input(
-                id='iteration-number-input',
+                id={'type': 'iteration-number-input', 'index': model_count},
                 type='number',
                 min=1,
                 max=100,
-                step=1
+                step=1,
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                }
             )
         ]
     )
@@ -1125,10 +1179,10 @@ def model_input_parameters_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[
-                    model_selection_dropdown(),
+                    model_selection_dropdown(model_count),
                     feature_descriptor_dropdown(model_count),
                     kmer_size_dropdown(model_count),
-                    feature_normalization_dropdown(),
+                    feature_normalization_dropdown(model_count),
                     feature_selection_question(model_count),
                     use_unsupervised_learning_question(model_count),
                     hyperparameter_optimisation_question(model_count)
@@ -1153,8 +1207,8 @@ def model_input_feature_selection_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[
-                    feature_selection_algorithm_dropdown(),
-                    feature_number_input()
+                    feature_selection_algorithm_dropdown(model_count),
+                    feature_number_input(model_count)
                 ]
             )
         ],
@@ -1177,8 +1231,8 @@ def model_input_unsupervised_learning_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[
-                    dimension_reduction_algorithm_dropdown(),
-                    dimension_number_input()
+                    dimension_reduction_algorithm_dropdown(model_count),
+                    dimension_number_input(model_count)
                 ]
             )
         ],
@@ -1200,7 +1254,7 @@ def model_input_hyperparameter_optimisation_card(model_count):
             ),
             dbc.CardBody(
                 id='card-body-input',
-                children=[hyperparameter_optimisation_number_input()]
+                children=[hyperparameter_optimisation_number_input(model_count)]
             )
         ],
         style={'display': 'none'}
