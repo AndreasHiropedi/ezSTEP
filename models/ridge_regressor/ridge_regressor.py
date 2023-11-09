@@ -1,21 +1,94 @@
-"""
-
-"""
+import numpy as np
 
 
 class RidgeRegressor:
+    """
+    This is the implementation of the Ridge Regressor
+    machine learning model.
+    """
 
     def __init__(self):
-        pass
+        # model parameters
+        self.alpha_list = 10**(np.linspace(-1,2,50))
+        self.cv = 7
+        self.print_res = False
+
+        # model data
+        self.training_data = None
+        self.testing_data = None
+        self.querying_data = None
+
+        # user input parameters
+        self.feature_encoding_method = None
+        self.kmer_size = None
+        self.feature_normalization_algorithm = None
+        self.feature_selection_algorithm = None
+        self.feature_number = None
+        self.hyper_opt_iterations = None
+
+    # ------------------------ SETTERS ------------------------ #
+
+    def set_training_data(self, training_data):
+        self.training_data = training_data
+
+    def set_testing_data(self, testing_data):
+        self.testing_data = testing_data
+
+    def set_querying_data(self, querying_data):
+        self.querying_data = querying_data
+
+    def set_feature_encoding_method(self, method):
+        self.feature_encoding_method = method
+
+    def set_kmer_size(self, kmer_size):
+        self.kmer_size = kmer_size
+
+    def set_feature_normalization_algorithm(self, algorithm):
+        self.feature_normalization_algorithm = algorithm
+
+    def set_feature_selection_algorithm(self, algorithm):
+        self.feature_selection_algorithm = algorithm
+
+    def set_feature_number(self, number):
+        self.feature_number = number
+
+    def set_hyper_opt_iterations(self, iterations):
+        self.hyper_opt_iterations = iterations
+
+    # ------------------------ METHODS ------------------------ #
 
     def train_model(self):
+        """
+        Method for training the machine learning model
+        on the user-uploaded training data
+        """
         pass
 
     def test_model(self):
+        """
+        Method for testing the machine learning model
+        on the user-uploaded testing data
+        """
         pass
 
     def query_model(self):
+        """
+        Method for querying the machine learning model
+        on the user-uploaded querying data
+        """
+        pass
+
+    def feature_selection(self):
+        """
+        Method for running the user-selected feature selection
+        algorithm with the user-selected number of features
+        """
         pass
 
     def hyper_opt(self):
+        """
+        Method for running the hyperparameter optimisation
+        function using user input
+        """
         pass
+
