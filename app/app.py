@@ -816,7 +816,9 @@ def output_statistics_dropdown():
                 ],
                 value=[],
                 multi=True,
-                searchable=False
+                searchable=False,
+                persistence=True,
+                persistence_type='session'
             )
         ]
     )
@@ -1409,7 +1411,9 @@ def model_output_performance_statistics_table(model_count, values_list):
             'background': '#5F276A',
             'color': 'white',
             'border': '1px solid black'
-        }
+        },
+        persistence=True,
+        persistence_type='session'
     )
 
 
