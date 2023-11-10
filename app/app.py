@@ -335,87 +335,10 @@ def tabs_container():
     )
 
 
-def training_data_upload_card(stored_name=None):
+def training_data_upload_card():
     """
     This function creates the upload boxes for the training data.
     """
-
-    if stored_name:
-        upload_children = html.Div(
-            [f"Uploaded: {stored_name}"],
-            style={
-                "margin-top": "30px",
-                "text-align": "center",
-                "font-weight": "bold",
-                "font-size": "12pt"
-            }
-        )
-
-        success_message = html.Div(
-            [f"File {stored_name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
-        )
-
-        return dbc.Card(
-            id='card',
-            children=[
-                dbc.CardHeader(
-                    id='card-header',
-                    children=["Training data (required)"],
-                ),
-                dbc.CardBody(
-                    id='card-body',
-                    children=[
-                        html.P(
-                            "Upload your training data",
-                            style={
-                                'text-align': 'center',
-                                'font-size': '14pt'
-                            }
-                        ),
-                        html.Div(
-                            id='upload-container',
-                            children=[
-                                dcc.Upload(
-                                    id='upload-training-data',
-                                    children=[
-                                        html.Div(
-                                            id='box-text',
-                                            children=[html.Div([upload_children, success_message])],
-                                        )
-                                    ],
-                                    multiple=False,
-                                    style={
-                                        'width': '97.5%',
-                                        'height': '80px',
-                                        'textAlign': 'center',
-                                        'border': '2px dashed black'
-                                    }
-                                )
-                            ]
-                        ),
-                        html.P(
-                            "or paste it in the box below",
-                            style={
-                                'text-align': 'center',
-                                'font-size': '14pt'
-                            }
-                        ),
-                        dcc.Textarea(
-                            style={
-                                'width': '97.5%',
-                                'height': '100px'
-                            }
-                        )
-                    ]
-                )
-            ],
-            className="mx-auto"
-        )
 
     return dbc.Card(
         id='card',
@@ -466,10 +389,13 @@ def training_data_upload_card(stored_name=None):
                         }
                     ),
                     dcc.Textarea(
+                        id='text-train-data',
                         style={
                             'width': '97.5%',
                             'height': '100px'
-                        }
+                        },
+                        persistence=True,
+                        persistence_type='session'
                     )
                 ]
             )
@@ -478,33 +404,10 @@ def training_data_upload_card(stored_name=None):
     )
 
 
-def testing_data_upload_card(stored_name):
+def testing_data_upload_card():
     """
     This function creates the upload boxes for the testing data.
     """
-
-    upload_children = None
-    success_message = None
-
-    if stored_name:
-        upload_children = html.Div(
-            [f"Uploaded: {stored_name}"],
-            style={
-                "margin-top": "30px",
-                "text-align": "center",
-                "font-weight": "bold",
-                "font-size": "12pt"
-            }
-        )
-
-        success_message = html.Div(
-            [f"File {stored_name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
-        )
 
     return dbc.Card(
         id='card',
@@ -525,8 +428,7 @@ def testing_data_upload_card(stored_name):
                     ),
                     dcc.Upload(
                         id='upload-testing-data',
-                        children=[html.Div([upload_children, success_message])] if stored_name else
-                        [
+                        children=[
                             html.Div(
                                 id='box-text',
                                 children=[
@@ -551,10 +453,13 @@ def testing_data_upload_card(stored_name):
                         }
                     ),
                     dcc.Textarea(
+                        id='text-test-data',
                         style={
                             'width': '97.5%',
                             'height': '100px'
-                        }
+                        },
+                        persistence=True,
+                        persistence_type='session'
                     )
                 ]
             )
@@ -563,33 +468,10 @@ def testing_data_upload_card(stored_name):
     )
 
 
-def query_data_upload_card(stored_name):
+def query_data_upload_card():
     """
     This function creates the upload boxes for the model querying data.
     """
-
-    upload_children = None
-    success_message = None
-
-    if stored_name:
-        upload_children = html.Div(
-            [f"Uploaded: {stored_name}"],
-            style={
-                "margin-top": "30px",
-                "text-align": "center",
-                "font-weight": "bold",
-                "font-size": "12pt"
-            }
-        )
-
-        success_message = html.Div(
-            [f"File {stored_name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
-        )
 
     return dbc.Card(
         id='card',
@@ -610,8 +492,7 @@ def query_data_upload_card(stored_name):
                     ),
                     dcc.Upload(
                         id='upload-querying-data',
-                        children=[html.Div([upload_children, success_message])] if stored_name else
-                        [
+                        children=[
                             html.Div(
                                 id='box-text',
                                 children=[
@@ -636,10 +517,13 @@ def query_data_upload_card(stored_name):
                         }
                     ),
                     dcc.Textarea(
+                        id='text-query-data',
                         style={
                             'width': '97.5%',
                             'height': '100px'
-                        }
+                        },
+                        persistence=True,
+                        persistence_type='session'
                     )
                 ]
             )
@@ -1434,10 +1318,10 @@ def model_output_performance_statistics_table(model_count, values_list):
     """
 
     # Create a dataframe of all the model output statistics
-    data_dict = {'Model number': [f'Model {i}' for i in range(1, int(model_count)+1)]}
+    data_dict = {'Model number': [f'Model {i}' for i in range(1, int(model_count) + 1)]}
 
     for value in values_list:
-        data_dict[value] = [f'Model {i} {value}' for i in range(1, int(model_count)+1)]
+        data_dict[value] = [f'Model {i} {value}' for i in range(1, int(model_count) + 1)]
 
     # Create a dataframe of all the model output statistics
     df = pd.DataFrame(data=data_dict)
@@ -1471,8 +1355,8 @@ def model_output_performance_statistics_table(model_count, values_list):
     )
 
 
-@app.callback(
-    [Output('upload-container', 'children'),
+@callback(
+    [Output('upload-training-data', 'children'),
      Output('store-uploaded-train-file', 'data')],
     Input('upload-training-data', 'contents'),
     State('upload-training-data', 'filename')
@@ -1514,71 +1398,19 @@ def update_training_output(content, name):
         if '.csv' in name:
             _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
-            return [
-               dcc.Upload(
-                   id='upload-training-data',
-                   children=[
-                       html.Div(
-                           id='box-text',
-                           children=[final_display],
-                       )
-                   ],
-                   multiple=False,
-                   style={
-                       'width': '97.5%',
-                       'height': '80px',
-                       'textAlign': 'center',
-                       'border': '2px dashed black'
-                   }
-               )
-            ], {'filename': name}
+            return final_display, {'filename': name}
 
         # If non-CSV, you can just return the name and a message or other placeholder
         final_display = html.Div([upload_children, failed_message])
-        return [
-           dcc.Upload(
-               id='upload-training-data',
-               children=[
-                   html.Div(
-                       id='box-text',
-                       children=[final_display],
-                   )
-               ],
-               multiple=False,
-               style={
-                   'width': '97.5%',
-                   'height': '80px',
-                   'textAlign': 'center',
-                   'border': '2px dashed black'
-               }
-           )
-        ], None
+        return final_display, None
 
     # If no content, revert to original children for dcc.Upload
-    return [
-       dcc.Upload(
-           id='upload-training-data',
-           children=[
-               html.Div(
-                   id='box-text',
-                   children=[
-                       'Drag and Drop or ',
-                       html.A('Select Files', style={'font-weight': 'bold'})
-                   ],
-               )
-           ],
-           multiple=False,
-           style={
-               'width': '97.5%',
-               'height': '80px',
-               'textAlign': 'center',
-               'border': '2px dashed black'
-           }
-       )
-    ], None
+    return html.Div(
+        id='box-text',
+        children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
 
 
-@app.callback(
+@callback(
     [Output('upload-testing-data', 'children'),
      Output('store-uploaded-test-file', 'data')],
     Input('upload-testing-data', 'contents'),
@@ -1619,7 +1451,7 @@ def update_testing_output(content, name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -1633,7 +1465,7 @@ def update_testing_output(content, name):
         children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
 
 
-@app.callback(
+@callback(
     [Output('upload-querying-data', 'children'),
      Output('store-uploaded-query-file', 'data')],
     Input('upload-querying-data', 'contents'),
@@ -1674,7 +1506,7 @@ def update_querying_output(content, name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -1838,19 +1670,12 @@ def update_bar_chart(slider_range, model_data):
     Output('content', 'children'),
     Input('container', 'value'),
     [State('store-model-content', 'data'),
-     State('store-model-count', 'data'),
-     State('store-uploaded-train-file', 'data'),
-     State('store-uploaded-test-file', 'data'),
-     State('store-uploaded-query-file', 'data')
-     ]
+     State('store-model-count', 'data')]
 )
 def render_tabs_content(
-    selected_tab,
-    stored_content,
-    stored_count,
-    stored_train_file,
-    stored_test_file,
-    stored_query_file
+        selected_tab,
+        stored_content,
+        stored_count
 ):
     """
     This callback function keeps track of the user changes to the
@@ -1859,18 +1684,16 @@ def render_tabs_content(
 
     # File upload tab
     if selected_tab == 'upload datasets':
-        training_name = stored_train_file['filename'] if stored_train_file else None
-        testing_name = stored_test_file['filename'] if stored_test_file else None
-        querying_name = stored_query_file['filename'] if stored_query_file else None
 
         return dbc.Container(
             id='tabs-content-upload',
             children=[
+                html.Div(id='uploaded-files'),
                 dbc.Row(
                     id='card-row',
                     children=[
                         dbc.Col(
-                            children=[training_data_upload_card(training_name)],
+                            children=[training_data_upload_card()],
                             md=3,
                             style={
                                 'margin-left': '50px',
@@ -1878,7 +1701,7 @@ def render_tabs_content(
                             }
                         ),
                         dbc.Col(
-                            children=[testing_data_upload_card(testing_name)],
+                            children=[testing_data_upload_card()],
                             md=5,
                             style={
                                 'margin-left': '50px',
@@ -1886,7 +1709,7 @@ def render_tabs_content(
                             }
                         ),
                         dbc.Col(
-                            children=[query_data_upload_card(querying_name)],
+                            children=[query_data_upload_card()],
                             md=3,
                             style={
                                 'margin-left': '80px',
@@ -1932,7 +1755,7 @@ def render_tabs_content(
         return dbc.Row(
             id='tabs-content-output',
             children=[output_statistics_card(), html.Div(id='table-container')] +
-                     [model_output_ref(i) for i in range(1, stored_count['n_clicks']+1)]
+                     [model_output_ref(i) for i in range(1, stored_count['n_clicks'] + 1)]
         )
 
     # Validation check
@@ -1940,7 +1763,7 @@ def render_tabs_content(
         return 'No content available.'
 
 
-@app.callback(
+@callback(
     [Output('tabs-content-input', 'children'),
      Output('store-model-count', 'data'),
      Output('store-model-content', 'data')
@@ -1970,7 +1793,7 @@ def add_new_model(n_clicks, current_children, stored_count, _stored_content):
     return dash.no_update, dash.no_update, dash.no_update
 
 
-@app.callback(
+@callback(
     Output('page-content', 'children'),
     Input('url', 'href')
 )
