@@ -1359,10 +1359,41 @@ def model_output_performance_statistics_table(model_count, values_list):
     [Output('upload-training-data', 'children'),
      Output('store-uploaded-train-file', 'data')],
     Input('upload-training-data', 'contents'),
-    State('upload-training-data', 'filename')
+    [State('upload-training-data', 'filename'),
+     State('store-uploaded-train-file', 'data')]
 )
-def update_training_output(content, name):
-    if content:
+def update_training_output(content, name, stored_train_file_name):
+    """
+
+    """
+
+    if stored_train_file_name:
+        file = stored_train_file_name['filename']
+
+        # Update the dcc.Upload children to show the uploaded file's name
+        upload_children = html.Div(
+            [f"Uploaded: {file}"],
+            style={
+                "margin-top": "30px",
+                "text-align": "center",
+                "font-weight": "bold",
+                "font-size": "12pt"
+            }
+        )
+
+        success_message = html.Div(
+            [f"File {file} uploaded successfully!"],
+            style={
+                "font-weight": "bold",
+                "color": "green",
+                "font-size": "12pt"
+            }
+        )
+
+        final_display = html.Div([upload_children, success_message])
+        return final_display, None
+
+    elif content:
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
             [f"Uploaded: {name}"],
@@ -1414,10 +1445,41 @@ def update_training_output(content, name):
     [Output('upload-testing-data', 'children'),
      Output('store-uploaded-test-file', 'data')],
     Input('upload-testing-data', 'contents'),
-    State('upload-testing-data', 'filename')
+    [State('upload-testing-data', 'filename'),
+     State('store-uploaded-test-file', 'data')]
 )
-def update_testing_output(content, name):
-    if content:
+def update_testing_output(content, name, stored_test_file_name):
+    """
+
+    """
+
+    if stored_test_file_name:
+        file = stored_test_file_name['filename']
+
+        # Update the dcc.Upload children to show the uploaded file's name
+        upload_children = html.Div(
+            [f"Uploaded: {file}"],
+            style={
+                "margin-top": "30px",
+                "text-align": "center",
+                "font-weight": "bold",
+                "font-size": "12pt"
+            }
+        )
+
+        success_message = html.Div(
+            [f"File {file} uploaded successfully!"],
+            style={
+                "font-weight": "bold",
+                "color": "green",
+                "font-size": "12pt"
+            }
+        )
+
+        final_display = html.Div([upload_children, success_message])
+        return final_display, None
+
+    elif content:
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
             [f"Uploaded: {name}"],
@@ -1469,10 +1531,41 @@ def update_testing_output(content, name):
     [Output('upload-querying-data', 'children'),
      Output('store-uploaded-query-file', 'data')],
     Input('upload-querying-data', 'contents'),
-    State('upload-querying-data', 'filename')
+    [State('upload-querying-data', 'filename'),
+     State('store-uploaded-query-file', 'data')]
 )
-def update_querying_output(content, name):
-    if content:
+def update_querying_output(content, name, stored_query_file_name):
+    """
+
+    """
+
+    if stored_query_file_name:
+        file = stored_query_file_name['filename']
+
+        # Update the dcc.Upload children to show the uploaded file's name
+        upload_children = html.Div(
+            [f"Uploaded: {file}"],
+            style={
+                "margin-top": "30px",
+                "text-align": "center",
+                "font-weight": "bold",
+                "font-size": "12pt"
+            }
+        )
+
+        success_message = html.Div(
+            [f"File {file} uploaded successfully!"],
+            style={
+                "font-weight": "bold",
+                "color": "green",
+                "font-size": "12pt"
+            }
+        )
+
+        final_display = html.Div([upload_children, success_message])
+        return final_display, None
+
+    elif content:
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
             [f"Uploaded: {name}"],
