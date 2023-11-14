@@ -1364,7 +1364,8 @@ def model_output_performance_statistics_table(model_count, values_list):
 )
 def update_training_output(content, name, stored_train_file_name):
     """
-
+    This callback updates the contents of the upload box for the
+    model train data.
     """
 
     if stored_train_file_name:
@@ -1450,7 +1451,8 @@ def update_training_output(content, name, stored_train_file_name):
 )
 def update_testing_output(content, name, stored_test_file_name):
     """
-
+    This callback updates the contents of the upload box for the
+    model test data.
     """
 
     if stored_test_file_name:
@@ -1536,7 +1538,8 @@ def update_testing_output(content, name, stored_test_file_name):
 )
 def update_querying_output(content, name, stored_query_file_name):
     """
-
+    This callback updates the contents of the upload box for the
+    model querying data.
     """
 
     if stored_query_file_name:
