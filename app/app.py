@@ -703,8 +703,8 @@ def output_statistics_dropdown():
         id='output-statistics',
         children=[
             html.H6(
-                "Select the evaluation statistics about the model that you wish to see in the output (select all that "
-                "apply):",
+                "Select the evaluation statistics (for testing) about the model that you wish to see in the output  "
+                "(select all that apply):",
                 id='select-statistics'
             ),
             dcc.Dropdown(
@@ -1155,12 +1155,13 @@ def output_statistics_card():
         children=[
             dbc.CardHeader(
                 id='card-header-output',
-                children=['Output statistics']
+                children=['Testing output statistics']
             ),
             dbc.CardBody(
                 id='card-body-output',
                 children=[output_statistics_dropdown()]
-            )
+            ),
+            html.Div(id='hyperlinks-container')
         ]
     )
 
@@ -1241,6 +1242,11 @@ def model_input_parameters_page(model_count):
                                 'Submit model selection',
                                 id='input-page-button',
                                 n_clicks=0
+                            ),
+                            html.Button(
+                                'Delete model',
+                                id='delete-button',
+                                n_clicks=0
                             )
                         ]
                     )
@@ -1293,6 +1299,23 @@ def model_input_ref(model_count):
     )
 
 
+def output_metric_ref(metric_name, model_count):
+    """
+    This function creates hyperlinks to a separate page for each
+    output statistic selected by the user (using the dropdown in the output tab).
+    """
+
+    return dcc.Link(
+        children=[
+            html.H4(
+                f"View {metric_name} plot",
+                id='metric-plot-ref'
+            )
+        ],
+        href=f'/output-statistics/{metric_name}-{model_count}'
+    )
+
+
 def model_output_ref(model_count):
     """
     This function creates hyperlinks to a separate page for each
@@ -1307,51 +1330,6 @@ def model_output_ref(model_count):
             )
         ],
         href=f'/model-output/model-{model_count}'
-    )
-
-
-def model_output_performance_statistics_table(model_count, values_list):
-    """
-    This function displays the output summary statistics table
-    for the models selected by the user (contains only the summary statistics
-    selected for all models).
-    """
-
-    # Create a dataframe of all the model output statistics
-    data_dict = {'Model number': [f'Model {i}' for i in range(1, int(model_count) + 1)]}
-
-    for value in values_list:
-        data_dict[value] = [f'Model {i} {value}' for i in range(1, int(model_count) + 1)]
-
-    # Create a dataframe of all the model output statistics
-    df = pd.DataFrame(data=data_dict)
-
-    return dash_table.DataTable(
-        id='table',
-        columns=[{"Model number": i, "id": i} for i in df.columns],
-        data=df.to_dict('records'),
-        style_data={
-            'text-align': 'center',
-            'font-size': '12pt',
-            'font-family': 'Times',
-            'border': '1px solid black'
-        },
-        style_table={
-            'width': '80%',
-            'margin-top': '40px',
-            'margin-left': '180px'
-        },
-        style_header={
-            'text-align': 'center',
-            'font-size': '12pt',
-            'font-family': 'Times',
-            'font-weight': 'bold',
-            'background': '#5F276A',
-            'color': 'white',
-            'border': '1px solid black'
-        },
-        persistence=True,
-        persistence_type='session'
     )
 
 
@@ -1721,22 +1699,21 @@ def show_kmer_dropdown(value, model_data):
 
 
 @callback(
-    Output('table-container', 'children'),
+    Output('hyperlinks-container', 'children'),
     [Input('output-statistics-dropdown', 'value'),
      Input('store-model-count', 'data')]
 )
 def generate_table(values_list, model_data):
     """
-    This callback function generates the summary statistics table
-    based on the user inputs in the dropdown.
+    This callback function generates the hyperlinks for testing statistics
+    visualisations based on the user inputs in the dropdown.
     """
 
     model_count = model_data['n_clicks']
 
-    if values_list:
-        return model_output_performance_statistics_table(model_count, values_list)
+    visualizations_links = [output_metric_ref(value, model_count) for value in values_list]
 
-    return []
+    return visualizations_links
 
 
 @callback(
@@ -1918,6 +1895,43 @@ def display_page(href):
             return model_output_page(model_num)
         except ValueError:
             return html.Div('Invalid model number.')
+
+    elif pathname.startswith('/output-statistics/'):
+        # Get the current model count for the graph
+        _model_count = int(pathname.split('/')[-1][-1])
+
+        # If one of the output statistics tabs is selected, check which one and display the appropriate graph
+        if 'RMSE' in pathname:
+            return html.Div(
+                id='RMSE-plot-container',
+                children=[
+
+                ]
+            )
+
+        elif 'R-squared' in pathname:
+            return html.Div(
+                id='R-squared-plot-container',
+                children=[
+
+                ]
+            )
+
+        elif 'MAE' in pathname:
+            return html.Div(
+                id='MAE-plot-container',
+                children=[
+
+                ]
+            )
+
+        elif 'Percentage within 2-fold error' in pathname:
+            return html.Div(
+                id='2-fold-plot-container',
+                children=[
+
+                ]
+            )
 
     return [
         app_header(),
