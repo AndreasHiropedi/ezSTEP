@@ -388,7 +388,7 @@ def training_data_upload_card():
                             'font-size': '14pt'
                         }
                     ),
-                    dcc.Textarea(
+                    dbc.Textarea(
                         id='text-train-data',
                         style={
                             'width': '97.5%',
@@ -452,7 +452,7 @@ def testing_data_upload_card():
                             'font-size': '14pt'
                         }
                     ),
-                    dcc.Textarea(
+                    dbc.Textarea(
                         id='text-test-data',
                         style={
                             'width': '97.5%',
@@ -727,6 +727,109 @@ def update_training_output(content, name, stored_train_file_name):
 
 
 @callback(
+    Output('text-train-data', 'style'),
+    Input('text-train-data', 'value')
+)
+def validate_training_text_input(value):
+    """
+
+    """
+
+    # Handle case where the text area is empty
+    if not value:
+        return {
+            'width': '97.5%',
+            'height': '100px'
+        }
+
+    # Split the text into rows
+    rows = value.split('\n')
+
+    sequences = []
+    labels = []
+    for row in rows:
+        # Skip empty rows
+        if row.strip() == "":
+            continue
+        row = row.strip()
+        # Check different row formats
+        if "|" in row:
+            data = row.split("|")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif "," in row:
+            data = row.split(",")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif ";" in row:
+            data = row.split(";")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        else:
+            return {
+                'width': '97.5%',
+                'height': '100px',
+                'border': '2px solid #dc3545'
+            }
+
+    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+
+    return {
+        'width': '97.5%',
+        'height': '100px',
+        'border': '2px solid #28a745'
+    }
+
+
+@callback(
     [Output('upload-testing-data', 'children'),
      Output('store-uploaded-test-file', 'data')],
     Input('upload-testing-data', 'contents'),
@@ -814,6 +917,109 @@ def update_testing_output(content, name, stored_test_file_name):
 
 
 @callback(
+    Output('text-test-data', 'style'),
+    Input('text-test-data', 'value')
+)
+def validate_testing_text_input(value):
+    """
+
+    """
+
+    # Handle case where the text area is empty
+    if not value:
+        return {
+            'width': '97.5%',
+            'height': '100px'
+        }
+
+    # Split the text into rows
+    rows = value.split('\n')
+
+    sequences = []
+    labels = []
+    for row in rows:
+        # Skip empty rows
+        if row.strip() == "":
+            continue
+        row = row.strip()
+        # Check different row formats
+        if "|" in row:
+            data = row.split("|")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif "," in row:
+            data = row.split(",")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif ";" in row:
+            data = row.split(";")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        else:
+            return {
+                'width': '97.5%',
+                'height': '100px',
+                'border': '2px solid #dc3545'
+            }
+
+    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+
+    return {
+        'width': '97.5%',
+        'height': '100px',
+        'border': '2px solid #28a745'
+    }
+
+
+@callback(
     [Output('upload-querying-data', 'children'),
      Output('store-uploaded-query-file', 'data')],
     Input('upload-querying-data', 'contents'),
@@ -898,6 +1104,109 @@ def update_querying_output(content, name, stored_query_file_name):
     return html.Div(
         id='box-text',
         children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+
+
+@callback(
+    Output('text-query-data', 'style'),
+    Input('text-query-data', 'value')
+)
+def validate_querying_text_input(value):
+    """
+
+    """
+
+    # Handle case where the text area is empty
+    if not value:
+        return {
+            'width': '97.5%',
+            'height': '100px'
+        }
+
+    # Split the text into rows
+    rows = value.split('\n')
+
+    sequences = []
+    labels = []
+    for row in rows:
+        # Skip empty rows
+        if row.strip() == "":
+            continue
+        row = row.strip()
+        # Check different row formats
+        if "|" in row:
+            data = row.split("|")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif "," in row:
+            data = row.split(",")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        elif ";" in row:
+            data = row.split(";")
+            # if there aren't exactly 2 elements, the data is invalid
+            if len(data) != 2:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # if one of them is empty, the data is invalid
+            if data[0].strip() == '' or data[1].strip() == '':
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+            # otherwise, data is valid
+            sequences.append(data[0])
+            labels.append(data[1])
+
+        else:
+            return {
+                'width': '97.5%',
+                'height': '100px',
+                'border': '2px solid #dc3545'
+            }
+
+    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+
+    return {
+        'width': '97.5%',
+        'height': '100px',
+        'border': '2px solid #28a745'
+    }
 
 
 @callback(
