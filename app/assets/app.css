@@ -899,3 +899,91 @@
     text-align: center;
     margin-right: 200px;
 }
+
+#rmse-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#rmse-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#rmse-page-contents {
+    top: 100px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
+
+#mae-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#mae-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#mae-page-contents {
+    top: 100px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
+
+#r-squared-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#r-squared-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#r-squared-page-contents {
+    top: 100px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
+
+#two-fold-page-header {
+    width: 100%;
+    background: #A9A9A9;
+    top: 0px;
+    height: 70px;
+    position: absolute;
+}
+
+#two-fold-page-header h1 {
+    top: 8px;
+    text-align: center;
+    text-size: 18pt;
+    font-weight: bold;
+}
+
+#two-fold-page-contents {
+    top: 100px;
+    width: 100%;
+    position: absolute;
+    padding-bottom: 50px;
+}
