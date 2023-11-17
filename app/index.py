@@ -652,7 +652,7 @@ def update_training_output(content, name, stored_train_file_name):
     model train data.
     """
 
-    if stored_train_file_name:
+    if stored_train_file_name and not content:
         file = stored_train_file_name['filename']
 
         # Update the dcc.Upload children to show the uploaded file's name
@@ -676,7 +676,7 @@ def update_training_output(content, name, stored_train_file_name):
         )
 
         final_display = html.Div([upload_children, success_message])
-        return final_display, None
+        return final_display, dash.no_update
 
     elif content:
         # Update the dcc.Upload children to show the uploaded file's name
@@ -739,7 +739,7 @@ def update_testing_output(content, name, stored_test_file_name):
     model test data.
     """
 
-    if stored_test_file_name:
+    if stored_test_file_name and not content:
         file = stored_test_file_name['filename']
 
         # Update the dcc.Upload children to show the uploaded file's name
@@ -763,7 +763,7 @@ def update_testing_output(content, name, stored_test_file_name):
         )
 
         final_display = html.Div([upload_children, success_message])
-        return final_display, None
+        return final_display, dash.no_update
 
     elif content:
         # Update the dcc.Upload children to show the uploaded file's name
@@ -826,7 +826,7 @@ def update_querying_output(content, name, stored_query_file_name):
     model querying data.
     """
 
-    if stored_query_file_name:
+    if stored_query_file_name and not content:
         file = stored_query_file_name['filename']
 
         # Update the dcc.Upload children to show the uploaded file's name
@@ -850,7 +850,7 @@ def update_querying_output(content, name, stored_query_file_name):
         )
 
         final_display = html.Div([upload_children, success_message])
-        return final_display, None
+        return final_display, dash.no_update
 
     elif content:
         # Update the dcc.Upload children to show the uploaded file's name
@@ -1106,6 +1106,7 @@ def display_page(href):
     ]
 
 
+# Update individual tab titles depending on the page
 clientside_callback(
     "dash_clientside.clientside.updateTitle",
     Output('page-title', 'children'),
