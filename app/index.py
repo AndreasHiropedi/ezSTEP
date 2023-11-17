@@ -10,6 +10,11 @@ from dash import html, dcc, callback, Input, Output, State, clientside_callback
 from pages import model_inputs_page, model_outputs_page, output_statistics_page
 from urllib.parse import urlparse
 
+# variables to store the uploaded data (TODO: change to serverside once deployed)
+TRAINING_DATA = None
+TESTING_DATA = None
+QUERYING_DATA = None
+
 
 def app_header():
     """
@@ -712,7 +717,8 @@ def update_training_output(content, name, stored_train_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            global TRAINING_DATA
+            TRAINING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -732,7 +738,7 @@ def update_training_output(content, name, stored_train_file_name):
 )
 def validate_training_text_input(value):
     """
-
+    This callback validates the input in the training data textbox.
     """
 
     # Handle case where the text area is empty
@@ -820,7 +826,13 @@ def validate_training_text_input(value):
                 'border': '2px solid #dc3545'
             }
 
-    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+    # If the data was not set using the file upload, use the data in the textarea instead
+    global TRAINING_DATA
+    if not TRAINING_DATA:
+        TRAINING_DATA = pd.DataFrame({
+            'Sequence': sequences,
+            'Label': labels
+        })
 
     return {
         'width': '97.5%',
@@ -902,7 +914,8 @@ def update_testing_output(content, name, stored_test_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            global TESTING_DATA
+            TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -922,7 +935,7 @@ def update_testing_output(content, name, stored_test_file_name):
 )
 def validate_testing_text_input(value):
     """
-
+    This callback validates the input in the testing data textbox.
     """
 
     # Handle case where the text area is empty
@@ -1010,7 +1023,13 @@ def validate_testing_text_input(value):
                 'border': '2px solid #dc3545'
             }
 
-    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+    # If the data was not set using the file upload, use the data in the textarea instead
+    global TESTING_DATA
+    if not TESTING_DATA:
+        TESTING_DATA = pd.DataFrame({
+            'Sequence': sequences,
+            'Label': labels
+        })
 
     return {
         'width': '97.5%',
@@ -1092,7 +1111,8 @@ def update_querying_output(content, name, stored_query_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            _df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            global QUERYING_DATA
+            QUERYING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -1112,7 +1132,7 @@ def update_querying_output(content, name, stored_query_file_name):
 )
 def validate_querying_text_input(value):
     """
-
+    This callback validates the input in the querying data textbox.
     """
 
     # Handle case where the text area is empty
@@ -1200,7 +1220,13 @@ def validate_querying_text_input(value):
                 'border': '2px solid #dc3545'
             }
 
-    # TODO: ADD CHECK IF FILE WAS UPLOADED (AND KEEP THAT DATA), OTHERWISE USE THIS VALID DATA
+    # If the data was not set using the file upload, use the data in the textarea instead
+    global QUERYING_DATA
+    if not QUERYING_DATA:
+        QUERYING_DATA = pd.DataFrame({
+            'Sequence': sequences,
+            'Label': labels
+        })
 
     return {
         'width': '97.5%',
