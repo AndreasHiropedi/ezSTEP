@@ -734,9 +734,10 @@ def update_training_output(content, name, stored_train_file_name):
 
 @callback(
     Output('text-train-data', 'style'),
-    Input('text-train-data', 'value')
+    Input('text-train-data', 'value'),
+    State('store-uploaded-train-file', 'data')
 )
-def validate_training_text_input(value):
+def validate_training_text_input(value, stored_train_file):
     """
     This callback validates the input in the training data textbox.
     """
@@ -827,8 +828,8 @@ def validate_training_text_input(value):
             }
 
     # If the data was not set using the file upload, use the data in the textarea instead
-    global TRAINING_DATA
-    if not TRAINING_DATA:
+    if not stored_train_file:
+        global TRAINING_DATA
         TRAINING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
@@ -916,6 +917,7 @@ def update_testing_output(content, name, stored_test_file_name):
         if '.csv' in name:
             global TESTING_DATA
             TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            print(TESTING_DATA)
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -931,9 +933,10 @@ def update_testing_output(content, name, stored_test_file_name):
 
 @callback(
     Output('text-test-data', 'style'),
-    Input('text-test-data', 'value')
+    Input('text-test-data', 'value'),
+    State('store-uploaded-test-file', 'data')
 )
-def validate_testing_text_input(value):
+def validate_testing_text_input(value, stored_test_file):
     """
     This callback validates the input in the testing data textbox.
     """
@@ -1024,8 +1027,8 @@ def validate_testing_text_input(value):
             }
 
     # If the data was not set using the file upload, use the data in the textarea instead
-    global TESTING_DATA
-    if not TESTING_DATA:
+    if not stored_test_file:
+        global TESTING_DATA
         TESTING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
@@ -1128,9 +1131,10 @@ def update_querying_output(content, name, stored_query_file_name):
 
 @callback(
     Output('text-query-data', 'style'),
-    Input('text-query-data', 'value')
+    Input('text-query-data', 'value'),
+    State('store-uploaded-query-file', 'data')
 )
-def validate_querying_text_input(value):
+def validate_querying_text_input(value, stored_query_file):
     """
     This callback validates the input in the querying data textbox.
     """
@@ -1221,8 +1225,8 @@ def validate_querying_text_input(value):
             }
 
     # If the data was not set using the file upload, use the data in the textarea instead
-    global QUERYING_DATA
-    if not QUERYING_DATA:
+    if not stored_query_file:
+        global QUERYING_DATA
         QUERYING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
