@@ -1,3 +1,4 @@
+import app.globals
 import dash_bootstrap_components as dbc
 
 from dash import html, dcc, callback, Input, Output, MATCH

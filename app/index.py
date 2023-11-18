@@ -1,3 +1,4 @@
+import app.globals
 import base64
 import dash
 import dash_bootstrap_components as dbc
@@ -9,11 +10,6 @@ from app.app_init import my_app
 from dash import html, dcc, callback, Input, Output, State, clientside_callback
 from pages import model_inputs_page, model_outputs_page, output_statistics_page
 from urllib.parse import urlparse
-
-# variables to store the uploaded data (TODO: change to serverside once deployed)
-TRAINING_DATA = None
-TESTING_DATA = None
-QUERYING_DATA = None
 
 
 def app_header():
@@ -717,8 +713,7 @@ def update_training_output(content, name, stored_train_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            global TRAINING_DATA
-            TRAINING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            app.globals.TRAINING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -829,8 +824,7 @@ def validate_training_text_input(value, stored_train_file):
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
-        global TRAINING_DATA
-        TRAINING_DATA = pd.DataFrame({
+        app.globals.TRAINING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
         })
@@ -915,9 +909,7 @@ def update_testing_output(content, name, stored_test_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            global TESTING_DATA
-            TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            print(TESTING_DATA)
+            app.globals.TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -1028,8 +1020,7 @@ def validate_testing_text_input(value, stored_test_file):
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
-        global TESTING_DATA
-        TESTING_DATA = pd.DataFrame({
+        app.globals.TESTING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
         })
@@ -1114,8 +1105,7 @@ def update_querying_output(content, name, stored_query_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            global QUERYING_DATA
-            QUERYING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            app.globals.QUERYING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             final_display = html.Div([upload_children, success_message])
             return final_display, {'filename': name}
 
@@ -1226,8 +1216,7 @@ def validate_querying_text_input(value, stored_query_file):
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
-        global QUERYING_DATA
-        QUERYING_DATA = pd.DataFrame({
+        app.globals.QUERYING_DATA = pd.DataFrame({
             'Sequence': sequences,
             'Label': labels
         })
