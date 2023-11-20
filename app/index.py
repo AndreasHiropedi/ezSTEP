@@ -35,6 +35,7 @@ def app_header():
                     )
                 ],
                 href='https://plotly.com',
+                target='_blank'
             ),
 
             # Web app title
@@ -49,6 +50,7 @@ def app_header():
                     "View on GitHub"
                 ],
                 href='https://github.com/AndreasHiropedi/BioNetTrain',
+                target='_blank'
             ),
 
             # GitHub logo
@@ -90,7 +92,8 @@ def app_footer():
                         ),
                     )
                 ],
-                href='https://homepages.inf.ed.ac.uk/doyarzun/'
+                href='https://homepages.inf.ed.ac.uk/doyarzun/',
+                target='_blank'
             ),
 
             # Copyright
@@ -586,20 +589,22 @@ def output_statistics_card():
     )
 
 
-def model_input_ref(model_count):
+def model_input_ref(model_key):
     """
     This function creates hyperlinks to a separate page for each
     model input (for each model created).
     """
 
+    app.globals.MODELS_LIST[model_key] = None
+
     return html.A(
         children=[
             html.H4(
-                f"Model {model_count} input parameters",
+                f"{model_key} input parameters",
                 id='model-inputs-ref'
             )
         ],
-        href=f'/model-input/model-{model_count}',
+        href=f'/model-input/{model_key}',
         target='_blank'
     )
 
@@ -622,7 +627,7 @@ def output_metric_ref(metric_name):
     )
 
 
-def model_output_ref(model_count):
+def model_output_ref(model_key):
     """
     This function creates hyperlinks to a separate page for each
     model output (for each model created).
@@ -631,11 +636,11 @@ def model_output_ref(model_count):
     return html.A(
         children=[
             html.H4(
-                f"Model {model_count} output",
+                f"{model_key} output",
                 id='model-outputs-ref'
             )
         ],
-        href=f'/model-output/model-{model_count}',
+        href=f'/model-output/{model_key}',
         target='_blank'
     )
 
@@ -1308,7 +1313,7 @@ def render_tabs_content(
         if stored_count:
             return dbc.Row(
                 id='tabs-content-input',
-                children=[model_input_ref(i) for i in range(1, stored_count['n_clicks'] + 1)] +
+                children=[model_input_ref(model_key) for model_key in app.globals.MODELS_LIST.keys()] +
                          [
                              html.Button(
                                  'Add a new model',
@@ -1323,7 +1328,7 @@ def render_tabs_content(
                 id='tabs-content-input',
                 children=[
                     # This creates the initial layout with one model
-                    model_input_ref("1"),
+                    model_input_ref("Model 1"),
                     html.Button(
                         'Add a new model',
                         id='button',
@@ -1337,7 +1342,7 @@ def render_tabs_content(
         return dbc.Row(
             id='tabs-content-output',
             children=[output_statistics_card(), html.Div(id='table-container')] +
-                     [model_output_ref(i) for i in range(1, stored_count['n_clicks'] + 1)]
+                     [model_output_ref(model_key) for model_key in app.globals.MODELS_LIST.keys()]
         )
 
     # Validation check
@@ -1354,16 +1359,18 @@ def render_tabs_content(
      State('store-model-count', 'data')
      ]
 )
-def add_new_model(n_clicks, current_children, stored_count):
+def add_new_model_tab(n_clicks, current_children, stored_count):
     """
     This callback function keeps track of the user changes to the
     model inputs tab (when adding new models).
     """
 
+    model_key = f'Model {n_clicks}'
+
     # Check if a new model has been added
     if n_clicks > stored_count['n_clicks']:
         stored_count['n_clicks'] = n_clicks
-        children = current_children + [model_input_ref(n_clicks)]
+        children = current_children + [model_input_ref(model_key)]
         return children, stored_count
 
     # If there has been no new model added
@@ -1388,17 +1395,25 @@ def display_page(href):
         # If a model inputs tab is selected, return the card for that input
         try:
             model_num = int(pathname.split('/')[-1][-1])
-            return model_inputs_page.create_layout(model_num)
+            model_key = f"Model {model_num}"
+            if model_key in app.globals.MODELS_LIST.keys():
+                return model_inputs_page.create_layout(model_num)
+            else:
+                return html.Div('Invalid model number.')
         except ValueError:
-            return html.Div('Invalid model number.')
+            return html.Div('Invalid URL.')
 
     elif pathname.startswith('/model-output/'):
         # If a model output tab is selected, return the card for that output
         try:
             model_num = int(pathname.split('/')[-1][-1])
-            return model_outputs_page.create_layout(model_num)
+            model_key = f"Model {model_num}"
+            if model_key in app.globals.MODELS_LIST.keys():
+                return model_outputs_page.create_layout(model_num)
+            else:
+                return html.Div('Invalid model number.')
         except ValueError:
-            return html.Div('Invalid model number.')
+            return html.Div('Invalid URL.')
 
     elif pathname.startswith('/output-statistics/'):
         # If one of the output statistics tabs is selected, check which one and display the appropriate graph
@@ -1444,7 +1459,7 @@ clientside_callback(
 
 my_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-title'),
+    html.Div(id='page-title', style={'display': 'none'}),
     html.Div(id='page-content'),
     dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
     dcc.Store(id='store-uploaded-train-file', storage_type='session'),

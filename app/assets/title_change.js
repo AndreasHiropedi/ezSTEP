@@ -7,10 +7,20 @@ window.dash_clientside.clientside = {
 
         if (pathname.startsWith('/model-input/')) {
             let model_num = pathname.split('/').pop().slice(-1);
-            title = `Model ${model_num} input`;
+            // Check if model_num is not a number
+            if (isNaN(model_num)) {
+                title = "Invalid";
+            } else {
+                title = `Model ${model_num} input`;
+            }
         } else if (pathname.startsWith('/model-output/')) {
             let model_num = pathname.split('/').pop().slice(-1);
-            title = `Model ${model_num} output`;
+            // Check if model_num is not a number
+            if (isNaN(model_num)) {
+                title = "Invalid";
+            } else {
+                title = `Model ${model_num} output`;
+            }
         } else if (pathname.startsWith('/output-statistics/')) {
             if (pathname.includes('RMSE')) {
                 title = 'RMSE plot';

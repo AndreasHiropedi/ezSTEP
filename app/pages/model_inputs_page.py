@@ -1,7 +1,8 @@
 import app.globals
+import dash
 import dash_bootstrap_components as dbc
 
-from dash import html, dcc, callback, Input, Output, MATCH
+from dash import html, dcc, callback, Input, Output, MATCH, State
 
 
 def create_layout(model_count):
@@ -46,21 +47,205 @@ def create_layout(model_count):
                     html.Div(
                         id='button-wrapper',
                         children=[
-                            html.Button(
-                                'Submit model selection',
-                                id='input-page-button',
-                                n_clicks=0
-                            ),
-                            html.Button(
-                                'Delete model',
-                                id='delete-button',
-                                n_clicks=0
-                            )
+                            submit_button(model_count),
+                            delete_button(model_count)
                         ]
-                    )
+                    ),
+                    delete_model_popup(model_count),
+                    confirm_deleted_model_popup(model_count)
                 ]
             )
         ]
+    )
+
+
+def submit_button(model_count):
+    """
+    This function creates the submit button
+    """
+
+    return html.Button(
+        'Submit model selection',
+        id={'type': 'submit-button', 'index': model_count},
+        n_clicks=0,
+        style={
+            'margin-top': '40px',
+            'font-size': '16pt',
+            'font-weight': 'bold',
+            'text-align': 'center',
+            'border': '1px solid black',
+            'color': 'white',
+            'background': 'blue',
+            'margin-left': '500px',
+            'padding': '0.75rem 1.25rem',
+            'cursor': 'pointer'
+        }
+    )
+
+
+def delete_button(model_count):
+    """
+    This function creates the delete button
+    """
+
+    return html.Button(
+        'Delete model',
+        id={'type': 'delete-button', 'index': model_count},
+        n_clicks=0,
+        style={
+            'margin-top': '40px',
+            'font-size': '16pt',
+            'font-weight': 'bold',
+            'text-align': 'center',
+            'border': '1px solid black',
+            'color': 'white',
+            'background': 'red',
+            'margin-left': '70px',
+            'padding': '0.75rem 1.25rem',
+            'cursor': 'pointer'
+        }
+    )
+
+
+def delete_model_popup(model_count):
+    """
+    This function creates a popup for when the 'delete model' button is pressed
+    """
+
+    return dbc.Modal(
+        id={'type': 'delete-model-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                dbc.ModalTitle(f"Are you sure you want to delete model {model_count}?"),
+                close_button=False,
+                id='delete-modal-header'
+            ),
+            html.Hr(
+                style={
+                    'height': '3px',
+                    'color': 'black',
+                    'background': 'black'
+                }
+            ),
+            dbc.ModalBody(
+                children=[
+                    dbc.Button(
+                        html.H4(
+                            "Yes",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "yes-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-left': '60px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '35px',
+                            'background': 'blue',
+                            'color': 'white'
+                        }
+                    ),
+                    dbc.Button(
+                        html.H4(
+                            "No",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "no-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-right': '60px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '35px',
+                            'background': 'red',
+                            'color': 'white'
+                        }
+                    )
+                ],
+                id='delete-modal-body'
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        style={
+            'top': '20px',
+            'width': '25%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid blue'
+        }
+    )
+
+
+def confirm_deleted_model_popup(model_count):
+    """
+    This function creates a popup that confirms the model was successfully deleted
+    """
+
+    return dbc.Modal(
+        id={'type': 'confirm-model-deletion-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                dbc.ModalTitle(f"Model {model_count} successfully deleted"),
+                close_button=False,
+                id='confirm-modal-header'
+            ),
+            html.Hr(
+                style={
+                    'height': '3px',
+                    'color': 'black',
+                    'background': 'black'
+                }
+            ),
+            dbc.ModalBody(
+                children=[
+                    html.P(
+                        f"You have now successfully deleted model {model_count}. To see this completed deletion, "
+                        f"please refresh the app's main tab (entitled BioNetTrain). You may now close this tab."
+                    ),
+                    dbc.Button(
+                        html.H4(
+                            "Close",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "close-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-left': '190px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '40px',
+                            'background': 'blue',
+                            'color': 'white',
+                            'margin-bottom': '20px'
+                        }
+                    )
+                ],
+                id='confirm-modal-body'
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        style={
+            'top': '20px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
     )
 
 
@@ -74,7 +259,7 @@ def model_input_guidelines():
         children=[
             html.H2("User Guidelines"),
             html.P(
-                "Below are some guidelines and information about the functionality of the model inputs page,"
+                "Below are some guidelines and information about the functionality of the model inputs page, "
                 "and some specific information about the individual selection tools available. "
             ),
             html.Div(
@@ -647,16 +832,13 @@ def hyperparameter_optimisation_number_input(model_count):
 
 @callback(
     Output({'type': 'feature-card', 'index': MATCH}, 'style'),
-    [Input({'type': 'feature-selection-question', 'index': MATCH}, 'value'),
-     Input('store-model-count', 'data')]
+    Input({'type': 'feature-selection-question', 'index': MATCH}, 'value')
 )
-def enable_feature_selection(answer, model_data):
+def enable_feature_selection(answer):
     """
     This callback function ensures the correct functionality
     for enabling/ disabling feature selection.
     """
-
-    _model_count = model_data['n_clicks']
 
     if answer == 'yes':
         return {
@@ -674,16 +856,13 @@ def enable_feature_selection(answer, model_data):
 
 @callback(
     Output({'type': 'unsupervised-card', 'index': MATCH}, 'style'),
-    [Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value'),
-     Input('store-model-count', 'data')]
+    Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value')
 )
-def enable_unsupervised(answer, model_data):
+def enable_unsupervised(answer):
     """
     This callback function ensures the correct functionality
     for enabling/ disabling unsupervised learning.
     """
-
-    _model_count = model_data['n_clicks']
 
     if answer == 'yes':
         return {
@@ -701,16 +880,13 @@ def enable_unsupervised(answer, model_data):
 
 @callback(
     Output({'type': 'hyperparameters-card', 'index': MATCH}, 'style'),
-    [Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value'),
-     Input('store-model-count', 'data')]
+    Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value')
 )
-def enable_hyperopt(answer, model_data):
+def enable_hyperopt(answer):
     """
     This callback function ensures the correct functionality
     for enabling/ disabling hyperparameter optimisation.
     """
-
-    _model_count = model_data['n_clicks']
 
     if answer == 'yes':
         return {
@@ -728,16 +904,13 @@ def enable_hyperopt(answer, model_data):
 
 @callback(
     Output({'type': 'kmer-descriptor', 'index': MATCH}, 'style'),
-    [Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value'),
-     Input('store-model-count', 'data')]
+    Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value')
 )
-def show_kmer_dropdown(value, model_data):
+def show_kmer_dropdown(value):
     """
     This callback function ensures the correct functionality
     for enabling/ disabling Kmer usage for feature description.
     """
-
-    _model_count = model_data['n_clicks']
 
     if value == 'kmer':
         return {
@@ -747,3 +920,86 @@ def show_kmer_dropdown(value, model_data):
         }
 
     return {'display': 'none'}
+
+
+@callback(
+    Output('input-page', 'style'),
+    [Input('delete-model-popup', 'is_open')]
+)
+def blur_background(is_modal_open):
+    """
+    This callback blurs the background of the page when the pop-up appears
+    """
+
+    return {'filter': 'blur(8px)'} if is_modal_open else dash.no_update
+
+
+@callback(
+    Output({'type': 'delete-model-popup', 'index': MATCH}, 'is_open'),
+    [Input({'type': 'delete-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'no-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'yes-button', 'index': MATCH}, 'n_clicks')],
+    [State({'type': 'delete-model-popup', 'index': MATCH}, 'is_open')],
+)
+def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
+    """
+    This callback handles the functionality of the delete button
+    """
+
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        # No buttons were clicked
+        return is_open
+
+    # Extract the index part from the triggered_id
+    triggered_id = ctx.triggered[0]['prop_id']
+    new_split = triggered_id.split(".")
+    big_string = new_split[0].strip("{}")
+    another_split = big_string.split(",")
+
+    # Get index value from index part
+    index_part = another_split[0]
+    index_value = index_part[-1]
+
+    # If the delete button was pressed more, the pop-up should be visible
+    if delete_clicks > no_clicks and delete_clicks > yes_clicks:
+        return True
+
+    # If the no button was pressed more, the pop-up should be hidden
+    elif no_clicks >= delete_clicks:
+        return False
+
+    elif yes_clicks >= delete_clicks:
+        del app.globals.MODELS_LIST[f'Model {index_value}']
+        return False
+
+    return is_open
+
+
+@callback(
+    Output({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'is_open'),
+    [Input({'type': 'close-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'yes-button', 'index': MATCH}, 'n_clicks')],
+    [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'is_open')],
+)
+def press_delete_button(close_clicks, yes_clicks, is_open):
+    """
+    This callback handles the functionality of the delete button
+    """
+
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        # No buttons were clicked
+        return is_open
+
+    # If the yes button was pressed, the pop-up should be visible
+    if yes_clicks > close_clicks:
+        return True
+
+    # If the close button was pressed, the pop-up should be hidden
+    elif close_clicks >= yes_clicks:
+        return False
+
+    return is_open

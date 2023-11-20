@@ -525,40 +525,6 @@
     justify-content: center;
 }
 
-#input-page-button {
-    margin-top: 40px;
-    font-size: 16pt;
-    font-weight: bold;
-    text-align: center;
-    border: 1px solid black;
-    color: white;
-    background: blue;
-    margin-left: 500px;
-    padding: 0.75rem 1.25rem;
-}
-
-#delete-button {
-    margin-top: 40px;
-    font-size: 16pt;
-    font-weight: bold;
-    text-align: center;
-    border: 1px solid black;
-    color: white;
-    background: red;
-    margin-left: 70px;
-    padding: 0.75rem 1.25rem;
-}
-
-#input-page-button:hover {
-    color: white;
-    background: black;
-}
-
-#delete-button:hover {
-    color: white;
-    background: black;
-}
-
 #output-statistics-card {
     display: inline-block;
     background: white;
@@ -851,11 +817,13 @@
     margin-right: 150px;
     display: inline-block;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #button:hover {
     color: white;
     background: grey;
+    cursor: pointer;
 }
 
 #box-text {
@@ -986,4 +954,36 @@
     width: 100%;
     position: absolute;
     padding-bottom: 50px;
+}
+
+#delete-modal-header {
+    font-weight: bold;
+    font-size: 14pt;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#delete-modal-body {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#confirm-modal-header {
+    font-weight: bold;
+    font-size: 14pt;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: green;
+}
+
+#confirm-modal-body p {
+    margin-top: 20px;
+    color: black;
+    margin-bottom: 20px;
+    font-size: 14pt;
+    text-align: center;
 }

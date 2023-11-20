@@ -2,4 +2,4 @@
 TRAINING_DATA = None
 TESTING_DATA = None
 QUERYING_DATA = None
-MODELS_LIST = []
+MODELS_LIST = {'Model 1': None}
