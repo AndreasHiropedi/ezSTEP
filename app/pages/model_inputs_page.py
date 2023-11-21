@@ -4,6 +4,10 @@ import dash_bootstrap_components as dbc
 import json
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
+from models.random_forest.random_forest import RandomForest
+from models.ridge_regressor.ridge_regressor import RidgeRegressor
+from models.mlp.multilayer_perceptron import MultiLayerPerceptron
+from models.svm.support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count):
@@ -53,7 +57,10 @@ def create_layout(model_count):
                         ]
                     ),
                     delete_model_popup(model_count),
-                    confirm_deleted_model_popup(model_count)
+                    confirm_deleted_model_popup(model_count),
+                    submit_model_popup(model_count),
+                    input_validation_popup(model_count),
+                    file_validation_popup(model_count)
                 ]
             ),
             html.Div(id={'type': 'dummy-div', 'index': model_count}, style={'display': 'none'}),
@@ -237,6 +244,209 @@ def confirm_deleted_model_popup(model_count):
                     )
                 ],
                 id='confirm-modal-body'
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        backdrop='static',
+        style={
+            'top': '20px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
+    )
+
+
+def submit_model_popup(model_count):
+    """
+    This function creates a popup for when a model selection is submitted
+    """
+
+    return dbc.Modal(
+        id={'type': 'submit-model-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                id='submit-modal-header',
+                children=[
+                    dbc.ModalTitle(f"Submitting user input for model {model_count}"),
+                    html.Div("✓", style={
+                        'color': 'white',
+                        'fontSize': '20px',
+                        'fontWeight': 'bold',
+                        'backgroundColor': 'green',
+                        'borderRadius': '50%',
+                        'width': '30px',
+                        'height': '30px',
+                        'textAlign': 'center',
+                        'lineHeight': '30px',
+                        'marginRight': '10px',
+                        'display': 'inline-block',
+                        'margin-left': '20px'
+                    })
+                ],
+                close_button=False
+            ),
+            dbc.ModalBody(
+                id='submit-modal-body',
+                children=[
+                    dbc.Button(
+                        html.H4(
+                            "Close",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "close-submit-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-left': '190px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '40px',
+                            'background': 'blue',
+                            'color': 'white',
+                            'margin-bottom': '20px',
+                        }
+                    )
+                ],
+                style={'display': 'none'}
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        backdrop='static',
+        style={
+            'top': '20px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
+    )
+
+
+def input_validation_popup(model_count):
+    """
+    This function creates a popup alerting the user that they haven't filled in all
+    model input fields/ used invalid inputs
+    """
+
+    return dbc.Modal(
+        id={'type': 'input-validation-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                dbc.ModalTitle(f"Incomplete input fields"),
+                close_button=False,
+                id='alert-modal-header'
+            ),
+            html.Hr(
+                style={
+                    'height': '3px',
+                    'color': 'black',
+                    'background': 'black'
+                }
+            ),
+            dbc.ModalBody(
+                children=[
+                    html.P(
+                        f"You have not filled in all the input fields for model {model_count}, or have provided "
+                        f"an invalid value in the input fields. Please check your inputs and try again."
+                    ),
+                    dbc.Button(
+                        html.H4(
+                            "Close",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "close-alert-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-left': '190px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '40px',
+                            'background': 'blue',
+                            'color': 'white',
+                            'margin-bottom': '20px'
+                        }
+                    )
+                ],
+                id='alert-modal-body'
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        backdrop='static',
+        style={
+            'top': '20px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
+    )
+
+
+def file_validation_popup(model_count):
+    """
+    This function creates a popup alerting the user that they haven't uploaded the training
+    and testing data/ provided invalid data.
+    """
+
+    return dbc.Modal(
+        id={'type': 'file-validation-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                dbc.ModalTitle(f"Invalid file upload"),
+                close_button=False,
+                id='file-modal-header'
+            ),
+            html.Hr(
+                style={
+                    'height': '3px',
+                    'color': 'black',
+                    'background': 'black'
+                }
+            ),
+            dbc.ModalBody(
+                children=[
+                    html.P(
+                        "The provided input for the training and testing data was missing or invalid. Please go "
+                        "back to the main page and try again."
+                    ),
+                    dbc.Button(
+                        html.H4(
+                            "Close",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "close-file-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-left': '190px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '40px',
+                            'background': 'blue',
+                            'color': 'white',
+                            'margin-bottom': '20px'
+                        }
+                    )
+                ],
+                id='file-modal-body'
             )
         ],
         keyboard=False,
@@ -976,9 +1186,9 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
      Input({'type': 'yes-button', 'index': MATCH}, 'n_clicks')],
     [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'is_open')],
 )
-def press_delete_button(close_clicks, yes_clicks, is_open):
+def deletion_confirmation_popup(close_clicks, yes_clicks, is_open):
     """
-    This callback handles the functionality of the delete button
+    This callback handles the functionality of the confirmation pop-up
     """
 
     ctx = dash.callback_context
@@ -1001,20 +1211,50 @@ def press_delete_button(close_clicks, yes_clicks, is_open):
 @callback(
     Output({'type': 'javascript-trigger', 'index': MATCH}, 'children'),
     [Input({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'is_open'),
-     Input({'type': 'delete-model-popup', 'index': MATCH}, 'is_open')],
+     Input({'type': 'delete-model-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')],
     [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'id'),
-     State({'type': 'delete-model-popup', 'index': MATCH}, 'id')]
+     State({'type': 'delete-model-popup', 'index': MATCH}, 'id'),
+     State({'type': 'submit-model-popup', 'index': MATCH}, 'id'),
+     State({'type': 'input-validation-popup', 'index': MATCH}, 'id'),
+     State({'type': 'file-validation-popup', 'index': MATCH}, 'id')]
 )
-def update_output(is_open1, is_open2, modal1_id, modal2_id):
+def convert_to_json(
+        is_open1,
+        is_open2,
+        is_open3,
+        is_open4,
+        is_open5,
+        modal1_id,
+        modal2_id,
+        modal3_id,
+        modal4_id,
+        modal5_id
+):
+    """
+    This callback converts data to JSON format (used when freezing background
+    when popup appears).
+    """
+
     data = {
         "is_open1": is_open1,
         "is_open2": is_open2,
+        "is_open3": is_open3,
+        "is_open4": is_open4,
+        "is_open5": is_open5,
         "modal1_id": modal1_id,
-        "modal2_id": modal2_id
+        "modal2_id": modal2_id,
+        "modal3_id": modal3_id,
+        "modal4_id": modal4_id,
+        "modal5_id": modal5_id
     }
+
     return json.dumps(data)
 
 
+# This callback handles the freezing of the background
 clientside_callback(
     """
     function(data) {
@@ -1025,6 +1265,15 @@ clientside_callback(
         } else if (details.is_open2) {
             var modalId = details.modal2_id.type + '-' + details.modal2_id.index;
             disablePageInteractions(modalId);
+        } else if (details.is_open3) {
+            var modalId = details.modal3_id.type + '-' + details.modal3_id.index;
+            disablePageInteractions(modalId);
+        } else if (details.is_open4) {
+            var modalId = details.modal4_id.type + '-' + details.modal4_id.index;
+            disablePageInteractions(modalId);
+        } else if (details.is_open5) {
+            var modalId = details.modal5_id.type + '-' + details.modal5_id.index;
+            disablePageInteractions(modalId);
         } else {
             enablePageInteractions();
         }
@@ -1034,4 +1283,64 @@ clientside_callback(
     Input({'type': 'javascript-trigger', 'index': MATCH}, 'children')
 )
 
+
+def validate_user_input(
+
+):
+    """
+    This function is used to ensure all the input fields have been correctly filled.
+    """
+
+    return True
+
+
+@callback(
+    [Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
+     Output({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
+     Output({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')],
+    # TODO: ADD ALL INPUTS FROM MODEL DROPDOWNS
+    [Input({'type': 'submit-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'close-alert-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'close-file-button', 'index': MATCH}, 'n_clicks')],
+    [State({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
+     State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
+     State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')]
+)
+def press_submit_button(
+        submit_clicks,
+        close_input_clicks,
+        close_file_clicks,
+        is_submit_open,
+        is_invalid_open,
+        is_file_open
+):
+    """
+    This callback handles the functionality of the submit button
+    """
+
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        # No buttons were clicked
+        return is_submit_open, is_invalid_open, is_file_open
+
+    # if the submit button was clicked
+    elif submit_clicks > (close_input_clicks + close_file_clicks):
+        # perform input validation
+        if not validate_user_input():
+            return False, True, False
+
+        # if inputs are valid
+        training_data = app.globals.TRAINING_DATA
+        testing_data = app.globals.TESTING_DATA
+        _querying_data = app.globals.QUERYING_DATA  # TODO: Remove _ from name
+
+        # if the required files were not uploaded or uploaded in the wrong format
+        if training_data is None or testing_data is None:
+            return False, False, True
+
+        # TODO: USE INPUTS FROM MODEL DROPDOWNS
+        return True, False, False
+
+    return False, False, False
 
