@@ -1,8 +1,9 @@
 import app.globals
 import dash
 import dash_bootstrap_components as dbc
+import json
 
-from dash import html, dcc, callback, Input, Output, MATCH, State
+from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
 
 
 def create_layout(model_count):
@@ -11,7 +12,7 @@ def create_layout(model_count):
     """
 
     return html.Div(
-        id='input-page',
+        id={'type': 'input-page', 'index': model_count},
         children=[
             html.Div(
                 id='input-page-header',
@@ -54,7 +55,9 @@ def create_layout(model_count):
                     delete_model_popup(model_count),
                     confirm_deleted_model_popup(model_count)
                 ]
-            )
+            ),
+            html.Div(id={'type': 'dummy-div', 'index': model_count}, style={'display': 'none'}),
+            html.Div(id={'type': 'javascript-trigger', 'index': model_count}, style={'display': 'none'})
         ]
     )
 
@@ -172,6 +175,7 @@ def delete_model_popup(model_count):
             )
         ],
         keyboard=False,
+        backdrop='static',
         is_open=False,
         style={
             'top': '20px',
@@ -237,6 +241,7 @@ def confirm_deleted_model_popup(model_count):
         ],
         keyboard=False,
         is_open=False,
+        backdrop='static',
         style={
             'top': '20px',
             'width': '30%',
@@ -923,18 +928,6 @@ def show_kmer_dropdown(value):
 
 
 @callback(
-    Output('input-page', 'style'),
-    [Input('delete-model-popup', 'is_open')]
-)
-def blur_background(is_modal_open):
-    """
-    This callback blurs the background of the page when the pop-up appears
-    """
-
-    return {'filter': 'blur(8px)'} if is_modal_open else dash.no_update
-
-
-@callback(
     Output({'type': 'delete-model-popup', 'index': MATCH}, 'is_open'),
     [Input({'type': 'delete-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'no-button', 'index': MATCH}, 'n_clicks'),
@@ -963,14 +956,14 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
     index_value = index_part[-1]
 
     # If the delete button was pressed more, the pop-up should be visible
-    if delete_clicks > no_clicks and delete_clicks > yes_clicks:
+    if delete_clicks > no_clicks and yes_clicks == 0:
         return True
 
     # If the no button was pressed more, the pop-up should be hidden
     elif no_clicks >= delete_clicks:
         return False
 
-    elif yes_clicks >= delete_clicks:
+    elif yes_clicks >= 0:
         del app.globals.MODELS_LIST[f'Model {index_value}']
         return False
 
@@ -1003,3 +996,42 @@ def press_delete_button(close_clicks, yes_clicks, is_open):
         return False
 
     return is_open
+
+
+@callback(
+    Output({'type': 'javascript-trigger', 'index': MATCH}, 'children'),
+    [Input({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'delete-model-popup', 'index': MATCH}, 'is_open')],
+    [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'id'),
+     State({'type': 'delete-model-popup', 'index': MATCH}, 'id')]
+)
+def update_output(is_open1, is_open2, modal1_id, modal2_id):
+    data = {
+        "is_open1": is_open1,
+        "is_open2": is_open2,
+        "modal1_id": modal1_id,
+        "modal2_id": modal2_id
+    }
+    return json.dumps(data)
+
+
+clientside_callback(
+    """
+    function(data) {
+        var details = JSON.parse(data);
+        if (details.is_open1) {
+            var modalId = details.modal1_id.type + '-' + details.modal1_id.index;
+            disablePageInteractions(modalId);
+        } else if (details.is_open2) {
+            var modalId = details.modal2_id.type + '-' + details.modal2_id.index;
+            disablePageInteractions(modalId);
+        } else {
+            enablePageInteractions();
+        }
+    }
+    """,
+    Output({'type': 'dummy-div', 'index': MATCH}, 'children'),
+    Input({'type': 'javascript-trigger', 'index': MATCH}, 'children')
+)
+
+
