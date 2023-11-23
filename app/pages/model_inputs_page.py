@@ -271,8 +271,38 @@ def submit_model_popup(model_count):
         children=[
             dbc.ModalHeader(
                 id='submit-modal-header',
+                children=[dbc.ModalTitle(f"Submitting user input for model {model_count} ...")],
+                close_button=False
+            )
+        ],
+        keyboard=False,
+        is_open=False,
+        backdrop='static',
+        style={
+            'top': '340px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
+    )
+
+
+def completion_popup(model_count):
+    """
+    This function creates a popup for when a model selection was
+    submitted and executed successfully.
+    """
+
+    return dbc.Modal(
+        id={'type': 'complete-submission-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                id='complete-modal-header',
                 children=[
-                    dbc.ModalTitle(f"Submitting user input for model {model_count}"),
+                    dbc.ModalTitle(f"Model {model_count} has been successfully created"),
                     html.Div("✓", style={
                         'color': 'white',
                         'fontSize': '20px',
@@ -291,37 +321,33 @@ def submit_model_popup(model_count):
                 close_button=False
             ),
             dbc.ModalBody(
-                id='submit-modal-body',
-                children=[
-                    dbc.Button(
-                        html.H4(
-                            "Close",
-                            style={
-                                'font-size': '12pt',
-                                'margin-top': '5px'
-                            }
-                        ),
-                        id={'type': "close-submit-button", 'index': model_count},
-                        n_clicks=0,
+                dbc.Button(
+                    html.H4(
+                        "Close",
                         style={
-                            'margin-left': '190px',
-                            'border': '2px solid black',
-                            'cursor': 'pointer',
-                            'height': '40px',
-                            'background': 'blue',
-                            'color': 'white',
-                            'margin-bottom': '20px',
+                            'font-size': '12pt',
+                            'margin-top': '5px'
                         }
-                    )
-                ],
-                style={'display': 'none'}
+                    ),
+                    id={'type': "close-complete-button", 'index': model_count},
+                    n_clicks=0,
+                    style={
+                        'margin-left': '190px',
+                        'border': '2px solid black',
+                        'cursor': 'pointer',
+                        'height': '40px',
+                        'background': 'blue',
+                        'color': 'white',
+                        'margin-bottom': '20px',
+                    }
+                )
             )
         ],
         keyboard=False,
         is_open=False,
         backdrop='static',
         style={
-            'top': '20px',
+            'top': '60px',
             'width': '30%',
             'margin-left': '600px',
             'position': 'fixed',
@@ -342,7 +368,7 @@ def input_validation_popup(model_count):
         id={'type': 'input-validation-popup', 'index': model_count},
         children=[
             dbc.ModalHeader(
-                dbc.ModalTitle(f"Incomplete input fields"),
+                dbc.ModalTitle(f"Input fields error"),
                 close_button=False,
                 id='alert-modal-header'
             ),
@@ -734,7 +760,7 @@ def kmer_size_dropdown(model_count):
                 id='select-kmer'
             ),
             dcc.Dropdown(
-                id='kmer-size-dropdown',
+                id={'type': 'kmer-size-dropdown', 'index': model_count},
                 options=[
                     {'label': '1', 'value': '1'},
                     {'label': '2', 'value': '2'},
@@ -743,7 +769,13 @@ def kmer_size_dropdown(model_count):
                     {'label': '5', 'value': '5'},
                 ],
                 searchable=False,
-                persistence=True
+                persistence=True,
+                style={
+                    'width': '91.5%',
+                    'font-size': '12pt',
+                    'text-align': 'center',
+                    'margin-left': '32px'
+                }
             )
         ],
         style={'display': 'none'}
@@ -934,6 +966,7 @@ def dimension_reduction_algorithm_dropdown(model_count):
                 options=[
                     {'label': 'PCA', 'value': 'pca'},
                     {'label': 'tsne', 'value': 'tsne'},
+                    {'label': 'UMAP', 'value': 'umap'},
                 ],
                 searchable=False,
                 persistence=True,
@@ -1285,11 +1318,48 @@ clientside_callback(
 
 
 def validate_user_input(
-
+        model_type,
+        feature_descriptor,
+        kmer_size,
+        feature_normalization,
+        feature_selection_ans,
+        feature_selection,
+        feature_number,
+        unsupervised_learning_ans,
+        dimension_reduction_algorithm,
+        dimension_number,
+        hyperopt_ans,
+        hyperopt_iterations
 ):
     """
     This function is used to ensure all the input fields have been correctly filled.
     """
+
+    # Checks to see all necessary inputs are present
+    if not model_type or not feature_descriptor or not feature_normalization:
+        return False
+
+    elif feature_descriptor == 'kmer' and not kmer_size:
+        return False
+
+    elif feature_selection_ans == "yes" and (not feature_selection or not feature_number):
+        return False
+
+    elif unsupervised_learning_ans == "yes" and (not dimension_reduction_algorithm or not dimension_number):
+        return False
+
+    elif hyperopt_ans == "yes" and not hyperopt_iterations:
+        return False
+
+    # Checks to see all given number inputs are valid
+    elif dimension_number and (dimension_number < 1 or dimension_number > 10):
+        return False
+
+    elif feature_number and (feature_number < 1 or feature_number > 100):
+        return False
+
+    elif hyperopt_iterations and (hyperopt_iterations < 1 or hyperopt_iterations > 100):
+        return False
 
     return True
 
@@ -1298,10 +1368,21 @@ def validate_user_input(
     [Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')],
-    # TODO: ADD ALL INPUTS FROM MODEL DROPDOWNS
     [Input({'type': 'submit-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'close-alert-button', 'index': MATCH}, 'n_clicks'),
-     Input({'type': 'close-file-button', 'index': MATCH}, 'n_clicks')],
+     Input({'type': 'close-file-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': 'model-type-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'kmer-size-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-normalization-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-selection-question', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-selection-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-number-input', 'index': MATCH}, 'value'),
+     Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value'),
+     Input({'type': 'dimension-reduction-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'dimension-number-input', 'index': MATCH}, 'value'),
+     Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value'),
+     Input({'type': 'iteration-number-input', 'index': MATCH}, 'value')],
     [State({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')]
@@ -1310,6 +1391,18 @@ def press_submit_button(
         submit_clicks,
         close_input_clicks,
         close_file_clicks,
+        model_type,
+        feature_descriptor,
+        kmer_size,
+        feature_normalization,
+        feature_selection_ans,
+        feature_selection,
+        feature_number,
+        unsupervised_learning_ans,
+        dimension_reduction_algorithm,
+        dimension_number,
+        hyperopt_ans,
+        hyperopt_iterations,
         is_submit_open,
         is_invalid_open,
         is_file_open
@@ -1326,21 +1419,72 @@ def press_submit_button(
 
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks):
-        # perform input validation
-        if not validate_user_input():
-            return False, True, False
-
-        # if inputs are valid
         training_data = app.globals.TRAINING_DATA
         testing_data = app.globals.TESTING_DATA
-        _querying_data = app.globals.QUERYING_DATA  # TODO: Remove _ from name
+        querying_data = app.globals.QUERYING_DATA
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
             return False, False, True
 
-        # TODO: USE INPUTS FROM MODEL DROPDOWNS
+        # perform input validation
+        if not validate_user_input(model_type, feature_descriptor, kmer_size, feature_normalization,
+                                   feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
+                                   dimension_reduction_algorithm, dimension_number, hyperopt_ans, hyperopt_iterations):
+            return False, True, False
+
+        # set model based on input parameters
+        model = None
+
+        if model_type == 'rf':
+            model = RandomForest()
+
+        elif model_type == 'mlp':
+            model = MultiLayerPerceptron()
+
+        elif model_type == 'svm':
+            model = SupportVectorMachine()
+
+        elif model_type == 'rr':
+            model = RidgeRegressor()
+
+        # set model info based on inputs
+
+        # set model data
+        model.set_training_data(training_data)
+        model.set_testing_data(testing_data)
+        if querying_data is not None:
+            model.set_querying_data(querying_data)
+
+        # set model parameters
+        model.set_feature_encoding_method(feature_descriptor)
+        model.set_feature_normalization_algorithm(feature_normalization)
+        if kmer_size:
+            model.set_kmer_size(kmer_size)
+        if feature_selection_ans == "yes":
+            model.set_feature_selection_algorithm(feature_selection)
+            model.set_feature_number(feature_number)
+        if hyperopt_ans == "yes":
+            model.set_hyper_opt_iterations(hyperopt_iterations)
+        if unsupervised_learning_ans == "yes":
+            model.set_dimensionality_reduction_algorithm(dimension_reduction_algorithm)
+            model.set_dimension_number(dimension_number)
+
+        # TODO: TRAIN AND TEST THE MODEL
+
+        # Extract the index part from the triggered_id
+        triggered_id = ctx.triggered[0]['prop_id']
+        new_split = triggered_id.split(".")
+        big_string = new_split[0].strip("{}")
+        another_split = big_string.split(",")
+
+        # Get index value from index part
+        index_part = another_split[0]
+        index_value = index_part[-1]
+
+        # Store model in the globally available list
+        app.globals.MODELS_LIST[f'Model {index_value}'] = model
+
         return True, False, False
 
     return False, False, False
-

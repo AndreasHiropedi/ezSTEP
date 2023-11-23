@@ -679,12 +679,6 @@
     margin-right: 10px;
 }
 
-#kmer-size-dropdown {
-    width: 60%;
-    font-size: 12pt;
-    text-align: center;
-}
-
 #normalization-descriptor {
     margin-top: -10px;
     display: flex;
@@ -1023,6 +1017,15 @@
 }
 
 #submit-modal-header {
+    font-weight: bold;
+    font-size: 14pt;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: black;
+}
+
+#complete-modal-header {
     font-weight: bold;
     font-size: 14pt;
     text-align: center;

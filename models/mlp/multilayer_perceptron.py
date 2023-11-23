@@ -26,6 +26,16 @@ class MultiLayerPerceptron:
         self.feature_number = None
         self.hyper_opt_iterations = None
 
+        # output statistics
+        self.RMSE = None
+        self.R_squared = None
+        self.MAE = None
+        self.Percentage_2fold_error = None
+
+        # unsupervised learning
+        self.dimensionality_reduction_algorithm = None
+        self.dimension_number = None
+
     # ------------------------ SETTERS ------------------------ #
 
     def set_training_data(self, training_data):
@@ -54,6 +64,12 @@ class MultiLayerPerceptron:
 
     def set_hyper_opt_iterations(self, iterations):
         self.hyper_opt_iterations = iterations
+
+    def set_dimensionality_reduction_algorithm(self, algorithm):
+        self.dimensionality_reduction_algorithm = algorithm
+
+    def set_dimension_number(self, number):
+        self.dimension_number = number
 
     # ------------------------ METHODS ------------------------ #
 

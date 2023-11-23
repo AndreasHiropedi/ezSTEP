@@ -9,7 +9,7 @@ class RidgeRegressor:
 
     def __init__(self):
         # model parameters
-        self.alpha_list = 10**(np.linspace(-1,2,50))
+        self.alpha_list = 10**(np.linspace(-1, 2, 50))
         self.cv = 7
         self.print_res = False
 
@@ -25,6 +25,16 @@ class RidgeRegressor:
         self.feature_selection_algorithm = None
         self.feature_number = None
         self.hyper_opt_iterations = None
+
+        # output statistics
+        self.RMSE = None
+        self.R_squared = None
+        self.MAE = None
+        self.Percentage_2fold_error = None
+
+        # unsupervised learning
+        self.dimensionality_reduction_algorithm = None
+        self.dimension_number = None
 
     # ------------------------ SETTERS ------------------------ #
 
@@ -54,6 +64,12 @@ class RidgeRegressor:
 
     def set_hyper_opt_iterations(self, iterations):
         self.hyper_opt_iterations = iterations
+
+    def set_dimensionality_reduction_algorithm(self, algorithm):
+        self.dimensionality_reduction_algorithm = algorithm
+
+    def set_dimension_number(self, number):
+        self.dimension_number = number
 
     # ------------------------ METHODS ------------------------ #
 
