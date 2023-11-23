@@ -60,7 +60,8 @@ def create_layout(model_count):
                     confirm_deleted_model_popup(model_count),
                     submit_model_popup(model_count),
                     input_validation_popup(model_count),
-                    file_validation_popup(model_count)
+                    file_validation_popup(model_count),
+                    completion_popup(model_count)
                 ]
             ),
             html.Div(id={'type': 'dummy-div', 'index': model_count}, style={'display': 'none'}),
@@ -271,8 +272,37 @@ def submit_model_popup(model_count):
         children=[
             dbc.ModalHeader(
                 id='submit-modal-header',
-                children=[dbc.ModalTitle(f"Submitting user input for model {model_count} ...")],
+                children=[dbc.ModalTitle(f"Creating model {model_count} using given input")],
                 close_button=False
+            ),
+            dbc.ModalBody(
+                id='submit-modal-body',
+                children=[
+                    html.Div(
+                        id='loader'
+                    ),
+                    dbc.Button(
+                        html.H4(
+                            "Update",
+                            style={
+                                'font-size': '12pt',
+                                'margin-top': '5px'
+                            }
+                        ),
+                        id={'type': "update-button", 'index': model_count},
+                        n_clicks=0,
+                        style={
+                            'margin-top': '20px',
+                            'margin-left': '190px',
+                            'border': '2px solid black',
+                            'cursor': 'pointer',
+                            'height': '40px',
+                            'background': 'blue',
+                            'color': 'white',
+                            'margin-bottom': '20px',
+                        }
+                    )
+                ]
             )
         ],
         keyboard=False,
@@ -340,14 +370,15 @@ def completion_popup(model_count):
                         'color': 'white',
                         'margin-bottom': '20px',
                     }
-                )
+                ),
+                id='complete-modal-body'
             )
         ],
         keyboard=False,
         is_open=False,
         backdrop='static',
         style={
-            'top': '60px',
+            'top': '340px',
             'width': '30%',
             'margin-left': '600px',
             'position': 'fixed',
@@ -1364,13 +1395,123 @@ def validate_user_input(
     return True
 
 
+def check_input_updates(
+        current_model,
+        model_type,
+        feature_descriptor,
+        kmer_size,
+        feature_normalization,
+        feature_selection_ans,
+        feature_selection,
+        feature_number,
+        unsupervised_learning_ans,
+        dimension_reduction_algorithm,
+        dimension_number,
+        hyperopt_ans,
+        hyperopt_iterations
+):
+    """
+    This function checks to see if the user changed any of the inputs so that
+    the app can recreate the model if needed
+    """
+
+    # check model type
+    model_class = None
+    if model_type == 'rf':
+        model_class = RandomForest()
+
+    elif model_type == 'mlp':
+        model_class = MultiLayerPerceptron()
+
+    elif model_type == 'svm':
+        model_class = SupportVectorMachine()
+
+    elif model_type == 'rr':
+        model_class = RidgeRegressor()
+
+    if type(current_model) is not type(model_class):
+        return True
+
+    # check model basic parameters
+
+    if current_model.feature_encoding_method != feature_descriptor:
+        return True
+
+    if current_model.kmer_size != kmer_size:
+        return True
+
+    if current_model.feature_normalization_algorithm != feature_normalization:
+        return True
+
+    # check model additional parameters
+
+    # feature selection
+    if feature_selection_ans == "yes":
+        if current_model.feature_selection_algorithm and feature_selection \
+                and current_model.feature_selection_algorithm != feature_selection:
+            return True
+
+        elif feature_selection and not current_model.feature_selection_algorithm:
+            return True
+
+        elif current_model.feature_selection_algorithm and not feature_selection:
+            return True
+
+        if current_model.feature_number and feature_number and current_model.feature_number != feature_number:
+            return True
+
+        elif feature_number and not current_model.feature_number:
+            return True
+
+        elif current_model.feature_number and not feature_number:
+            return True
+
+    # unsupervised learning
+    if unsupervised_learning_ans == "yes":
+        if current_model.dimensionality_reduction_algorithm and dimension_reduction_algorithm \
+                and current_model.dimensionality_reduction_algorithm != dimension_reduction_algorithm:
+            return True
+
+        elif dimension_reduction_algorithm and not current_model.dimensionality_reduction_algorithm:
+            return True
+
+        elif current_model.dimensionality_reduction_algorithm and not dimension_reduction_algorithm:
+            return True
+
+        if current_model.dimension_number and dimension_number and current_model.dimension_number != dimension_number:
+            return True
+
+        elif dimension_number and not current_model.dimension_number:
+            return True
+
+        elif current_model.dimension_number and not dimension_number:
+            return True
+
+    # hyperparameter optimization
+    if hyperopt_ans == "yes":
+        if current_model.hyper_opt_iterations and hyperopt_iterations \
+                and current_model.hyper_opt_iterations != hyperopt_iterations:
+            return True
+
+        elif hyperopt_iterations and not current_model.hyper_opt_iterations:
+            return True
+
+        elif current_model.hyper_opt_iterations and not hyperopt_iterations:
+            return True
+
+    return False
+
+
 @callback(
     [Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
-     Output({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')],
+     Output({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
+     Output({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')],
     [Input({'type': 'submit-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'close-alert-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'close-file-button', 'index': MATCH}, 'n_clicks'),
+     Input({'type': "update-button", 'index': MATCH}, 'n_clicks'),
+     Input({'type': "close-complete-button", 'index': MATCH}, 'n_clicks'),
      Input({'type': 'model-type-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'kmer-size-dropdown', 'index': MATCH}, 'value'),
@@ -1385,12 +1526,15 @@ def validate_user_input(
      Input({'type': 'iteration-number-input', 'index': MATCH}, 'value')],
     [State({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
-     State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')]
+     State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
+     State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')]
 )
 def press_submit_button(
         submit_clicks,
         close_input_clicks,
         close_file_clicks,
+        _update_clicks,
+        close_complete_clicks,
         model_type,
         feature_descriptor,
         kmer_size,
@@ -1405,7 +1549,8 @@ def press_submit_button(
         hyperopt_iterations,
         is_submit_open,
         is_invalid_open,
-        is_file_open
+        is_file_open,
+        is_finished_open
 ):
     """
     This callback handles the functionality of the submit button
@@ -1415,23 +1560,54 @@ def press_submit_button(
 
     if not ctx.triggered:
         # No buttons were clicked
-        return is_submit_open, is_invalid_open, is_file_open
+        return is_submit_open, is_invalid_open, is_file_open, is_finished_open
+
+    # Extract the index part from the triggered_id
+    triggered_id = ctx.triggered[0]['prop_id']
+    new_split = triggered_id.split(".")
+    big_string = new_split[0].strip("{}")
+    another_split = big_string.split(",")
+
+    # Get index value from index part
+    index_part = another_split[0]
+    index_value = index_part[-1]
+
+    current_model = app.globals.MODELS_LIST[f'Model {index_value}']
+
+    # if the model has been created successfully, inform the user
+    if current_model and current_model.trained_model and current_model.tested_model \
+            and submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks) \
+            and not check_input_updates(current_model, model_type, feature_descriptor, kmer_size, feature_normalization,
+                                        feature_selection_ans, feature_selection, feature_number,
+                                        unsupervised_learning_ans, dimension_reduction_algorithm, dimension_number,
+                                        hyperopt_ans, hyperopt_iterations):
+        # check if querying_data has been uploaded
+        querying_data = app.globals.QUERYING_DATA
+        if querying_data is not None:
+            # if that process has finished
+            if current_model.queried_model:
+                return False, False, False, True
+            else:
+                return True, False, False, False
+
+        return False, False, False, True
 
     # if the submit button was clicked
-    elif submit_clicks > (close_input_clicks + close_file_clicks):
+    elif submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks):
+
         training_data = app.globals.TRAINING_DATA
         testing_data = app.globals.TESTING_DATA
         querying_data = app.globals.QUERYING_DATA
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
-            return False, False, True
+            return False, False, True, False
 
         # perform input validation
         if not validate_user_input(model_type, feature_descriptor, kmer_size, feature_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
                                    dimension_reduction_algorithm, dimension_number, hyperopt_ans, hyperopt_iterations):
-            return False, True, False
+            return False, True, False, False
 
         # set model based on input parameters
         model = None
@@ -1470,21 +1646,15 @@ def press_submit_button(
             model.set_dimensionality_reduction_algorithm(dimension_reduction_algorithm)
             model.set_dimension_number(dimension_number)
 
-        # TODO: TRAIN AND TEST THE MODEL
-
-        # Extract the index part from the triggered_id
-        triggered_id = ctx.triggered[0]['prop_id']
-        new_split = triggered_id.split(".")
-        big_string = new_split[0].strip("{}")
-        another_split = big_string.split(",")
-
-        # Get index value from index part
-        index_part = another_split[0]
-        index_value = index_part[-1]
+        # perform the necessary model operations
+        model.train_model()
+        model.test_model()
+        if querying_data is not None:
+            model.query_model()
 
         # Store model in the globally available list
         app.globals.MODELS_LIST[f'Model {index_value}'] = model
 
-        return True, False, False
+        return True, False, False, False
 
-    return False, False, False
+    return False, False, False, False

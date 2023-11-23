@@ -37,6 +37,11 @@ class RandomForest:
         self.dimensionality_reduction_algorithm = None
         self.dimension_number = None
 
+        # track progress (for users)
+        self.trained_model = False
+        self.tested_model = False
+        self.queried_model = False
+
     # ------------------------ SETTERS ------------------------ #
 
     def set_training_data(self, training_data):
@@ -79,21 +84,27 @@ class RandomForest:
         Method for training the machine learning model
         on the user-uploaded training data
         """
-        pass
+
+        self.trained_model = True
+        return None
 
     def test_model(self):
         """
         Method for testing the machine learning model
         on the user-uploaded testing data
         """
-        pass
+
+        self.tested_model = True
+        return None
 
     def query_model(self):
         """
         Method for querying the machine learning model
         on the user-uploaded querying data
         """
-        pass
+
+        self.queried_model = True
+        return None
 
     def feature_selection(self):
         """
