@@ -659,13 +659,13 @@
     margin-right: 10px;
 }
 
-#feature-descriptor {
+#feature-encoder {
     margin-top: -20px;
     display: flex;
     align-items: center;
 }
 
-#select-descriptor {
+#select-encoder {
     font-weight: normal;
     font-size: 12pt;
     width: 40%;

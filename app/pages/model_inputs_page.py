@@ -630,7 +630,7 @@ def model_input_parameters_card(model_count):
                 id='card-body-input',
                 children=[
                     model_selection_dropdown(model_count),
-                    feature_descriptor_dropdown(model_count),
+                    feature_encoder_dropdown(model_count),
                     kmer_size_dropdown(model_count),
                     feature_normalization_dropdown(model_count),
                     feature_selection_question(model_count),
@@ -744,24 +744,24 @@ def model_selection_dropdown(model_count):
     )
 
 
-def feature_descriptor_dropdown(model_count):
+def feature_encoder_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
-    the type of feature descriptor they wish to use.
+    the type of feature encoder they wish to use.
     """
 
     return html.Div(
-        id='feature-descriptor',
+        id='feature-encoder',
         children=[
             html.H6(
-                "Select feature descriptor:",
-                id='select-descriptor'
+                "Select feature encoding method:",
+                id='select-encoder'
             ),
             dcc.Dropdown(
-                id={'type': 'feature-descriptor-dropdown', 'index': model_count},
+                id={'type': 'feature-encoder-dropdown', 'index': model_count},
                 options=[
                     {'label': 'Kmer', 'value': 'kmer'},
-                    {'label': 'Binary', 'value': 'binary'},
+                    {'label': 'Binary (one-hot)', 'value': 'binary'},
                 ],
                 searchable=False,
                 style={
@@ -1150,7 +1150,7 @@ def enable_hyperopt(answer):
 
 @callback(
     Output({'type': 'kmer-descriptor', 'index': MATCH}, 'style'),
-    Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value')
+    Input({'type': 'feature-encoder-dropdown', 'index': MATCH}, 'value')
 )
 def show_kmer_dropdown(value):
     """
@@ -1326,7 +1326,7 @@ clientside_callback(
 
 def validate_user_input(
         model_type,
-        feature_descriptor,
+        feature_encoder,
         kmer_size,
         feature_normalization,
         feature_selection_ans,
@@ -1342,10 +1342,10 @@ def validate_user_input(
     """
 
     # Checks to see all necessary inputs are present
-    if not model_type or not feature_descriptor or not feature_normalization:
+    if not model_type or not feature_encoder or not feature_normalization:
         return False
 
-    elif feature_descriptor == 'kmer' and not kmer_size:
+    elif feature_encoder == 'kmer' and not kmer_size:
         return False
 
     elif feature_selection_ans == "yes" and (not feature_selection or not feature_number):
@@ -1370,7 +1370,7 @@ def validate_user_input(
 def check_input_updates(
         current_model,
         model_type,
-        feature_descriptor,
+        feature_encoder,
         kmer_size,
         feature_normalization,
         feature_selection_ans,
@@ -1405,7 +1405,7 @@ def check_input_updates(
 
     # check model basic parameters
 
-    if current_model.feature_encoding_method != feature_descriptor:
+    if current_model.feature_encoding_method != feature_encoder:
         return True
 
     if current_model.kmer_size != kmer_size:
@@ -1484,7 +1484,7 @@ def check_input_updates(
      Input({'type': "update-button", 'index': MATCH}, 'n_clicks'),
      Input({'type': "close-complete-button", 'index': MATCH}, 'n_clicks'),
      Input({'type': 'model-type-dropdown', 'index': MATCH}, 'value'),
-     Input({'type': 'feature-descriptor-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'feature-encoder-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'kmer-size-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'feature-normalization-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'feature-selection-question', 'index': MATCH}, 'value'),
@@ -1506,7 +1506,7 @@ def press_submit_button(
         _update_clicks,
         close_complete_clicks,
         model_type,
-        feature_descriptor,
+        feature_encoder,
         kmer_size,
         feature_normalization,
         feature_selection_ans,
@@ -1546,7 +1546,7 @@ def press_submit_button(
     # if the model has been created successfully, inform the user
     if current_model and current_model.trained_model and current_model.tested_model \
             and submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks) \
-            and not check_input_updates(current_model, model_type, feature_descriptor, kmer_size, feature_normalization,
+            and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, feature_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm, hyperopt_ans,
                                         hyperopt_iterations):
@@ -1573,7 +1573,7 @@ def press_submit_button(
             return False, False, True, False
 
         # perform input validation
-        if not validate_user_input(model_type, feature_descriptor, kmer_size, feature_normalization,
+        if not validate_user_input(model_type, feature_encoder, kmer_size, feature_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
                                    dimension_reduction_algorithm, hyperopt_ans, hyperopt_iterations):
             return False, True, False, False
@@ -1602,7 +1602,7 @@ def press_submit_button(
             model.set_querying_data(querying_data)
 
         # set model parameters
-        model.set_feature_encoding_method(feature_descriptor)
+        model.set_feature_encoding_method(feature_encoder)
         model.set_feature_normalization_algorithm(feature_normalization)
 
         # if kmer is used for feature encoding

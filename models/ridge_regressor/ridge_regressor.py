@@ -115,18 +115,3 @@ class RidgeRegressor:
 
         self.queried_model = True
         return None
-
-    def feature_selection(self):
-        """
-        Method for running the user-selected feature selection
-        algorithm with the user-selected number of features
-        """
-        pass
-
-    def hyper_opt(self):
-        """
-        Method for running the hyperparameter optimisation
-        function using user input
-        """
-        pass
-
