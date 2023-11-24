@@ -35,12 +35,17 @@ class RandomForest:
 
         # unsupervised learning
         self.dimensionality_reduction_algorithm = None
-        self.dimension_number = None
+        self.dimension_number = 2
 
         # track progress (for users)
         self.trained_model = False
         self.tested_model = False
         self.queried_model = False
+
+        # question answers
+        self.use_feature_select = None
+        self.use_unsupervised = None
+        self.use_hyper_opt = None
 
     # ------------------------ SETTERS ------------------------ #
 
@@ -74,8 +79,14 @@ class RandomForest:
     def set_dimensionality_reduction_algorithm(self, algorithm):
         self.dimensionality_reduction_algorithm = algorithm
 
-    def set_dimension_number(self, number):
-        self.dimension_number = number
+    def set_use_unsupervised(self, answer):
+        self.use_unsupervised = answer
+
+    def set_use_feature_select(self, answer):
+        self.use_feature_select = answer
+
+    def set_use_hyperopt(self, answer):
+        self.use_hyper_opt = answer
 
     # ------------------------ METHODS ------------------------ #
 

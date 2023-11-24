@@ -760,19 +760,6 @@
     margin-right: 10px;
 }
 
-#dimension-number {
-    margin-top: -30px;
-    display: flex;
-    align-items: center;
-}
-
-#select-dimension-number {
-    font-weight: normal;
-    font-size: 12pt;
-    width: 40%;
-    margin-right: 10px;
-}
-
 #dimension-algorithm-descriptor {
     margin-top: 20px;
     display: flex;

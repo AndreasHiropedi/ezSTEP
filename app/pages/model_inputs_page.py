@@ -681,8 +681,7 @@ def model_input_unsupervised_learning_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[
-                    dimension_reduction_algorithm_dropdown(model_count),
-                    dimension_number_input(model_count)
+                    dimension_reduction_algorithm_dropdown(model_count)
                 ]
             )
         ],
@@ -1012,38 +1011,6 @@ def dimension_reduction_algorithm_dropdown(model_count):
     )
 
 
-def dimension_number_input(model_count):
-    """
-    This function allows the user to choose the number of dimensions
-    to be used by the dimensionality reduction algorithm (in case unsupervised learning
-    is enabled).
-    """
-
-    return html.Div(
-        id='dimension-number',
-        children=[
-            html.H6(
-                "Enter number of dimensions:",
-                id='select-dimension-number'
-            ),
-            dcc.Input(
-                id={'type': 'dimension-number-input', 'index': model_count},
-                type='number',
-                min=1,
-                max=10,
-                step=1,
-                persistence=True,
-                style={
-                    'width': '91.5%',
-                    'font-size': '12pt',
-                    'text-align': 'center',
-                    'margin-left': '32px'
-                }
-            )
-        ]
-    )
-
-
 def hyperparameter_optimisation_question(model_count):
     """
     This function allows the user to choose if they wish to use hyperparameter
@@ -1278,12 +1245,14 @@ def deletion_confirmation_popup(close_clicks, yes_clicks, is_open):
      Input({'type': 'delete-model-popup', 'index': MATCH}, 'is_open'),
      Input({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Input({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
-     Input({'type': 'file-validation-popup', 'index': MATCH}, 'is_open')],
+     Input({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')],
     [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'id'),
      State({'type': 'delete-model-popup', 'index': MATCH}, 'id'),
      State({'type': 'submit-model-popup', 'index': MATCH}, 'id'),
      State({'type': 'input-validation-popup', 'index': MATCH}, 'id'),
-     State({'type': 'file-validation-popup', 'index': MATCH}, 'id')]
+     State({'type': 'file-validation-popup', 'index': MATCH}, 'id'),
+     State({'type': 'complete-submission-popup', 'index': MATCH}, 'id')]
 )
 def convert_to_json(
         is_open1,
@@ -1291,11 +1260,13 @@ def convert_to_json(
         is_open3,
         is_open4,
         is_open5,
+        is_open6,
         modal1_id,
         modal2_id,
         modal3_id,
         modal4_id,
-        modal5_id
+        modal5_id,
+        modal6_id
 ):
     """
     This callback converts data to JSON format (used when freezing background
@@ -1308,11 +1279,13 @@ def convert_to_json(
         "is_open3": is_open3,
         "is_open4": is_open4,
         "is_open5": is_open5,
+        "is_open6": is_open6,
         "modal1_id": modal1_id,
         "modal2_id": modal2_id,
         "modal3_id": modal3_id,
         "modal4_id": modal4_id,
-        "modal5_id": modal5_id
+        "modal5_id": modal5_id,
+        "modal6_id": modal6_id
     }
 
     return json.dumps(data)
@@ -1338,6 +1311,9 @@ clientside_callback(
         } else if (details.is_open5) {
             var modalId = details.modal5_id.type + '-' + details.modal5_id.index;
             disablePageInteractions(modalId);
+        } else if (details.is_open6) {
+            var modalId = details.modal6_id.type + '-' + details.modal6_id.index;
+            disablePageInteractions(modalId);
         } else {
             enablePageInteractions();
         }
@@ -1358,7 +1334,6 @@ def validate_user_input(
         feature_number,
         unsupervised_learning_ans,
         dimension_reduction_algorithm,
-        dimension_number,
         hyperopt_ans,
         hyperopt_iterations
 ):
@@ -1376,16 +1351,13 @@ def validate_user_input(
     elif feature_selection_ans == "yes" and (not feature_selection or not feature_number):
         return False
 
-    elif unsupervised_learning_ans == "yes" and (not dimension_reduction_algorithm or not dimension_number):
+    elif unsupervised_learning_ans == "yes" and not dimension_reduction_algorithm:
         return False
 
     elif hyperopt_ans == "yes" and not hyperopt_iterations:
         return False
 
     # Checks to see all given number inputs are valid
-    elif dimension_number and (dimension_number < 1 or dimension_number > 10):
-        return False
-
     elif feature_number and (feature_number < 1 or feature_number > 100):
         return False
 
@@ -1406,7 +1378,6 @@ def check_input_updates(
         feature_number,
         unsupervised_learning_ans,
         dimension_reduction_algorithm,
-        dimension_number,
         hyperopt_ans,
         hyperopt_iterations
 ):
@@ -1446,7 +1417,10 @@ def check_input_updates(
     # check model additional parameters
 
     # feature selection
-    if feature_selection_ans == "yes":
+    if current_model.use_feature_select != feature_selection_ans:
+        return True
+
+    elif feature_selection_ans == "yes":
         if current_model.feature_selection_algorithm and feature_selection \
                 and current_model.feature_selection_algorithm != feature_selection:
             return True
@@ -1467,7 +1441,10 @@ def check_input_updates(
             return True
 
     # unsupervised learning
-    if unsupervised_learning_ans == "yes":
+    if current_model.use_unsupervised != unsupervised_learning_ans:
+        return True
+
+    elif unsupervised_learning_ans == "yes":
         if current_model.dimensionality_reduction_algorithm and dimension_reduction_algorithm \
                 and current_model.dimensionality_reduction_algorithm != dimension_reduction_algorithm:
             return True
@@ -1478,17 +1455,11 @@ def check_input_updates(
         elif current_model.dimensionality_reduction_algorithm and not dimension_reduction_algorithm:
             return True
 
-        if current_model.dimension_number and dimension_number and current_model.dimension_number != dimension_number:
-            return True
-
-        elif dimension_number and not current_model.dimension_number:
-            return True
-
-        elif current_model.dimension_number and not dimension_number:
-            return True
-
     # hyperparameter optimization
-    if hyperopt_ans == "yes":
+    if current_model.use_hyper_opt != hyperopt_ans:
+        return True
+
+    elif hyperopt_ans == "yes":
         if current_model.hyper_opt_iterations and hyperopt_iterations \
                 and current_model.hyper_opt_iterations != hyperopt_iterations:
             return True
@@ -1521,7 +1492,6 @@ def check_input_updates(
      Input({'type': 'feature-number-input', 'index': MATCH}, 'value'),
      Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value'),
      Input({'type': 'dimension-reduction-dropdown', 'index': MATCH}, 'value'),
-     Input({'type': 'dimension-number-input', 'index': MATCH}, 'value'),
      Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value'),
      Input({'type': 'iteration-number-input', 'index': MATCH}, 'value')],
     [State({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
@@ -1544,7 +1514,6 @@ def press_submit_button(
         feature_number,
         unsupervised_learning_ans,
         dimension_reduction_algorithm,
-        dimension_number,
         hyperopt_ans,
         hyperopt_iterations,
         is_submit_open,
@@ -1579,8 +1548,8 @@ def press_submit_button(
             and submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks) \
             and not check_input_updates(current_model, model_type, feature_descriptor, kmer_size, feature_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
-                                        unsupervised_learning_ans, dimension_reduction_algorithm, dimension_number,
-                                        hyperopt_ans, hyperopt_iterations):
+                                        unsupervised_learning_ans, dimension_reduction_algorithm, hyperopt_ans,
+                                        hyperopt_iterations):
         # check if querying_data has been uploaded
         querying_data = app.globals.QUERYING_DATA
         if querying_data is not None:
@@ -1606,7 +1575,7 @@ def press_submit_button(
         # perform input validation
         if not validate_user_input(model_type, feature_descriptor, kmer_size, feature_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
-                                   dimension_reduction_algorithm, dimension_number, hyperopt_ans, hyperopt_iterations):
+                                   dimension_reduction_algorithm, hyperopt_ans, hyperopt_iterations):
             return False, True, False, False
 
         # set model based on input parameters
@@ -1635,16 +1604,32 @@ def press_submit_button(
         # set model parameters
         model.set_feature_encoding_method(feature_descriptor)
         model.set_feature_normalization_algorithm(feature_normalization)
+
+        # if kmer is used for feature encoding
         if kmer_size:
             model.set_kmer_size(kmer_size)
+
+        # check if feature selection is enabled
         if feature_selection_ans == "yes":
+            model.set_use_feature_select("yes")
             model.set_feature_selection_algorithm(feature_selection)
             model.set_feature_number(feature_number)
+        else:
+            model.set_use_feature_select("no")
+
+        # check if hyperopt is enabled
         if hyperopt_ans == "yes":
+            model.set_use_hyperopt("yes")
             model.set_hyper_opt_iterations(hyperopt_iterations)
+        else:
+            model.set_use_hyperopt("no")
+
+        # check if unsupervised learning is enabled
         if unsupervised_learning_ans == "yes":
+            model.set_use_unsupervised("yes")
             model.set_dimensionality_reduction_algorithm(dimension_reduction_algorithm)
-            model.set_dimension_number(dimension_number)
+        else:
+            model.set_use_unsupervised("no")
 
         # perform the necessary model operations
         model.train_model()
