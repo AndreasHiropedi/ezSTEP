@@ -1,8 +1,12 @@
 .DS_Store
 app/__pycache__/
 app/pages/__pycache__/
+app/assets/__pycache__/
 models/__pycache__/
 models/mlp/__pycache__/
 models/random_forest/__pycache__/
 models/ridge_regressor/__pycache__/
 models/svm/__pycache__/
+models/features/__pycache__/
+models/unsupervised_learning/__pycache__/
+

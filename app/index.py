@@ -705,7 +705,7 @@ def update_training_output(content, name, stored_train_file_name):
             }
         )
 
-        failed_message = html.Div(
+        wrong_format_message = html.Div(
             [f"File {name} not compatible!"],
             style={
                 "font-weight": "bold",
@@ -714,16 +714,33 @@ def update_training_output(content, name, stored_train_file_name):
             }
         )
 
-        # Process the content if you need, e.g., for a CSV file
+        wrong_columns_message = html.Div(
+            [f"File {name} in correct format but wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
             app.globals.TRAINING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            final_display = html.Div([upload_children, success_message])
-            return final_display, {'filename': name}
+
+            # Check if file contains two columns labeled 'sequence' and 'protein'
+            app.globals.TRAINING_DATA.columns = app.globals.TRAINING_DATA.columns.astype(str).str.lower()
+            if 'sequence' in app.globals.TRAINING_DATA.columns and 'protein' in app.globals.TRAINING_DATA.columns:
+                final_display = html.Div([upload_children, success_message])
+                return final_display, {'filename': name}
+
+            # If CSV but without right columns
+            final_display = html.Div([upload_children, wrong_columns_message])
+            return final_display, None
 
         # If non-CSV, you can just return the name and a message or other placeholder
-        final_display = html.Div([upload_children, failed_message])
+        final_display = html.Div([upload_children, wrong_format_message])
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
@@ -753,7 +770,7 @@ def validate_training_text_input(value, stored_train_file):
     rows = value.split('\n')
 
     sequences = []
-    labels = []
+    proteins = []
     for row in rows:
         # Skip empty rows
         if row.strip() == "":
@@ -778,7 +795,7 @@ def validate_training_text_input(value, stored_train_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif "," in row:
             data = row.split(",")
@@ -798,7 +815,7 @@ def validate_training_text_input(value, stored_train_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif ";" in row:
             data = row.split(";")
@@ -818,7 +835,7 @@ def validate_training_text_input(value, stored_train_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         else:
             return {
@@ -830,8 +847,8 @@ def validate_training_text_input(value, stored_train_file):
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
         app.globals.TRAINING_DATA = pd.DataFrame({
-            'Sequence': sequences,
-            'Label': labels
+            'sequence': sequences,
+            'protein': proteins
         })
 
     return {
@@ -901,7 +918,7 @@ def update_testing_output(content, name, stored_test_file_name):
             }
         )
 
-        failed_message = html.Div(
+        wrong_format_message = html.Div(
             [f"File {name} not compatible!"],
             style={
                 "font-weight": "bold",
@@ -910,16 +927,33 @@ def update_testing_output(content, name, stored_test_file_name):
             }
         )
 
-        # Process the content if you need, e.g., for a CSV file
+        wrong_columns_message = html.Div(
+            [f"File {name} in correct format but wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
             app.globals.TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            final_display = html.Div([upload_children, success_message])
-            return final_display, {'filename': name}
+
+            # Check if file contains two columns labeled 'sequence' and 'protein'
+            app.globals.TESTING_DATA.columns = app.globals.TESTING_DATA.columns.astype(str).str.lower()
+            if 'sequence' in app.globals.TESTING_DATA.columns and 'protein' in app.globals.TESTING_DATA.columns:
+                final_display = html.Div([upload_children, success_message])
+                return final_display, {'filename': name}
+
+            # If CSV but without right columns
+            final_display = html.Div([upload_children, wrong_columns_message])
+            return final_display, None
 
         # If non-CSV, you can just return the name and a message or other placeholder
-        final_display = html.Div([upload_children, failed_message])
+        final_display = html.Div([upload_children, wrong_format_message])
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
@@ -949,7 +983,7 @@ def validate_testing_text_input(value, stored_test_file):
     rows = value.split('\n')
 
     sequences = []
-    labels = []
+    proteins = []
     for row in rows:
         # Skip empty rows
         if row.strip() == "":
@@ -974,7 +1008,7 @@ def validate_testing_text_input(value, stored_test_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif "," in row:
             data = row.split(",")
@@ -994,7 +1028,7 @@ def validate_testing_text_input(value, stored_test_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif ";" in row:
             data = row.split(";")
@@ -1014,7 +1048,7 @@ def validate_testing_text_input(value, stored_test_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         else:
             return {
@@ -1026,8 +1060,8 @@ def validate_testing_text_input(value, stored_test_file):
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
         app.globals.TESTING_DATA = pd.DataFrame({
-            'Sequence': sequences,
-            'Label': labels
+            'sequence': sequences,
+            'protein': proteins
         })
 
     return {
@@ -1097,7 +1131,7 @@ def update_querying_output(content, name, stored_query_file_name):
             }
         )
 
-        failed_message = html.Div(
+        wrong_format_message = html.Div(
             [f"File {name} not compatible!"],
             style={
                 "font-weight": "bold",
@@ -1106,16 +1140,33 @@ def update_querying_output(content, name, stored_query_file_name):
             }
         )
 
-        # Process the content if you need, e.g., for a CSV file
+        wrong_columns_message = html.Div(
+            [f"File {name} in correct format but wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
             app.globals.QUERYING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            final_display = html.Div([upload_children, success_message])
-            return final_display, {'filename': name}
+
+            # Check if file contains two columns labeled 'sequence' and 'protein'
+            app.globals.QUERYING_DATA.columns = app.globals.QUERYING_DATA.columns.astype(str).str.lower()
+            if 'sequence' in app.globals.QUERYING_DATA.columns and 'protein' in app.globals.QUERYING_DATA.columns:
+                final_display = html.Div([upload_children, success_message])
+                return final_display, {'filename': name}
+
+            # If CSV but without right columns
+            final_display = html.Div([upload_children, wrong_columns_message])
+            return final_display, None
 
         # If non-CSV, you can just return the name and a message or other placeholder
-        final_display = html.Div([upload_children, failed_message])
+        final_display = html.Div([upload_children, wrong_format_message])
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
@@ -1145,7 +1196,7 @@ def validate_querying_text_input(value, stored_query_file):
     rows = value.split('\n')
 
     sequences = []
-    labels = []
+    proteins = []
     for row in rows:
         # Skip empty rows
         if row.strip() == "":
@@ -1170,7 +1221,7 @@ def validate_querying_text_input(value, stored_query_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif "," in row:
             data = row.split(",")
@@ -1190,7 +1241,7 @@ def validate_querying_text_input(value, stored_query_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         elif ";" in row:
             data = row.split(";")
@@ -1210,7 +1261,7 @@ def validate_querying_text_input(value, stored_query_file):
                 }
             # otherwise, data is valid
             sequences.append(data[0])
-            labels.append(data[1])
+            proteins.append(data[1])
 
         else:
             return {
@@ -1222,8 +1273,8 @@ def validate_querying_text_input(value, stored_query_file):
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
         app.globals.QUERYING_DATA = pd.DataFrame({
-            'Sequence': sequences,
-            'Label': labels
+            'sequence': sequences,
+            'protein': proteins
         })
 
     return {

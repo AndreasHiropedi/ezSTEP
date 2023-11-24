@@ -1,3 +1,5 @@
+from models.features import encoders
+from models.features import normalizers
 
 
 class RandomForest:
@@ -27,15 +29,21 @@ class RandomForest:
         self.feature_number = None
         self.hyper_opt_iterations = None
 
-        # output statistics
-        self.RMSE = None
-        self.R_squared = None
-        self.MAE = None
-        self.Percentage_2fold_error = None
+        # training output statistics
+        self.training_RMSE = None
+        self.training_R_squared = None
+        self.training_MAE = None
+        self.training_percentage_2fold_error = None
+
+        # testing output statistics
+        self.testing_RMSE = None
+        self.testing_R_squared = None
+        self.testing_MAE = None
+        self.testing_percentage_2fold_error = None
 
         # unsupervised learning
         self.dimensionality_reduction_algorithm = None
-        self.dimension_number = 2
+        self.dimension_number = None
 
         # track progress (for users)
         self.trained_model = False
@@ -79,6 +87,9 @@ class RandomForest:
     def set_dimensionality_reduction_algorithm(self, algorithm):
         self.dimensionality_reduction_algorithm = algorithm
 
+    def set_dimension_number(self, number):
+        self.dimension_number = number
+
     def set_use_unsupervised(self, answer):
         self.use_unsupervised = answer
 
@@ -97,7 +108,6 @@ class RandomForest:
         """
 
         self.trained_model = True
-        return None
 
     def test_model(self):
         """
@@ -106,7 +116,6 @@ class RandomForest:
         """
 
         self.tested_model = True
-        return None
 
     def query_model(self):
         """
@@ -115,4 +124,3 @@ class RandomForest:
         """
 
         self.queried_model = True
-        return None
