@@ -6,43 +6,46 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def map_sequence(sequence, sequence_mapping, unknown_label):
     """
-    This function maps sequences to their corresponding label or 'Unknown'.
+    This function maps sequences to their corresponding label or a special label for unknown sequences.
     """
     return sequence_mapping.get(sequence, unknown_label)
 
 
 def encode_one_hot(train_data, test_data):
     """
-    Encodes the 'sequence' column of train and test datasets using one-hot encoding.
-    Unseen sequences in test data are mapped to an 'Unknown' category.
+    This function applies one-hot encoding to the features in both training and test sets
     """
 
     # Create a dictionary for sequence mapping in training data
     unique_sequences = np.unique(train_data['sequence'])
     sequence_mapping = {seq: idx for idx, seq in enumerate(unique_sequences)}
 
-    # Assign a number for 'Unknown' category, distinct from other labels
+    # Define a label for 'Unknown' category
     unknown_label = len(unique_sequences)
 
-    # Apply this function to both training and testing data
+    # Apply mapping to training data
     train_data['sequence_mapped'] = train_data['sequence'].apply(
         lambda x: map_sequence(x, sequence_mapping, unknown_label))
+
+    # Apply mapping to test data, mapping unknown sequences to the 'Unknown' category
     test_data['sequence_mapped'] = test_data['sequence'].apply(
         lambda x: map_sequence(x, sequence_mapping, unknown_label))
 
     # OneHotEncode the mapped sequence data
     encoder = OneHotEncoder(categories='auto')
-    encoder.fit(train_data[['sequence_mapped']])
+    encoder.fit(np.append(train_data[['sequence_mapped']], [[unknown_label]], axis=0))
 
+    # Transform both train and test data
     train_sequence_encoded = encoder.transform(train_data[['sequence_mapped']])
     test_sequence_encoded = encoder.transform(test_data[['sequence_mapped']])
 
-    train_encoded_df = pd.DataFrame(train_sequence_encoded.toarray())
-    test_encoded_df = pd.DataFrame(test_sequence_encoded.toarray())
+    # Convert to DataFrames
+    train_encoded_df = pd.DataFrame(train_sequence_encoded.toarray(), columns=encoder.get_feature_names_out())
+    test_encoded_df = pd.DataFrame(test_sequence_encoded.toarray(), columns=encoder.get_feature_names_out())
 
+    # Reset index and concatenate with 'protein' column
     train_data.reset_index(drop=True, inplace=True)
     test_data.reset_index(drop=True, inplace=True)
-
     train_final = pd.concat([train_data['protein'], train_encoded_df], axis=1)
     test_final = pd.concat([test_data['protein'], test_encoded_df], axis=1)
 

@@ -1,5 +1,10 @@
+import numpy as np
+
 from models.features import encoders
 from models.features import normalizers
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.model_selection import cross_val_predict, KFold
 
 
 class RandomForest:
@@ -9,12 +14,20 @@ class RandomForest:
     """
 
     def __init__(self):
+
         # model parameters
         self.n_estimator = 25
         self.max_depth = 30
         self.min_samples_leaf = 3
         self.min_samples_split = 2
-        self.print_res = False
+
+        # model itself
+        self.model = RandomForestRegressor(
+            n_estimators=self.n_estimator,
+            max_depth=self.max_depth,
+            min_samples_leaf=self.min_samples_leaf,
+            min_samples_split=self.min_samples_split
+        )
 
         # model data
         self.training_data = None
@@ -54,6 +67,12 @@ class RandomForest:
         self.use_feature_select = None
         self.use_unsupervised = None
         self.use_hyper_opt = None
+
+        # temporary outputs
+        self.encoded_train = None
+        self.encoded_test = None
+        self.normalized_train = None
+        self.normalized_test = None
 
     # ------------------------ SETTERS ------------------------ #
 
@@ -101,11 +120,68 @@ class RandomForest:
 
     # ------------------------ METHODS ------------------------ #
 
+    def encode_features(self):
+        """
+        Method for applying the correct feature encoding method based on
+        the user inputs
+        """
+
+        if self.feature_encoding_method == 'binary':
+            self.encoded_train, self.encoded_test = encoders.encode_one_hot(self.training_data, self.testing_data)
+
+        elif self.feature_encoding_method == 'kmer':
+            self.encoded_train, self.encoded_test = \
+                encoders.encode_kmer(self.training_data, self.testing_data, self.kmer_size)
+
+    def normalize_features(self):
+        """
+        Method for applying the correct feature normalization method based on
+        the user inputs
+        """
+
+        if self.feature_normalization_algorithm == 'zscore':
+            self.normalized_train, self.normalized_test = \
+                normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+
+        elif self.feature_normalization_algorithm == 'minmax':
+            self.normalized_train, self.normalized_test = \
+                normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+
     def train_model(self):
         """
         Method for training the machine learning model
         on the user-uploaded training data
         """
+
+        # Encode and normalize the features in the uploaded data
+        self.encode_features()
+        self.normalize_features()
+
+        # Prepare the training data
+        x_train = self.normalized_train.drop('protein', axis=1)
+        y_train = self.normalized_train['protein']
+
+        # Setup K-Fold cross-validation
+        k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
+
+        # Get cross-validated predictions
+        predictions = cross_val_predict(self.model, x_train, y_train, cv=k_fold)
+
+        # Calculate RMSE
+        self.training_RMSE = np.sqrt(mean_squared_error(y_train, predictions))
+
+        # Calculate R-Squared
+        self.training_R_squared = r2_score(y_train, predictions)
+
+        # Calculate MAE
+        self.training_MAE = mean_absolute_error(y_train, predictions)
+
+        # Calculate Percentage within 2-Fold Error
+        self.training_percentage_2fold_error = \
+            np.mean((predictions / y_train <= 2) & (y_train / predictions <= 2)) * 100
+
+        # Retrain on the entire training dataset
+        self.model.fit(x_train, y_train)
 
         self.trained_model = True
 
@@ -114,6 +190,26 @@ class RandomForest:
         Method for testing the machine learning model
         on the user-uploaded testing data
         """
+
+        # Prepare the test data
+        x_test = self.normalized_test.drop('protein', axis=1)
+        y_test = self.normalized_test['protein']
+
+        # Make predictions using the trained model
+        test_predictions = self.model.predict(x_test)
+
+        # Calculate RMSE for test data
+        self.testing_RMSE = np.sqrt(mean_squared_error(y_test, test_predictions))
+
+        # Calculate R-Squared for test data
+        self.testing_R_squared = r2_score(y_test, test_predictions)
+
+        # Calculate MAE for test data
+        self.testing_MAE = mean_absolute_error(y_test, test_predictions)
+
+        # Calculate Percentage within 2-Fold Error for test data
+        self.testing_percentage_2fold_error = \
+            np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)) * 100
 
         self.tested_model = True
 
