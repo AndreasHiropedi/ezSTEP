@@ -264,7 +264,7 @@ def confirm_deleted_model_popup(model_count):
 
 def submit_model_popup(model_count):
     """
-    This function creates a popup for when a model selection is submitted
+    This function creates a popup for when a model is being created
     """
 
     return dbc.Modal(
@@ -1593,8 +1593,19 @@ def press_submit_button(
 
     current_model = app.globals.MODELS_LIST[f'Model {index_value}']
 
+    if current_model and (not current_model.trained_model or not current_model.tested_model):
+        # check if querying_data has been uploaded
+        querying_data = app.globals.QUERYING_DATA
+        # perform the necessary model operations
+        current_model.train_model()
+        current_model.test_model()
+        if querying_data is not None:
+            current_model.query_model()
+
+        return True, False, False, False
+
     # if the model has been created successfully, inform the user
-    if current_model and current_model.trained_model and current_model.tested_model \
+    elif current_model and current_model.trained_model and current_model.tested_model \
             and submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks) \
             and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, feature_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
@@ -1682,12 +1693,6 @@ def press_submit_button(
             model.set_dimension_number(dimension_number)
         else:
             model.set_use_unsupervised("no")
-
-        # perform the necessary model operations
-        model.train_model()
-        model.test_model()
-        if querying_data is not None:
-            model.query_model()
 
         # Store model in the globally available list
         app.globals.MODELS_LIST[f'Model {index_value}'] = model

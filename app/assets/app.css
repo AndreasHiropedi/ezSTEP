@@ -1047,10 +1047,10 @@
      align-items: center;
  }
 
- #select-dimension-number {
-     font-weight: normal;
-     font-size: 12pt;
-     width: 60%;
-     margin-right: 10px;
- }
+#select-dimension-number {
+    font-weight: normal;
+    font-size: 12pt;
+    width: 60%;
+    margin-right: 10px;
+}
 
