@@ -57,6 +57,9 @@ def generate_kmers(sequence, kmer_size):
     Generate k-mers for a given sequence.
     """
 
+    # Ensure kmer_size is an integer
+    kmer_size = int(kmer_size)
+
     return [sequence[i:i + kmer_size] for i in range(len(sequence) - kmer_size + 1)]
 
 
