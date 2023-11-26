@@ -1,19 +1,9 @@
+import app.globals
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
 from dash import html, dcc, callback, Input, Output
-
-# Sample data (replace with actual data)
-df = pd.DataFrame({
-    'Fruit': ['Apples', 'Oranges', 'Bananas', 'Grapes', 'Pineapples'],
-    'Amount': [4, 1, 2, 2, 5],
-})
-
-# Generate a color map dynamically based on the number of fruits
-# Using a Plotly qualitative color palette
-colors = px.colors.qualitative.Plotly
-color_map = {fruit: colors[i % len(colors)] for i, fruit in enumerate(df['Fruit'])}  # replace with actual data
 
 
 def create_layout(metric_name):
@@ -137,16 +127,27 @@ def update_rmse_bar_chart(_id):
     This callback generates the RMSE bar chart based on the existing models
     """
 
+    # RMSE testing data
+    df = pd.DataFrame({
+        'Model number': app.globals.MODELS_LIST.keys(),
+        'RMSE': [model.testing_RMSE for model in app.globals.MODELS_LIST.values()],
+    })
+
+    # Generate a color map dynamically based on the number of fruits
+    # Using a Plotly qualitative color palette
+    colors = px.colors.qualitative.Plotly
+    color_map = {fruit: colors[i % len(colors)] for i, fruit in enumerate(df['Model number'])}
+
     # Create an empty figure
     fig = go.Figure()
 
-    # Add a bar for each category
-    for fruit in df['Fruit']:
+    # Add a bar for each model
+    for model in df['Model number']:
         fig.add_trace(go.Bar(
-            x=[fruit],
-            y=[df[df['Fruit'] == fruit]['Amount'].values[0]],
-            name=fruit,
-            marker_color=color_map[fruit]
+            x=[model],
+            y=[df[df['Model number'] == model]['RMSE'].values[0]],
+            name=model,
+            marker_color=color_map[model]
         ))
 
     fig.update_layout(
@@ -167,16 +168,27 @@ def update_r_squared_bar_chart(_id):
     This callback generates the R-squared bar chart based on the existing models
     """
 
+    # R-squared testing data
+    df = pd.DataFrame({
+        'Model number': app.globals.MODELS_LIST.keys(),
+        'R-squared': [model.testing_R_squared for model in app.globals.MODELS_LIST.values()],
+    })
+
+    # Generate a color map dynamically based on the number of fruits
+    # Using a Plotly qualitative color palette
+    colors = px.colors.qualitative.Plotly
+    color_map = {fruit: colors[i % len(colors)] for i, fruit in enumerate(df['Model number'])}
+
     # Create an empty figure
     fig = go.Figure()
 
-    # Add a bar for each category
-    for fruit in df['Fruit']:
+    # Add a bar for each model
+    for model in df['Model number']:
         fig.add_trace(go.Bar(
-            x=[fruit],
-            y=[df[df['Fruit'] == fruit]['Amount'].values[0]],
-            name=fruit,
-            marker_color=color_map[fruit]
+            x=[model],
+            y=[df[df['Model number'] == model]['R-squared'].values[0]],
+            name=model,
+            marker_color=color_map[model]
         ))
 
     fig.update_layout(
@@ -197,16 +209,27 @@ def update_mae_bar_chart(_id):
     This callback generates the MAE bar chart based on the existing models
     """
 
+    # MAE testing data
+    df = pd.DataFrame({
+        'Model number': app.globals.MODELS_LIST.keys(),
+        'MAE': [model.testing_MAE for model in app.globals.MODELS_LIST.values()],
+    })
+
+    # Generate a color map dynamically based on the number of fruits
+    # Using a Plotly qualitative color palette
+    colors = px.colors.qualitative.Plotly
+    color_map = {fruit: colors[i % len(colors)] for i, fruit in enumerate(df['Model number'])}
+
     # Create an empty figure
     fig = go.Figure()
 
-    # Add a bar for each category
-    for fruit in df['Fruit']:
+    # Add a bar for each model
+    for model in df['Model number']:
         fig.add_trace(go.Bar(
-            x=[fruit],
-            y=[df[df['Fruit'] == fruit]['Amount'].values[0]],
-            name=fruit,
-            marker_color=color_map[fruit]
+            x=[model],
+            y=[df[df['Model number'] == model]['MAE'].values[0]],
+            name=model,
+            marker_color=color_map[model]
         ))
 
     fig.update_layout(
@@ -227,16 +250,28 @@ def update_two_fold_error_bar_chart(_id):
     This callback generates the Percentage 2-fold error bar chart based on the existing models
     """
 
+    # Percentage two-fold error testing data
+    df = pd.DataFrame({
+        'Model number': app.globals.MODELS_LIST.keys(),
+        'Percentage two-fold error':
+            [model.testing_percentage_2fold_error for model in app.globals.MODELS_LIST.values()],
+    })
+
+    # Generate a color map dynamically based on the number of fruits
+    # Using a Plotly qualitative color palette
+    colors = px.colors.qualitative.Plotly
+    color_map = {fruit: colors[i % len(colors)] for i, fruit in enumerate(df['Model number'])}
+
     # Create an empty figure
     fig = go.Figure()
 
-    # Add a bar for each category
-    for fruit in df['Fruit']:
+    # Add a bar for each model
+    for model in df['Model number']:
         fig.add_trace(go.Bar(
-            x=[fruit],
-            y=[df[df['Fruit'] == fruit]['Amount'].values[0]],
-            name=fruit,
-            marker_color=color_map[fruit]
+            x=[model],
+            y=[df[df['Model number'] == model]['Percentage two-fold error'].values[0]],
+            name=model,
+            marker_color=color_map[model]
         ))
 
     fig.update_layout(
