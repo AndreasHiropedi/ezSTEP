@@ -734,6 +734,7 @@ def update_training_output(content, name, stored_train_file_name):
             app.globals.TRAINING_DATA.columns = app.globals.TRAINING_DATA.columns.astype(str).str.lower()
             if 'sequence' in app.globals.TRAINING_DATA.columns and 'protein' in app.globals.TRAINING_DATA.columns:
                 final_display = html.Div([upload_children, success_message])
+                app.globals.TRAINING_FILE = name
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -947,6 +948,7 @@ def update_testing_output(content, name, stored_test_file_name):
             app.globals.TESTING_DATA.columns = app.globals.TESTING_DATA.columns.astype(str).str.lower()
             if 'sequence' in app.globals.TESTING_DATA.columns and 'protein' in app.globals.TESTING_DATA.columns:
                 final_display = html.Div([upload_children, success_message])
+                app.globals.TESTING_FILE = name
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1160,6 +1162,7 @@ def update_querying_output(content, name, stored_query_file_name):
             app.globals.QUERYING_DATA.columns = app.globals.QUERYING_DATA.columns.astype(str).str.lower()
             if 'sequence' in app.globals.QUERYING_DATA.columns and 'protein' in app.globals.QUERYING_DATA.columns:
                 final_display = html.Div([upload_children, success_message])
+                app.globals.QUERYING_FILE = name
                 return final_display, {'filename': name}
 
             # If CSV but without right columns

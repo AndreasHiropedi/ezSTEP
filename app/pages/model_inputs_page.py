@@ -1473,6 +1473,28 @@ def check_input_updates(
     return False
 
 
+def check_dataset_change(
+        current_model,
+        training_data,
+        testing_data,
+        querying_data
+):
+    """
+    Checks if there were any changes in the training, testing, or querying data
+    """
+
+    if current_model and training_data and current_model.training_file != training_data:
+        return True
+
+    elif current_model and testing_data and current_model.testing_file != testing_data:
+        return True
+
+    elif current_model and querying_data and current_model.querying_file != querying_data:
+        return True
+
+    return False
+
+
 @callback(
     [Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
@@ -1560,7 +1582,9 @@ def press_submit_button(
             and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, feature_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm,
-                                        hyperopt_ans, hyperopt_iterations):
+                                        hyperopt_ans, hyperopt_iterations) \
+            and not check_dataset_change(current_model, app.globals.TRAINING_FILE, app.globals.TESTING_FILE,
+                                         app.globals.QUERYING_FILE):
         # check if querying_data has been uploaded
         querying_data = app.globals.QUERYING_DATA
         if querying_data is not None:
@@ -1573,12 +1597,42 @@ def press_submit_button(
 
         return False, False, False, True
 
+    # if the data has changed
+    elif current_model and check_dataset_change(current_model, app.globals.TRAINING_FILE,
+                                                app.globals.TESTING_FILE, app.globals.QUERYING_FILE):
+        # get necessary information
+        training_data = app.globals.TRAINING_DATA
+        testing_data = app.globals.TESTING_DATA
+        querying_data = app.globals.QUERYING_DATA
+        training_file = app.globals.TRAINING_FILE
+        testing_file = app.globals.TESTING_FILE
+        querying_file = app.globals.QUERYING_FILE
+
+        # set model data
+        current_model.set_training_data(training_data)
+        current_model.set_training_file(training_file)
+        current_model.set_testing_data(testing_data)
+        current_model.set_testing_file(testing_file)
+        if querying_data is not None:
+            current_model.set_querying_data(querying_data)
+            current_model.set_querying_file(querying_file)
+
+        # set the trained, tested, and queried attributes to False
+        current_model.trained_model = False
+        current_model.tested_model = False
+        current_model.queried_model = False
+
+        return True, False, False, False
+
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks):
 
         training_data = app.globals.TRAINING_DATA
         testing_data = app.globals.TESTING_DATA
         querying_data = app.globals.QUERYING_DATA
+        training_file = app.globals.TRAINING_FILE
+        testing_file = app.globals.TESTING_FILE
+        querying_file = app.globals.QUERYING_FILE
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
@@ -1609,9 +1663,12 @@ def press_submit_button(
 
         # set model data
         model.set_training_data(training_data)
+        model.set_training_file(training_file)
         model.set_testing_data(testing_data)
+        model.set_testing_file(testing_file)
         if querying_data is not None:
             model.set_querying_data(querying_data)
+            model.set_querying_file(querying_file)
 
         # set model parameters
         model.set_feature_encoding_method(feature_encoder)

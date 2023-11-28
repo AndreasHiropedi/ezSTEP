@@ -66,6 +66,11 @@ class RidgeRegressor:
         self.normalized_train = None
         self.normalized_test = None
 
+        # files used
+        self.training_file = None
+        self.testing_file = None
+        self.querying_file = None
+
     # ------------------------ SETTERS ------------------------ #
 
     def set_training_data(self, training_data):
@@ -76,6 +81,15 @@ class RidgeRegressor:
 
     def set_querying_data(self, querying_data):
         self.querying_data = querying_data
+
+    def set_training_file(self, training_file):
+        self.training_file = training_file
+
+    def set_testing_file(self, testing_file):
+        self.testing_file = testing_file
+
+    def set_querying_file(self, querying_file):
+        self.querying_file = querying_file
 
     def set_feature_encoding_method(self, method):
         self.feature_encoding_method = method
