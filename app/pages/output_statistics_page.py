@@ -127,10 +127,17 @@ def update_rmse_bar_chart(_id):
     This callback generates the RMSE bar chart based on the existing models
     """
 
+    # only stores the created models (in case the user adds more models but doesn't initialise all of them)
+    # to avoid errors when plotting the graph
+    existing_models = {}
+    for key, value in app.globals.MODELS_LIST.items():
+        if value is not None:
+            existing_models[key] = value
+
     # RMSE testing data
     df = pd.DataFrame({
-        'Model number': app.globals.MODELS_LIST.keys(),
-        'RMSE': [model.testing_RMSE for model in app.globals.MODELS_LIST.values()],
+        'Model number': existing_models.keys(),
+        'RMSE': [model.testing_RMSE for model in existing_models.values()],
     })
 
     # Generate a color map dynamically based on the number of fruits
@@ -168,10 +175,17 @@ def update_r_squared_bar_chart(_id):
     This callback generates the R-squared bar chart based on the existing models
     """
 
+    # only stores the created models (in case the user adds more models but doesn't initialise all of them)
+    # to avoid errors when plotting the graph
+    existing_models = {}
+    for key, value in app.globals.MODELS_LIST.items():
+        if value is not None:
+            existing_models[key] = value
+
     # R-squared testing data
     df = pd.DataFrame({
-        'Model number': app.globals.MODELS_LIST.keys(),
-        'R-squared': [model.testing_R_squared for model in app.globals.MODELS_LIST.values()],
+        'Model number': existing_models.keys(),
+        'R-squared': [model.testing_R_squared for model in existing_models.values()],
     })
 
     # Generate a color map dynamically based on the number of fruits
@@ -209,10 +223,17 @@ def update_mae_bar_chart(_id):
     This callback generates the MAE bar chart based on the existing models
     """
 
+    # only stores the created models (in case the user adds more models but doesn't initialise all of them)
+    # to avoid errors when plotting the graph
+    existing_models = {}
+    for key, value in app.globals.MODELS_LIST.items():
+        if value is not None:
+            existing_models[key] = value
+
     # MAE testing data
     df = pd.DataFrame({
-        'Model number': app.globals.MODELS_LIST.keys(),
-        'MAE': [model.testing_MAE for model in app.globals.MODELS_LIST.values()],
+        'Model number': existing_models.keys(),
+        'MAE': [model.testing_MAE for model in existing_models.values()],
     })
 
     # Generate a color map dynamically based on the number of fruits
@@ -250,11 +271,18 @@ def update_two_fold_error_bar_chart(_id):
     This callback generates the Percentage 2-fold error bar chart based on the existing models
     """
 
+    # only stores the created models (in case the user adds more models but doesn't initialise all of them)
+    # to avoid errors when plotting the graph
+    existing_models = {}
+    for key, value in app.globals.MODELS_LIST.items():
+        if value is not None:
+            existing_models[key] = value
+
     # Percentage two-fold error testing data
     df = pd.DataFrame({
-        'Model number': app.globals.MODELS_LIST.keys(),
+        'Model number': existing_models.keys(),
         'Percentage two-fold error':
-            [model.testing_percentage_2fold_error for model in app.globals.MODELS_LIST.values()],
+            [model.testing_percentage_2fold_error for model in existing_models.values()],
     })
 
     # Generate a color map dynamically based on the number of fruits

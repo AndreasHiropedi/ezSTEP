@@ -595,7 +595,8 @@ def model_input_ref(model_key):
     model input (for each model created).
     """
 
-    app.globals.MODELS_LIST[model_key] = None
+    if model_key not in app.globals.MODELS_LIST.keys():
+        app.globals.MODELS_LIST[model_key] = None
 
     return html.A(
         children=[

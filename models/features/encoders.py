@@ -1,14 +1,18 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def map_sequence(sequence, sequence_mapping, unknown_label):
+def encode_dna_seq_one_hot(sequence):
     """
-    This function maps sequences to their corresponding label or a special label for unknown sequences.
+    Applies one-hot encoding to an individual DNA sequence
     """
-    return sequence_mapping.get(sequence, unknown_label)
+
+    mapping = dict(zip("acgt", range(4)))
+    seq2 = [mapping[i] for i in sequence]
+    one_hot_seq = np.eye(4)[seq2]
+
+    return one_hot_seq
 
 
 def encode_one_hot(train_data, test_data):
@@ -16,32 +20,18 @@ def encode_one_hot(train_data, test_data):
     This function applies one-hot encoding to the features in both training and test sets
     """
 
-    # Create a dictionary for sequence mapping in training data
-    unique_sequences = np.unique(train_data['sequence'])
-    sequence_mapping = {seq: idx for idx, seq in enumerate(unique_sequences)}
+    one_hot_encoded_train = np.array([encode_dna_seq_one_hot(sequence) for sequence in train_data['sequence']])
+    one_hot_encoded_test = np.array([encode_dna_seq_one_hot(sequence) for sequence in test_data['sequence']])
 
-    # Define a label for 'Unknown' category
-    unknown_label = len(unique_sequences)
+    train_nsamples, train_nx, train_ny = one_hot_encoded_train.shape
+    test_nsamples, test_nx, test_ny = one_hot_encoded_test.shape
 
-    # Apply mapping to training data
-    train_data['sequence_mapped'] = train_data['sequence'].apply(
-        lambda x: map_sequence(x, sequence_mapping, unknown_label))
+    train_reshaped = one_hot_encoded_train.reshape((train_nsamples, train_nx * train_ny))
+    test_reshaped = one_hot_encoded_test.reshape((test_nsamples, test_nx * test_ny))
 
-    # Apply mapping to test data, mapping unknown sequences to the 'Unknown' category
-    test_data['sequence_mapped'] = test_data['sequence'].apply(
-        lambda x: map_sequence(x, sequence_mapping, unknown_label))
-
-    # OneHotEncode the mapped sequence data
-    encoder = OneHotEncoder(categories='auto')
-    encoder.fit(np.append(train_data[['sequence_mapped']], [[unknown_label]], axis=0))
-
-    # Transform both train and test data
-    train_sequence_encoded = encoder.transform(train_data[['sequence_mapped']])
-    test_sequence_encoded = encoder.transform(test_data[['sequence_mapped']])
-
-    # Convert to DataFrames
-    train_encoded_df = pd.DataFrame(train_sequence_encoded.toarray(), columns=encoder.get_feature_names_out())
-    test_encoded_df = pd.DataFrame(test_sequence_encoded.toarray(), columns=encoder.get_feature_names_out())
+    # Create dataframes from reshaped one-hot encoded data
+    train_encoded_df = pd.DataFrame(train_reshaped, columns=[f'base_{i}' for i in range(train_nx * train_ny)])
+    test_encoded_df = pd.DataFrame(test_reshaped, columns=[f'base_{i}' for i in range(test_nx * test_ny)])
 
     # Reset index and concatenate with 'protein' column
     train_data.reset_index(drop=True, inplace=True)
@@ -50,6 +40,7 @@ def encode_one_hot(train_data, test_data):
     test_final = pd.concat([test_data['protein'], test_encoded_df], axis=1)
 
     return train_final, test_final
+
 
 
 def generate_kmers(sequence, kmer_size):

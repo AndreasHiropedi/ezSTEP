@@ -21,7 +21,7 @@ def min_max_normalization(train_data, test_data):
     train_features_scaled = feature_scaler.fit_transform(train_features)
     test_features_scaled = feature_scaler.transform(test_features)
 
-    # Optionally, normalize target
+    # Normalize target
     train_target_scaled = target_scaler.fit_transform(train_target.values.reshape(-1, 1))
     test_target_scaled = target_scaler.transform(test_target.values.reshape(-1, 1))
 
@@ -57,7 +57,7 @@ def z_score_normalization(train_data, test_data):
     train_features_standardized = feature_scaler.fit_transform(train_features)
     test_features_standardized = feature_scaler.transform(test_features)
 
-    # Optionally, standardize target
+    # Standardize target
     train_target_standardized = target_scaler.fit_transform(train_target.values.reshape(-1, 1))
     test_target_standardized = target_scaler.transform(test_target.values.reshape(-1, 1))
 

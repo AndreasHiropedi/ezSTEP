@@ -48,7 +48,7 @@ class RidgeRegressor:
 
         # unsupervised learning
         self.dimensionality_reduction_algorithm = None
-        self.dimension_number = None
+        self.dimension_number = 2
 
         # track progress (for users)
         self.trained_model = False
@@ -97,9 +97,6 @@ class RidgeRegressor:
 
     def set_dimensionality_reduction_algorithm(self, algorithm):
         self.dimensionality_reduction_algorithm = algorithm
-
-    def set_dimension_number(self, number):
-        self.dimension_number = number
 
     def set_use_unsupervised(self, answer):
         self.use_unsupervised = answer
