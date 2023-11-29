@@ -22,15 +22,7 @@ window.dash_clientside.clientside = {
                 title = `Model ${model_num} output`;
             }
         } else if (pathname.startsWith('/output-statistics/')) {
-            if (pathname.includes('RMSE')) {
-                title = 'RMSE plot';
-            } else if (pathname.includes('R-squared')) {
-                title = 'R-squared plot';
-            } else if (pathname.includes('MAE')) {
-                title = 'MAE plot';
-            } else if (pathname.includes('Percentage within 2-fold error')) {
-                title = 'Percentage within 2-fold error plot';
-            }
+            title = "Testing output statistics"
         }
 
         document.title = title;

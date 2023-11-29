@@ -536,38 +536,6 @@ def query_data_upload_card():
     )
 
 
-def output_statistics_dropdown():
-    """
-    This function allows the user to select the types of summary statistics
-    they wish to see regarding the chosen model (such as RMSE, R-squared, etc.).
-    """
-
-    return html.Div(
-        id='output-statistics',
-        children=[
-            html.H6(
-                "Select the evaluation statistics (for testing) about the model that you wish to see in the output  "
-                "(select all that apply):",
-                id='select-statistics'
-            ),
-            dcc.Dropdown(
-                id='output-statistics-dropdown',
-                options=[
-                    {'label': 'RMSE', 'value': 'RMSE'},
-                    {'label': 'R-squared', 'value': 'R-squared'},
-                    {'label': 'MAE', 'value': 'MAE'},
-                    {'label': 'Percentage within 2-fold error', 'value': 'Percentage within 2-fold error'},
-                ],
-                value=[],
-                multi=True,
-                searchable=False,
-                persistence=True,
-                persistence_type='session'
-            )
-        ]
-    )
-
-
 def output_statistics_card():
     """
     This function creates the card with the output statistics dropdown
@@ -582,9 +550,14 @@ def output_statistics_card():
             ),
             dbc.CardBody(
                 id='card-body-output',
-                children=[output_statistics_dropdown()]
-            ),
-            html.Div(id='hyperlinks-container')
+                children=[
+                    html.P(
+                        "Click the hyperlink below to view the plot of all testing output statistics "
+                        "for all existing models."
+                    ),
+                    output_metric_ref()
+                ]
+            )
         ]
     )
 
@@ -610,20 +583,20 @@ def model_input_ref(model_key):
     )
 
 
-def output_metric_ref(metric_name):
+def output_metric_ref():
     """
-    This function creates hyperlinks to a separate page for each
-    output statistic selected by the user (using the dropdown in the output tab).
+    This function creates the hyperlink to a separate page for the
+    output statistics graph
     """
 
     return html.A(
         children=[
             html.H4(
-                f"View {metric_name} plot",
+                "View output statistics plot",
                 id='metric-plot-ref'
             )
         ],
-        href=f'/output-statistics/{metric_name}',
+        href=f'/output-statistics/output-graph',
         target='_blank'
     )
 
@@ -707,7 +680,7 @@ def update_training_output(content, name, stored_train_file_name):
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} not compatible!"],
+            [f"File {name} is not compatible!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -716,7 +689,16 @@ def update_training_output(content, name, stored_train_file_name):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} in correct format but wrong column names!"],
+            [f"File {name} uses the wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        invalid_data_message = html.Div(
+            [f"File {name} uses data in the wrong format!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -733,6 +715,10 @@ def update_training_output(content, name, stored_train_file_name):
             # Check if file contains two columns labeled 'sequence' and 'protein'
             app.globals.TRAINING_DATA.columns = app.globals.TRAINING_DATA.columns.astype(str).str.lower()
             if 'sequence' in app.globals.TRAINING_DATA.columns and 'protein' in app.globals.TRAINING_DATA.columns:
+
+                # TODO: ADD VALIDATION FOR THE DATA ITSELF (SEQUENCES SAME LENGTH, STRINGS, AND CONTAIN ONLY A, C, T, G)
+                # TODO: AND PROTEIN COLUMN ONLY CONTAINS NUMBERS
+
                 final_display = html.Div([upload_children, success_message])
                 app.globals.TRAINING_FILE = name
                 return final_display, {'filename': name}
@@ -1289,21 +1275,6 @@ def validate_querying_text_input(value, stored_query_file):
 
 
 @callback(
-    Output('hyperlinks-container', 'children'),
-    Input('output-statistics-dropdown', 'value')
-)
-def generate_hyperlinks(values_list):
-    """
-    This callback function generates the hyperlinks for testing statistics
-    visualisations based on the user inputs in the dropdown.
-    """
-
-    visualizations_links = [output_metric_ref(value) for value in values_list]
-
-    return visualizations_links
-
-
-@callback(
     Output('content', 'children'),
     Input('container', 'value'),
     [State('store-model-count', 'data')]
@@ -1471,19 +1442,8 @@ def display_page(href):
             return html.Div('Invalid URL.')
 
     elif pathname.startswith('/output-statistics/'):
-        # If one of the output statistics tabs is selected, check which one and display the appropriate graph
-        if 'RMSE' in pathname:
-            return output_statistics_page.create_layout('RMSE')
-
-        elif 'R-squared' in pathname:
-            return output_statistics_page.create_layout('R-squared')
-
-        elif 'MAE' in pathname:
-            return output_statistics_page.create_layout('MAE')
-
-        # needed to format this way due to how browsers render this path
-        elif 'Percentage%20within%202-fold%20error' in pathname:
-            return output_statistics_page.create_layout('Percentage within 2-fold error')
+        # If the output statistics page is created
+        return output_statistics_page.create_layout()
 
     return [
         app_header(),

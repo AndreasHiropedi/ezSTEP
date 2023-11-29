@@ -646,6 +646,10 @@
     border-top: 1px solid;
 }
 
+#card-body-output p {
+    text-align: center
+}
+
 #model-selection {
     margin-top: 20px;
     display: flex;
@@ -697,27 +701,6 @@
     font-size: 12pt;
     width: 40%;
     margin-right: 10px;
-}
-
-#output-statistics {
-    margin-top: -30px;
-}
-
-#select-statistics {
-    font-weight: normal;
-    font-size: 14pt;
-    width: 100%;
-    margin-top: 45px;
-    margin-left: 20px;
-}
-
-#output-statistics-dropdown {
-    margin-top: -10px;
-    width: 80%;
-    font-size: 14pt;
-    text-align: center;
-    margin-left: 80px;
-    margin-bottom: 15px;
 }
 
 #algorithm-descriptor {
@@ -849,7 +832,7 @@
     margin-right: 200px;
 }
 
-#rmse-page-header {
+#statistics-page-header {
     width: 100%;
     background: #A9A9A9;
     top: 0px;
@@ -857,80 +840,14 @@
     position: absolute;
 }
 
-#rmse-page-header h1 {
+#statistics-page-header h1 {
     top: 8px;
     text-align: center;
     text-size: 18pt;
     font-weight: bold;
 }
 
-#rmse-page-contents {
-    top: 100px;
-    width: 100%;
-    position: absolute;
-    padding-bottom: 50px;
-}
-
-#mae-page-header {
-    width: 100%;
-    background: #A9A9A9;
-    top: 0px;
-    height: 70px;
-    position: absolute;
-}
-
-#mae-page-header h1 {
-    top: 8px;
-    text-align: center;
-    text-size: 18pt;
-    font-weight: bold;
-}
-
-#mae-page-contents {
-    top: 100px;
-    width: 100%;
-    position: absolute;
-    padding-bottom: 50px;
-}
-
-#r-squared-page-header {
-    width: 100%;
-    background: #A9A9A9;
-    top: 0px;
-    height: 70px;
-    position: absolute;
-}
-
-#r-squared-page-header h1 {
-    top: 8px;
-    text-align: center;
-    text-size: 18pt;
-    font-weight: bold;
-}
-
-#r-squared-page-contents {
-    top: 100px;
-    width: 100%;
-    position: absolute;
-    padding-bottom: 50px;
-}
-
-#two-fold-page-header {
-    width: 100%;
-    background: #A9A9A9;
-    top: 0px;
-    height: 70px;
-    position: absolute;
-}
-
-#two-fold-page-header h1 {
-    top: 8px;
-    text-align: center;
-    text-size: 18pt;
-    font-weight: bold;
-}
-
-#two-fold-page-contents {
+#statistics-page-contents {
     top: 100px;
     width: 100%;
     position: absolute;

@@ -660,6 +660,14 @@ def model_input_feature_selection_card(model_count):
                     feature_selection_algorithm_dropdown(model_count),
                     feature_number_input(model_count)
                 ]
+            ),
+            html.P(
+                "NOTE: the maximum number of features allowed as input is 100",
+                style={
+                    'margin-top': '-40px',
+                    'font-size': '10pt',
+                    'text-align': 'center'
+                }
             )
         ],
         style={'display': 'none'}
@@ -704,6 +712,14 @@ def model_input_hyperparameter_optimisation_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[hyperparameter_optimisation_number_input(model_count)]
+            ),
+            html.P(
+                "NOTE: the maximum number of iterations allowed as input is 100",
+                style={
+                    'margin-top': '-40px',
+                    'font-size': '10pt',
+                    'text-align': 'center'
+                }
             )
         ],
         style={'display': 'none'}

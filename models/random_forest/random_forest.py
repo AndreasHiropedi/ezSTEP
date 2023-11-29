@@ -47,12 +47,14 @@ class RandomForest:
         self.training_R_squared = None
         self.training_MAE = None
         self.training_percentage_2fold_error = None
+        self.training_2fold_error = None
 
         # testing output statistics
         self.testing_RMSE = None
         self.testing_R_squared = None
         self.testing_MAE = None
         self.testing_percentage_2fold_error = None
+        self.testing_2fold_error = None
 
         # unsupervised learning
         self.dimensionality_reduction_algorithm = None
@@ -191,6 +193,9 @@ class RandomForest:
         self.training_percentage_2fold_error = \
             np.mean((predictions / y_train <= 2) & (y_train / predictions <= 2)) * 100
 
+        # Calculate 2-fold error
+        self.training_2fold_error = np.mean((predictions / y_train <= 2) & (y_train / predictions <= 2))
+
         # Retrain on the entire training dataset
         self.model.fit(x_train, y_train)
 
@@ -221,6 +226,9 @@ class RandomForest:
         # Calculate Percentage within 2-Fold Error for test data
         self.testing_percentage_2fold_error = \
             np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)) * 100
+
+        # Calculate 2-fold error
+        self.testing_2fold_error = np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2))
 
         self.tested_model = True
 
