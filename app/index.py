@@ -710,17 +710,29 @@ def update_training_output(content, name, stored_train_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            app.globals.TRAINING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
 
             # Check if file contains two columns labeled 'sequence' and 'protein'
-            app.globals.TRAINING_DATA.columns = app.globals.TRAINING_DATA.columns.astype(str).str.lower()
-            if 'sequence' in app.globals.TRAINING_DATA.columns and 'protein' in app.globals.TRAINING_DATA.columns:
+            df.columns = df.columns.astype(str).str.lower()
+            if 'sequence' in df.columns and 'protein' in df.columns:
 
-                # TODO: ADD VALIDATION FOR THE DATA ITSELF (SEQUENCES SAME LENGTH, STRINGS, AND CONTAIN ONLY A, C, T, G)
-                # TODO: AND PROTEIN COLUMN ONLY CONTAINS NUMBERS
+                # Check data in the protein column is of the correct type
+                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
+                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # Check data in the sequence column is of the correct type
+                # we check that the data is a string, all sequences are the same length
+                # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
+                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
 
                 final_display = html.Div([upload_children, success_message])
                 app.globals.TRAINING_FILE = name
+                app.globals.TRAINING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -907,7 +919,7 @@ def update_testing_output(content, name, stored_test_file_name):
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} not compatible!"],
+            [f"File {name} is not compatible!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -916,7 +928,16 @@ def update_testing_output(content, name, stored_test_file_name):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} in correct format but wrong column names!"],
+            [f"File {name} uses the wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        invalid_data_message = html.Div(
+            [f"File {name} uses data in the wrong format!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -928,13 +949,29 @@ def update_testing_output(content, name, stored_test_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            app.globals.TESTING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
 
             # Check if file contains two columns labeled 'sequence' and 'protein'
-            app.globals.TESTING_DATA.columns = app.globals.TESTING_DATA.columns.astype(str).str.lower()
-            if 'sequence' in app.globals.TESTING_DATA.columns and 'protein' in app.globals.TESTING_DATA.columns:
+            df.columns = df.columns.astype(str).str.lower()
+            if 'sequence' in df.columns and 'protein' in df.columns:
+
+                # Check data in the protein column is of the correct type
+                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
+                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # Check data in the sequence column is of the correct type
+                # we check that the data is a string, all sequences are the same length
+                # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
+                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
                 final_display = html.Div([upload_children, success_message])
                 app.globals.TESTING_FILE = name
+                app.globals.TESTING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1121,7 +1158,7 @@ def update_querying_output(content, name, stored_query_file_name):
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} not compatible!"],
+            [f"File {name} is not compatible!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1130,7 +1167,16 @@ def update_querying_output(content, name, stored_query_file_name):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} in correct format but wrong column names!"],
+            [f"File {name} uses the wrong column names!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        invalid_data_message = html.Div(
+            [f"File {name} uses data in the wrong format!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1142,13 +1188,29 @@ def update_querying_output(content, name, stored_query_file_name):
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
         if '.csv' in name:
-            app.globals.QUERYING_DATA = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
 
             # Check if file contains two columns labeled 'sequence' and 'protein'
-            app.globals.QUERYING_DATA.columns = app.globals.QUERYING_DATA.columns.astype(str).str.lower()
-            if 'sequence' in app.globals.QUERYING_DATA.columns and 'protein' in app.globals.QUERYING_DATA.columns:
+            df.columns = df.columns.astype(str).str.lower()
+            if 'sequence' in df.columns and 'protein' in df.columns:
+
+                # Check data in the protein column is of the correct type
+                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
+                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # Check data in the sequence column is of the correct type
+                # we check that the data is a string, all sequences are the same length
+                # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
+                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                    final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
                 final_display = html.Div([upload_children, success_message])
                 app.globals.QUERYING_FILE = name
+                app.globals.QUERYING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
