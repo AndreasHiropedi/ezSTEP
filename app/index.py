@@ -772,13 +772,16 @@ def validate_training_text_input(value, stored_train_file):
     sequences = []
     proteins = []
     for row in rows:
+
         # Skip empty rows
         if row.strip() == "":
             continue
         row = row.strip()
+
         # Check different row formats
         if "|" in row:
             data = row.split("|")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -786,6 +789,7 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -793,12 +797,46 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif "," in row:
             data = row.split(",")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -806,6 +844,7 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -813,12 +852,48 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif ";" in row:
             data = row.split(";")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -826,6 +901,7 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -833,9 +909,44 @@ def validate_training_text_input(value, stored_train_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         else:
             return {
@@ -843,6 +954,13 @@ def validate_training_text_input(value, stored_train_file):
                 'height': '100px',
                 'border': '2px solid #dc3545'
             }
+
+    if len(sequences) == 0 and len(proteins) == 0:
+        return {
+            'width': '97.5%',
+            'height': '100px',
+            'border': '2px solid #dc3545'
+        }
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
@@ -1011,13 +1129,16 @@ def validate_testing_text_input(value, stored_test_file):
     sequences = []
     proteins = []
     for row in rows:
+
         # Skip empty rows
         if row.strip() == "":
             continue
         row = row.strip()
+
         # Check different row formats
         if "|" in row:
             data = row.split("|")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1025,6 +1146,7 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1032,12 +1154,48 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif "," in row:
             data = row.split(",")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1045,6 +1203,7 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1052,12 +1211,48 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif ";" in row:
             data = row.split(";")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1065,6 +1260,7 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1072,9 +1268,44 @@ def validate_testing_text_input(value, stored_test_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         else:
             return {
@@ -1082,6 +1313,13 @@ def validate_testing_text_input(value, stored_test_file):
                 'height': '100px',
                 'border': '2px solid #dc3545'
             }
+
+    if len(sequences) == 0 and len(proteins) == 0:
+        return {
+            'width': '97.5%',
+            'height': '100px',
+            'border': '2px solid #dc3545'
+        }
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
@@ -1250,13 +1488,16 @@ def validate_querying_text_input(value, stored_query_file):
     sequences = []
     proteins = []
     for row in rows:
+
         # Skip empty rows
         if row.strip() == "":
             continue
         row = row.strip()
+
         # Check different row formats
         if "|" in row:
             data = row.split("|")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1264,6 +1505,7 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1271,12 +1513,48 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif "," in row:
             data = row.split(",")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1284,6 +1562,7 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1291,12 +1570,48 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         elif ";" in row:
             data = row.split(";")
+
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
@@ -1304,6 +1619,7 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
@@ -1311,9 +1627,44 @@ def validate_querying_text_input(value, stored_query_file):
                     'height': '100px',
                     'border': '2px solid #dc3545'
                 }
+
+            sequence_value = data[0].strip()
+            protein_value = data[1].strip()
+
+            # check if protein value is valid
+            try:
+                float_protein_value = float(protein_value)
+            except ValueError:
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            protein_value = float_protein_value
+
+            # check if sequence value is valid
+            # check that all sequences are the same length
+            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+
+            allowed_chars = {'a', 'c', 't', 'g'}
+            if any(char not in allowed_chars for char in sequence_value.lower()):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
+            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                    'width': '97.5%',
+                    'height': '100px',
+                    'border': '2px solid #dc3545'
+                }
+
             # otherwise, data is valid
-            sequences.append(data[0])
-            proteins.append(data[1])
+            sequences.append(sequence_value)
+            proteins.append(protein_value)
 
         else:
             return {
@@ -1321,6 +1672,13 @@ def validate_querying_text_input(value, stored_query_file):
                 'height': '100px',
                 'border': '2px solid #dc3545'
             }
+
+    if len(sequences) == 0 and len(proteins) == 0:
+        return {
+            'width': '97.5%',
+            'height': '100px',
+            'border': '2px solid #dc3545'
+        }
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
@@ -1532,7 +1890,6 @@ clientside_callback(
     Output('page-title', 'children'),
     Input('url', 'href')
 )
-
 
 my_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
