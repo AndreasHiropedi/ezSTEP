@@ -189,11 +189,16 @@ def user_guide():
                                 "they choose to use the textbox, they must ensure the data is formatted in "
                                 "the following order: sequence + separator (such as , or | or ;) + label + "
                                 "new line character. If the user fails to ensure these conditions, then "
-                                "the app may not be able to process their inputted data."
+                                "the app may not be able to process their inputted data. However, it is worth noting "
+                                "that these conditions only apply for training and testing, since for the querying "
+                                "data the user will only need to provide the sequences (in the format of one sequence "
+                                "per line)."
                             ),
                             html.P(
                                 "NOTE: for the training process, we always perform 5-fold cross validation on the "
-                                "uploaded training dataset."
+                                "uploaded training dataset. Therefore, it is worth noting that, if the length of the "
+                                "text input is less than 5 sequences long, even if the sequences are valid, the input "
+                                "will be rendered invalid."
                             )
                         ],
                         style={
@@ -400,6 +405,13 @@ def training_data_upload_card():
                         },
                         persistence=True,
                         persistence_type='session'
+                    ),
+                    dcc.Input(
+                        id='previous-train-value',
+                        type='hidden',
+                        value='',
+                        persistence=True,
+                        persistence_type='session'
                     )
                 ]
             )
@@ -464,6 +476,13 @@ def testing_data_upload_card():
                         },
                         persistence=True,
                         persistence_type='session'
+                    ),
+                    dcc.Input(
+                        id='previous-test-value',
+                        type='hidden',
+                        value='',
+                        persistence=True,
+                        persistence_type='session'
                     )
                 ]
             )
@@ -526,6 +545,13 @@ def query_data_upload_card():
                             'width': '97.5%',
                             'height': '100px'
                         },
+                        persistence=True,
+                        persistence_type='session'
+                    ),
+                    dcc.Input(
+                        id='previous-query-value',
+                        type='hidden',
+                        value='',
                         persistence=True,
                         persistence_type='session'
                     )
@@ -751,10 +777,14 @@ def update_training_output(content, name, stored_train_file_name):
 
 @callback(
     Output('text-train-data', 'style'),
+    Output('training-change-counter', 'data'),
+    Output('previous-train-value', 'value'),
     Input('text-train-data', 'value'),
-    State('store-uploaded-train-file', 'data')
+    State('previous-train-value', 'value'),
+    State('store-uploaded-train-file', 'data'),
+    State('training-change-counter', 'data')
 )
-def validate_training_text_input(value, stored_train_file):
+def validate_training_text_input(value, previous_value, stored_train_file, counter):
     """
     This callback validates the input in the training data textbox.
     """
@@ -764,7 +794,11 @@ def validate_training_text_input(value, stored_train_file):
         return {
             'width': '97.5%',
             'height': '100px'
-        }
+        }, counter, previous_value
+
+    # Check if input in the text area has changed
+    if value != previous_value:
+        counter += 1
 
     # Split the text into rows
     rows = value.split('\n')
@@ -788,7 +822,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
@@ -796,7 +830,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -809,7 +843,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # check if sequence value is valid
             # check that all sequences are the same length
@@ -821,14 +855,14 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -843,7 +877,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
@@ -851,7 +885,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -864,7 +898,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             protein_value = float_protein_value
 
@@ -878,14 +912,14 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -900,7 +934,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
@@ -908,7 +942,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -921,7 +955,7 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             protein_value = float_protein_value
 
@@ -935,14 +969,14 @@ def validate_training_text_input(value, stored_train_file):
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
-                }
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -953,14 +987,15 @@ def validate_training_text_input(value, stored_train_file):
                 'width': '97.5%',
                 'height': '100px',
                 'border': '2px solid #dc3545'
-            }
+            }, counter, value
 
-    if len(sequences) == 0 and len(proteins) == 0:
+    # Check if length of input is less than 5 (since we need at least 5 for 5-fold)
+    if len(sequences) < 5 and len(proteins) < 5:
         return {
             'width': '97.5%',
             'height': '100px',
             'border': '2px solid #dc3545'
-        }
+        }, counter, value
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
@@ -968,12 +1003,13 @@ def validate_training_text_input(value, stored_train_file):
             'sequence': sequences,
             'protein': proteins
         })
+        app.globals.TRAINING_FILE = f"training_text_input_{counter}"
 
     return {
         'width': '97.5%',
         'height': '100px',
         'border': '2px solid #28a745'
-    }
+    }, counter, value
 
 
 @callback(
@@ -1108,10 +1144,14 @@ def update_testing_output(content, name, stored_test_file_name):
 
 @callback(
     Output('text-test-data', 'style'),
+    Output('testing-change-counter', 'data'),
+    Output('previous-test-value', 'value'),
     Input('text-test-data', 'value'),
-    State('store-uploaded-test-file', 'data')
+    State('previous-test-value', 'value'),
+    State('store-uploaded-test-file', 'data'),
+    State('testing-change-counter', 'data')
 )
-def validate_testing_text_input(value, stored_test_file):
+def validate_testing_text_input(value, previous_value, stored_test_file, counter):
     """
     This callback validates the input in the testing data textbox.
     """
@@ -1119,9 +1159,13 @@ def validate_testing_text_input(value, stored_test_file):
     # Handle case where the text area is empty
     if not value:
         return {
-            'width': '97.5%',
-            'height': '100px'
-        }
+           'width': '97.5%',
+           'height': '100px'
+        }, counter, previous_value
+
+    # Check if input in the text area has changed
+    if value != previous_value:
+        counter += 1
 
     # Split the text into rows
     rows = value.split('\n')
@@ -1142,33 +1186,31 @@ def validate_testing_text_input(value, stored_test_file):
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
 
             # check if protein value is valid
             try:
-                float_protein_value = float(protein_value)
+                protein_value = float(protein_value)
             except ValueError:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            protein_value = float_protein_value
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # check if sequence value is valid
             # check that all sequences are the same length
@@ -1177,17 +1219,17 @@ def validate_testing_text_input(value, stored_test_file):
             allowed_chars = {'a', 'c', 't', 'g'}
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1199,18 +1241,18 @@ def validate_testing_text_input(value, stored_test_file):
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -1220,10 +1262,10 @@ def validate_testing_text_input(value, stored_test_file):
                 float_protein_value = float(protein_value)
             except ValueError:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             protein_value = float_protein_value
 
@@ -1234,17 +1276,17 @@ def validate_testing_text_input(value, stored_test_file):
             allowed_chars = {'a', 'c', 't', 'g'}
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1256,18 +1298,18 @@ def validate_testing_text_input(value, stored_test_file):
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # if one of them is empty, the data is invalid
             if data[0].strip() == '' or data[1].strip() == '':
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -1277,10 +1319,10 @@ def validate_testing_text_input(value, stored_test_file):
                 float_protein_value = float(protein_value)
             except ValueError:
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             protein_value = float_protein_value
 
@@ -1291,17 +1333,17 @@ def validate_testing_text_input(value, stored_test_file):
             allowed_chars = {'a', 'c', 't', 'g'}
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
 
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1309,17 +1351,18 @@ def validate_testing_text_input(value, stored_test_file):
 
         else:
             return {
-                'width': '97.5%',
-                'height': '100px',
-                'border': '2px solid #dc3545'
-            }
+               'width': '97.5%',
+               'height': '100px',
+               'border': '2px solid #dc3545'
+            }, counter, value
 
-    if len(sequences) == 0 and len(proteins) == 0:
+    # Check if length of input is less than 5 (since we need at least 5 inputs for 5-fold)
+    if len(sequences) < 5 and len(proteins) < 5:
         return {
-            'width': '97.5%',
-            'height': '100px',
-            'border': '2px solid #dc3545'
-        }
+           'width': '97.5%',
+           'height': '100px',
+           'border': '2px solid #dc3545'
+        }, counter, value
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
@@ -1327,12 +1370,13 @@ def validate_testing_text_input(value, stored_test_file):
             'sequence': sequences,
             'protein': proteins
         })
+        app.globals.TESTING_FILE = f"testing_text_input_{counter}"
 
     return {
         'width': '97.5%',
         'height': '100px',
         'border': '2px solid #28a745'
-    }
+    }, counter, value
 
 
 @callback(
@@ -1428,15 +1472,9 @@ def update_querying_output(content, name, stored_query_file_name):
         if '.csv' in name:
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
 
-            # Check if file contains two columns labeled 'sequence' and 'protein'
+            # Check if file contains a column labeled 'sequence'
             df.columns = df.columns.astype(str).str.lower()
-            if 'sequence' in df.columns and 'protein' in df.columns:
-
-                # Check data in the protein column is of the correct type
-                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
-                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
-                    final_display = html.Div([upload_children, invalid_data_message])
-                    return final_display, None
+            if 'sequence' in df.columns:
 
                 # Check data in the sequence column is of the correct type
                 # we check that the data is a string, all sequences are the same length
@@ -1467,10 +1505,14 @@ def update_querying_output(content, name, stored_query_file_name):
 
 @callback(
     Output('text-query-data', 'style'),
+    Output('querying-change-counter', 'data'),
+    Output('previous-query-value', 'value'),
     Input('text-query-data', 'value'),
-    State('store-uploaded-query-file', 'data')
+    State('previous-query-value', 'value'),
+    State('store-uploaded-query-file', 'data'),
+    State('querying-change-counter', 'data')
 )
-def validate_querying_text_input(value, stored_query_file):
+def validate_querying_text_input(value, previous_value, stored_query_file, counter):
     """
     This callback validates the input in the querying data textbox.
     """
@@ -1478,220 +1520,58 @@ def validate_querying_text_input(value, stored_query_file):
     # Handle case where the text area is empty
     if not value:
         return {
-            'width': '97.5%',
-            'height': '100px'
-        }
+           'width': '97.5%',
+           'height': '100px'
+        }, counter, previous_value
+
+    # Check if input in the text area has changed
+    if value != previous_value:
+        counter += 1
 
     # Split the text into rows
     rows = value.split('\n')
 
     sequences = []
-    proteins = []
     for row in rows:
 
         # Skip empty rows
         if row.strip() == "":
             continue
-        row = row.strip()
+        sequence_value = row.strip()
 
-        # Check different row formats
-        if "|" in row:
-            data = row.split("|")
-
-            # if there aren't exactly 2 elements, the data is invalid
-            if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            sequence_value = data[0].strip()
-            protein_value = data[1].strip()
-
-            # check if protein value is valid
-            try:
-                float_protein_value = float(protein_value)
-            except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            protein_value = float_protein_value
-
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-
-            allowed_chars = {'a', 'c', 't', 'g'}
-            if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # otherwise, data is valid
-            sequences.append(sequence_value)
-            proteins.append(protein_value)
-
-        elif "," in row:
-            data = row.split(",")
-
-            # if there aren't exactly 2 elements, the data is invalid
-            if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            sequence_value = data[0].strip()
-            protein_value = data[1].strip()
-
-            # check if protein value is valid
-            try:
-                float_protein_value = float(protein_value)
-            except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            protein_value = float_protein_value
-
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-
-            allowed_chars = {'a', 'c', 't', 'g'}
-            if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # otherwise, data is valid
-            sequences.append(sequence_value)
-            proteins.append(protein_value)
-
-        elif ";" in row:
-            data = row.split(";")
-
-            # if there aren't exactly 2 elements, the data is invalid
-            if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            sequence_value = data[0].strip()
-            protein_value = data[1].strip()
-
-            # check if protein value is valid
-            try:
-                float_protein_value = float(protein_value)
-            except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            protein_value = float_protein_value
-
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-
-            allowed_chars = {'a', 'c', 't', 'g'}
-            if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }
-
-            # otherwise, data is valid
-            sequences.append(sequence_value)
-            proteins.append(protein_value)
-
-        else:
+        # Check if sequence value is valid
+        # check that all sequences are the same length
+        # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+        allowed_chars = {'a', 'c', 't', 'g'}
+        if any(char not in allowed_chars for char in sequence_value.lower()):
             return {
-                'width': '97.5%',
-                'height': '100px',
-                'border': '2px solid #dc3545'
-            }
+               'width': '97.5%',
+               'height': '100px',
+               'border': '2px solid #dc3545'
+            }, counter, value
 
-    if len(sequences) == 0 and len(proteins) == 0:
-        return {
-            'width': '97.5%',
-            'height': '100px',
-            'border': '2px solid #dc3545'
-        }
+        if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+            return {
+               'width': '97.5%',
+               'height': '100px',
+               'border': '2px solid #dc3545'
+            }, counter, value
+
+        # Otherwise, data is valid
+        sequences.append(sequence_value)
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
         app.globals.QUERYING_DATA = pd.DataFrame({
             'sequence': sequences,
-            'protein': proteins
         })
+        app.globals.QUERYING_FILE = f"querying_text_input_{counter}"
 
     return {
         'width': '97.5%',
         'height': '100px',
         'border': '2px solid #28a745'
-    }
+    }, counter, value
 
 
 @callback(
@@ -1898,7 +1778,10 @@ my_app.layout = html.Div([
     dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
     dcc.Store(id='store-uploaded-train-file', storage_type='session'),
     dcc.Store(id='store-uploaded-test-file', storage_type='session'),
-    dcc.Store(id='store-uploaded-query-file', storage_type='session')
+    dcc.Store(id='store-uploaded-query-file', storage_type='session'),
+    dcc.Store(id='training-change-counter', data=0, storage_type='session'),
+    dcc.Store(id='testing-change-counter', data=0, storage_type='session'),
+    dcc.Store(id='querying-change-counter', data=0, storage_type='session')
 ])
 
 if __name__ == '__main__':
