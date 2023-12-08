@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 from models.features import encoders
 from models.features import normalizers
 from sklearn.linear_model import Ridge
@@ -33,6 +35,7 @@ class RidgeRegressor:
         self.feature_selection_algorithm = None
         self.feature_number = None
         self.hyper_opt_iterations = None
+        self.model_number = None
 
         # training output statistics
         self.training_RMSE = None
@@ -65,8 +68,16 @@ class RidgeRegressor:
         # temporary outputs
         self.encoded_train = None
         self.encoded_test = None
+        self.encoded_query = None
         self.normalized_train = None
         self.normalized_test = None
+        self.normalized_query = None
+
+        # normalizers
+        self.z_score_feature_normaliser = None
+        self.z_score_target_normaliser = None
+        self.min_max_feature_normaliser = None
+        self.min_max_target_normaliser = None
 
         # files used
         self.training_file = None
@@ -123,6 +134,9 @@ class RidgeRegressor:
     def set_use_hyperopt(self, answer):
         self.use_hyper_opt = answer
 
+    def set_model_num(self, number):
+        self.model_number = f"model_{number}"
+
     # ------------------------ METHODS ------------------------ #
 
     def encode_features(self):
@@ -132,11 +146,12 @@ class RidgeRegressor:
         """
 
         if self.feature_encoding_method == 'binary':
-            self.encoded_train, self.encoded_test = encoders.encode_one_hot(self.training_data, self.testing_data)
+            self.encoded_train, self.encoded_test, self.encoded_query = \
+                encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
 
         elif self.feature_encoding_method == 'kmer':
-            self.encoded_train, self.encoded_test = \
-                encoders.encode_kmer(self.training_data, self.testing_data, self.kmer_size)
+            self.encoded_train, self.encoded_test, self.encoded_query = \
+                encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
 
     def normalize_features(self):
         """
@@ -145,11 +160,13 @@ class RidgeRegressor:
         """
 
         if self.feature_normalization_algorithm == 'zscore':
-            self.normalized_train, self.normalized_test = \
+            self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
+                self.z_score_target_normaliser = \
                 normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
 
         elif self.feature_normalization_algorithm == 'minmax':
-            self.normalized_train, self.normalized_test = \
+            self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
+                self.min_max_target_normaliser = \
                 normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
 
     def train_model(self):
@@ -229,5 +246,31 @@ class RidgeRegressor:
         Method for querying the machine learning model
         on the user-uploaded querying data
         """
+
+        normalized_x = None
+        scaler = None
+        if self.feature_normalization_algorithm == 'zscore':
+            normalized_x = self.z_score_feature_normaliser.transform(self.encoded_query)
+            scaler = self.z_score_target_normaliser
+
+        elif self.feature_normalization_algorithm == 'minmax':
+            normalized_x = self.min_max_feature_normaliser.transform(self.encoded_query)
+            scaler = self.min_max_target_normaliser
+
+        normalized_x_df = pd.DataFrame(normalized_x, columns=self.encoded_query.columns)
+
+        normalized_predictions = self.model.predict(normalized_x_df)
+
+        # Convert predictions back to original scale
+        predictions_original_scale = scaler.inverse_transform(normalized_predictions.reshape(-1, 1))
+
+        # Convert predictions to a DataFrame
+        predictions_df = pd.DataFrame(predictions_original_scale, columns=['protein'])
+
+        # Concatenate the raw data DataFrame with the predictions DataFrame
+        combined_df = pd.concat([self.querying_data['sequence'], predictions_df], axis=1)
+
+        # Write to a CSV file
+        combined_df.to_csv(f'{self.model_number}_query_data_predictions.csv', index=False)
 
         self.queried_model = True

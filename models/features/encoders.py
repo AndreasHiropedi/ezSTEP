@@ -15,7 +15,7 @@ def encode_dna_seq_one_hot(sequence):
     return one_hot_seq
 
 
-def encode_one_hot(train_data, test_data):
+def encode_one_hot(train_data, test_data, query_data):
     """
     This function applies one-hot encoding to the features in both training and test sets
     """
@@ -39,8 +39,16 @@ def encode_one_hot(train_data, test_data):
     train_final = pd.concat([train_data['protein'], train_encoded_df], axis=1)
     test_final = pd.concat([test_data['protein'], test_encoded_df], axis=1)
 
-    return train_final, test_final
+    # Encode query data if uploaded
+    if query_data is not None:
+        one_hot_encoded_query = np.array([encode_dna_seq_one_hot(sequence) for sequence in query_data['sequence']])
+        query_nsamples, query_nx, query_ny = one_hot_encoded_query.shape
+        query_reshaped = one_hot_encoded_test.reshape((query_nsamples, query_nx * query_ny))
+        query_encoded_df = pd.DataFrame(query_reshaped, columns=[f'base_{i}' for i in range(train_nx * train_ny)])
 
+        return train_final, test_final, query_encoded_df
+
+    return train_final, test_final, None
 
 
 def generate_kmers(sequence, kmer_size):
@@ -68,7 +76,7 @@ def apply_kmer(data, kmer_size):
     return data
 
 
-def encode_kmer(train_data, test_data, kmer_size):
+def encode_kmer(train_data, test_data, query_data, kmer_size):
     """
     Use Kmer encoding on the original training and testing data
     """
@@ -92,4 +100,12 @@ def encode_kmer(train_data, test_data, kmer_size):
     train_final = pd.concat([train_data['protein'], train_kmer_df], axis=1)
     test_final = pd.concat([test_data['protein'], test_kmer_df], axis=1)
 
-    return train_final, test_final
+    # Encode query data if uploaded
+    if query_data is not None:
+        query_data = apply_kmer(query_data, kmer_size)
+        query_kmer = vectorizer.transform(query_data['kmer_sequence'])
+        query_kmer_df = pd.DataFrame(query_kmer.toarray(), columns=vectorizer.get_feature_names_out())
+
+        return train_final, test_final, query_kmer_df
+
+    return train_final, test_final, None

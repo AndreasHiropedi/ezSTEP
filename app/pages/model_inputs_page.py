@@ -1676,6 +1676,7 @@ def press_submit_button(
             model = RidgeRegressor()
 
         # set model info based on inputs
+        model.set_model_num(index_value)
 
         # set model data
         model.set_training_data(training_data)

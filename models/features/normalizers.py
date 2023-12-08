@@ -35,7 +35,7 @@ def min_max_normalization(train_data, test_data):
     test_final_scaled = pd.concat(
         [pd.DataFrame(test_target_scaled, columns=['protein']), test_features_scaled_df], axis=1)
 
-    return train_final_scaled, test_final_scaled
+    return train_final_scaled, test_final_scaled, feature_scaler, target_scaler
 
 
 def z_score_normalization(train_data, test_data):
@@ -71,4 +71,4 @@ def z_score_normalization(train_data, test_data):
     test_final_standardized = pd.concat(
         [pd.DataFrame(test_target_standardized, columns=['protein']), test_features_standardized_df], axis=1)
 
-    return train_final_standardized, test_final_standardized
+    return train_final_standardized, test_final_standardized, feature_scaler, target_scaler
