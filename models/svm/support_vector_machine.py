@@ -3,6 +3,7 @@ import pandas as pd
 
 from models.features import encoders
 from models.features import normalizers
+from models.features import selectors
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import cross_val_predict, KFold
 from sklearn.svm import SVR
@@ -76,6 +77,10 @@ class SupportVectorMachine:
         self.normalized_train = None
         self.normalized_test = None
         self.normalized_query = None
+        self.selected_train = None
+        self.selected_test = None
+        self.selected_query = None
+        self.selected_features = None
 
         # normalizers
         self.z_score_feature_normaliser = None
@@ -167,11 +172,15 @@ class SupportVectorMachine:
             self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
                 self.z_score_target_normaliser = \
                 normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+            if self.encoded_query is not None:
+                self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
 
         elif self.feature_normalization_algorithm == 'minmax':
             self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
                 self.min_max_target_normaliser = \
                 normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+            if self.encoded_query is not None:
+                self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
 
     def train_model(self):
         """
@@ -183,8 +192,29 @@ class SupportVectorMachine:
         self.encode_features()
         self.normalize_features()
 
+        # Apply feature selection (if enabled)
+        if self.use_feature_select == "yes":
+            # f-score
+            if self.feature_selection_algorithm == "f-score":
+                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
+                    selectors.f_score_selection(self.normalized_train, self.normalized_test,
+                                                self.normalized_query, self.feature_number)
+
+            # weight importance
+            elif self.feature_selection_algorithm == "weight":
+                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
+                    selectors.weight_importance_selection(self.model, self.normalized_train, self.normalized_test,
+                                                          self.normalized_query, self.feature_number)
+
+            # mutual information
+            elif self.feature_selection_algorithm == "mutual":
+                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
+                    selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
+                                                           self.normalized_query, self.feature_number)
+
         # Prepare the training data
-        x_train = self.normalized_train.drop('protein', axis=1)
+        x_train = self.selected_train if self.selected_train is not None else \
+            self.normalized_train.drop('protein', axis=1)
         y_train = self.normalized_train['protein']
 
         # Setup K-Fold cross-validation
@@ -221,7 +251,7 @@ class SupportVectorMachine:
         """
 
         # Prepare the test data
-        x_test = self.normalized_test.drop('protein', axis=1)
+        x_test = self.selected_test if self.selected_test is not None else self.normalized_test.drop('protein', axis=1)
         y_test = self.normalized_test['protein']
 
         # Make predictions using the trained model
@@ -251,17 +281,17 @@ class SupportVectorMachine:
         on the user-uploaded querying data
         """
 
-        normalized_x = None
         scaler = None
         if self.feature_normalization_algorithm == 'zscore':
-            normalized_x = self.z_score_feature_normaliser.transform(self.encoded_query)
             scaler = self.z_score_target_normaliser
 
         elif self.feature_normalization_algorithm == 'minmax':
-            normalized_x = self.min_max_feature_normaliser.transform(self.encoded_query)
             scaler = self.min_max_target_normaliser
 
-        normalized_x_df = pd.DataFrame(normalized_x, columns=self.encoded_query.columns)
+        normalized_x_df = pd.DataFrame(self.normalized_query, columns=self.encoded_query.columns)
+        if self.selected_query is not None:
+            normalized_x_df = pd.DataFrame(self.selected_query,
+                                           columns=self.encoded_query.columns[self.selected_features])
 
         normalized_predictions = self.model.predict(normalized_x_df)
 

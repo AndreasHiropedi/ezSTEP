@@ -909,10 +909,8 @@ def feature_selection_algorithm_dropdown(model_count):
             dcc.Dropdown(
                 id={'type': 'feature-selection-dropdown', 'index': model_count},
                 options=[
-                    {'label': 'Chi-Square', 'value': 'chi'},
-                    {'label': 'Information Gain', 'value': 'gain'},
-                    {'label': 'F-Score', 'value': 'f-score'},
-                    {'label': 'Pearson Correlation', 'value': 'pearson'},
+                    {'label': 'Regression F-score', 'value': 'f-score'},
+                    {'label': 'Weight Importance', 'value': 'weight'},
                     {'label': 'Mutual Information', 'value': 'mutual'},
                 ],
                 searchable=False,
