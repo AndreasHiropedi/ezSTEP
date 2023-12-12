@@ -1009,7 +1009,7 @@ def dimension_reduction_algorithm_dropdown(model_count):
                 id={'type': 'dimension-reduction-dropdown', 'index': model_count},
                 options=[
                     {'label': 'PCA', 'value': 'pca'},
-                    {'label': 'tsne', 'value': 'tsne'},
+                    {'label': 't-SNE', 'value': 'tsne'},
                     {'label': 'UMAP', 'value': 'umap'},
                 ],
                 searchable=False,

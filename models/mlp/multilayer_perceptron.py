@@ -4,6 +4,7 @@ import pandas as pd
 from models.features import encoders
 from models.features import normalizers
 from models.features import selectors
+from models.unsupervised_learning import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import cross_val_predict, KFold
 from sklearn.neural_network import MLPRegressor
@@ -99,6 +100,9 @@ class MultiLayerPerceptron:
         self.selected_test = None
         self.selected_query = None
         self.selected_features = None
+        self.unsupervised_train = None
+        self.unsupervised_test = None
+        self.unsupervised_query = None
 
         # normalizers
         self.z_score_feature_normaliser = None
@@ -210,6 +214,26 @@ class MultiLayerPerceptron:
         self.encode_features()
         self.normalize_features()
 
+        # Apply dimensionality reduction (if unsupervised learning is enabled)
+        if self.use_unsupervised == "yes":
+            # PCA
+            if self.dimensionality_reduction_algorithm == 'pca':
+                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
+                    dimension_reduction_methods.use_pca(self.normalized_train, self.normalized_test,
+                                                        self.normalized_query)
+
+            # UMAP
+            elif self.dimensionality_reduction_algorithm == 'umap':
+                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
+                    dimension_reduction_methods.use_umap(self.normalized_train, self.normalized_test,
+                                                         self.normalized_query)
+
+            # t-SNE
+            elif self.dimensionality_reduction_algorithm == 'tsne':
+                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
+                    dimension_reduction_methods.use_tsne(self.normalized_train, self.normalized_test,
+                                                         self.normalized_query)
+
         # Apply feature selection (if enabled)
         if self.use_feature_select == "yes":
             # f-score
@@ -234,6 +258,8 @@ class MultiLayerPerceptron:
         x_train = self.selected_train if self.selected_train is not None else \
             self.normalized_train.drop('protein', axis=1)
         y_train = self.normalized_train['protein']
+
+        # TODO: ADD HYPER-OPT HERE
 
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
