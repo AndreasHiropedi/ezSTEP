@@ -1,13 +1,30 @@
 import numpy as np
 import pandas as pd
 
+from functools import partial
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 from models.features import encoders
 from models.features import normalizers
 from models.features import selectors
 from models.unsupervised_learning import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import cross_val_predict, KFold
+from sklearn.model_selection import cross_val_predict, KFold, cross_val_score
 from sklearn.neural_network import MLPRegressor
+
+
+def hyper_opt_func(params, x, y):
+    """
+    This function performs the hyperparameter optimisation
+    """
+
+    mlp = MLPRegressor(activation=params['activation'],
+                       hidden_layer_sizes=params['hidden_layer_sizes'],
+                       max_iter=params['max_iter'])
+
+    # Assuming X, y are your data
+    score = cross_val_score(mlp, x, y, scoring='r2', cv=5).mean()
+
+    return {'loss': -score, 'status': STATUS_OK}
 
 
 class MultiLayerPerceptron:
@@ -259,7 +276,37 @@ class MultiLayerPerceptron:
             self.normalized_train.drop('protein', axis=1)
         y_train = self.normalized_train['protein']
 
-        # TODO: ADD HYPER-OPT HERE
+        # Apply hyperparameter optimisation (if enabled)
+        if self.use_hyper_opt == "yes":
+            # set up the parameter space for hyper-opt
+            space = {
+                'activation': hp.choice('activation', ['logistic', 'relu', 'tanh']),
+                'hidden_layer_sizes': hp.choice('hidden_layer_sizes', [
+                    (100, 100), (100, 100, 100), (200, 200),
+                    (200, 200, 200), (250, 250), (250, 250, 250)
+                ]),
+                'max_iter': hp.choice('max_iter', [100, 200, 250])
+            }
+
+            # Initialize trials object to store details of each iteration
+            trials = Trials()
+
+            # Create a partial function with X and y
+            objective_with_data = partial(hyper_opt_func, x=x_train, y=y_train)
+
+            # Run the optimizer
+            best = fmin(fn=objective_with_data, space=space, algo=tpe.suggest, max_evals=self.hyper_opt_iterations,
+                        trials=trials)
+
+            # Select the best model
+            self.model = MLPRegressor(
+                activation=['logistic', 'relu', 'tanh'][best['activation']],
+                hidden_layer_sizes=[
+                    (100, 100), (100, 100, 100), (200, 200),
+                    (200, 200, 200), (250, 250), (250, 250, 250)
+                ][best['hidden_layer_sizes']],
+                max_iter=[100, 200, 250][best['max_iter']]
+            )
 
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)

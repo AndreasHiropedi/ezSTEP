@@ -1,13 +1,35 @@
 import numpy as np
 import pandas as pd
 
+from functools import partial
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 from models.features import encoders
 from models.features import normalizers
 from models.features import selectors
 from models.unsupervised_learning import dimension_reduction_methods
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import cross_val_predict, KFold
+from sklearn.model_selection import cross_val_predict, KFold, cross_val_score
+
+
+def hyper_opt_func(params, x, y):
+    """
+    This function performs the hyperparameter optimisation
+    """
+
+    rf = RandomForestRegressor(
+        bootstrap=params['bootstrap'],
+        max_depth=params['max_depth'],
+        max_features=params['max_features'],
+        min_samples_leaf=params['min_samples_leaf'],
+        min_samples_split=params['min_samples_split'],
+        n_estimators=params['n_estimators']
+    )
+
+    # Assuming X, y are your data
+    score = cross_val_score(rf, x, y, scoring='r2', cv=5).mean()
+
+    return {'loss': -score, 'status': STATUS_OK}
 
 
 class RandomForest:
@@ -244,7 +266,37 @@ class RandomForest:
             self.normalized_train.drop('protein', axis=1)
         y_train = self.normalized_train['protein']
 
-        # TODO: ADD HYPER-OPT HERE
+        # Apply hyperparameter optimisation (if enabled)
+        if self.use_hyper_opt == "yes":
+            # set up the parameter space for hyper-opt
+            space = {
+                'bootstrap': hp.choice('bootstrap', [True]),
+                'max_depth': hp.choice('max_depth', [80, 90, 100, 110]),
+                'max_features': hp.choice('max_features', [2, 3]),
+                'min_samples_leaf': hp.choice('min_samples_leaf', [3, 4, 5]),
+                'min_samples_split': hp.choice('min_samples_split', [8, 10, 12]),
+                'n_estimators': hp.choice('n_estimators', [100, 200, 300, 1000])
+            }
+
+            # Initialize trials object to store details of each iteration
+            trials = Trials()
+
+            # Create a partial function with X and y
+            objective_with_data = partial(hyper_opt_func, x=x_train, y=y_train)
+
+            # Run the optimizer
+            best = fmin(fn=objective_with_data, space=space, algo=tpe.suggest, max_evals=self.hyper_opt_iterations,
+                        trials=trials)
+
+            # Select the best model
+            self.model = RandomForestRegressor(
+                bootstrap=[True][best['bootstrap']],
+                max_depth=[80, 90, 100, 110][best['max_depth']],
+                max_features=[2, 3][best['max_features']],
+                min_samples_leaf=[3, 4, 5][best['min_samples_leaf']],
+                min_samples_split=[8, 10, 12][best['min_samples_split']],
+                n_estimators=[100, 200, 300, 1000][best['n_estimators']]
+            )
 
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)

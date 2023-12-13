@@ -1,13 +1,32 @@
 import numpy as np
 import pandas as pd
 
+from functools import partial
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 from models.features import encoders
 from models.features import normalizers
 from models.features import selectors
 from models.unsupervised_learning import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import cross_val_predict, KFold
+from sklearn.model_selection import cross_val_predict, KFold, cross_val_score
 from sklearn.svm import SVR
+
+
+def hyper_opt_func(params, x, y):
+    """
+    This function performs the hyperparameter optimisation
+    """
+
+    svr = SVR(
+        kernel=params['kernel'],
+        C=params['C'],
+        epsilon=params['epsilon']
+    )
+
+    # Assuming X, y are your data
+    score = cross_val_score(svr, x, y, scoring='r2', cv=5).mean()
+
+    return {'loss': -score, 'status': STATUS_OK}
 
 
 class SupportVectorMachine:
@@ -164,7 +183,7 @@ class SupportVectorMachine:
 
         elif self.feature_encoding_method == 'kmer':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_kmer(self.training_data, self.testing_data, self.kmer_size, self.querying_data)
+                encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
 
     def normalize_features(self):
         """
@@ -241,7 +260,32 @@ class SupportVectorMachine:
             self.normalized_train.drop('protein', axis=1)
         y_train = self.normalized_train['protein']
 
-        # TODO: ADD HYPER-OPT HERE
+        # Apply hyperparameter optimisation (if enabled)
+        # Apply hyperparameter optimisation (if enabled)
+        if self.use_hyper_opt == "yes":
+            # set up the parameter space for hyper-opt
+            space = {
+                'kernel': hp.choice('kernel', ['rbf', 'poly', 'linear']),
+                'C': hp.choice('C', [1, 10, 20, 30, 40, 50]),
+                'epsilon': hp.choice('epsilon', [0.1, 0.3, 0.5, 0.7, 1.0])
+            }
+
+            # Initialize trials object to store details of each iteration
+            trials = Trials()
+
+            # Create a partial function with X and y
+            objective_with_data = partial(hyper_opt_func, x=x_train, y=y_train)
+
+            # Run the optimizer
+            best = fmin(fn=objective_with_data, space=space, algo=tpe.suggest, max_evals=self.hyper_opt_iterations,
+                        trials=trials)
+
+            # Select the best model
+            self.model = SVR(
+                kernel=['rbf', 'poly', 'linear'][best['kernel']],
+                C=[1, 10, 20, 30, 40, 50][best['C']],
+                epsilon=[0.1, 0.3, 0.5, 0.7, 1.0][best['epsilon']]
+            )
 
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
