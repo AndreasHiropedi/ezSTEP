@@ -261,6 +261,12 @@ class RandomForest:
                     selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
                                                            self.normalized_query, self.feature_number)
 
+            # PCA
+            elif self.feature_selection_algorithm == "pca":
+                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
+                    selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
+                                            self.feature_number)
+
         # Prepare the training data
         x_train = self.selected_train if self.selected_train is not None else \
             self.normalized_train.drop('protein', axis=1)

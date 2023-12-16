@@ -1,5 +1,6 @@
 import numpy as np
 
+from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest, mutual_info_regression, f_regression, SelectFromModel
 
 
@@ -28,7 +29,7 @@ def f_score_selection(train_data, test_data, query_data, features_number):
         query_selected = selector.transform(query_data)
         return train_selected, test_selected, query_selected, selected_features_mask
 
-    return train_selected, test_selected, None, None
+    return train_selected, test_selected, None, selected_features_mask
 
 
 def weight_importance_selection(model, train_data, test_data, query_data, features_number):
@@ -56,7 +57,7 @@ def weight_importance_selection(model, train_data, test_data, query_data, featur
         query_selected = selector.transform(query_data)
         return train_selected, test_selected, query_selected, selected_features_mask
 
-    return train_selected, test_selected, None, None
+    return train_selected, test_selected, None, selected_features_mask
 
 
 def mutual_information_selection(train_data, test_data, query_data, features_number):
@@ -84,4 +85,31 @@ def mutual_information_selection(train_data, test_data, query_data, features_num
         query_selected = selector.transform(query_data)
         return train_selected, test_selected, query_selected, selected_features_mask
 
-    return train_selected, test_selected, None, None
+    return train_selected, test_selected, None, selected_features_mask
+
+
+def pca_selection(train_data, test_data, query_data, features_number):
+    """
+    This function implements PCA for feature selection.
+    """
+
+    # Separate features and target
+    train_features = train_data.drop('protein', axis=1)
+    test_features = test_data.drop('protein', axis=1)
+
+    # Apply PCA
+    pca = PCA(n_components=features_number)
+    train_pca = pca.fit_transform(train_features)
+
+    # Transform the test data set
+    test_pca = pca.transform(test_features)
+
+    # Get the selected features
+    selected_features = pca.components_.T
+
+    # Transform query set (if applicable)
+    if query_data is not None:
+        query_pca = pca.transform(query_data)
+        return train_pca, test_pca, query_pca, selected_features
+
+    return train_pca, test_pca, None, selected_features

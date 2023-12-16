@@ -912,6 +912,7 @@ def feature_selection_algorithm_dropdown(model_count):
                     {'label': 'Regression F-score', 'value': 'f-score'},
                     {'label': 'Weight Importance', 'value': 'weight'},
                     {'label': 'Mutual Information', 'value': 'mutual'},
+                    {'label': 'PCA', 'value': 'pca'},
                 ],
                 searchable=False,
                 persistence=True,
