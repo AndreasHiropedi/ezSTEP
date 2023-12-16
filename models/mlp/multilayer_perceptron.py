@@ -8,7 +8,7 @@ from models.features import normalizers
 from models.features import selectors
 from models.unsupervised_learning import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import cross_val_predict, KFold, cross_val_score
+from sklearn.model_selection import KFold, cross_val_score
 from sklearn.neural_network import MLPRegressor
 
 
@@ -84,6 +84,10 @@ class MultiLayerPerceptron:
         self.training_MAE = None
         self.training_percentage_2fold_error = None
         self.training_2fold_error = None
+        self.training_RMSE_std = None
+        self.training_R_squared_std = None
+        self.training_MAE_std = None
+        self.training_percentage_2fold_error_std = None
 
         # testing output statistics
         self.testing_RMSE = None
@@ -234,19 +238,19 @@ class MultiLayerPerceptron:
         # Apply dimensionality reduction (if unsupervised learning is enabled)
         if self.use_unsupervised == "yes":
             # PCA
-            if self.dimensionality_reduction_algorithm == 'pca':
+            if self.dimensionality_reduction_algorithm == 'PCA':
                 self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
                     dimension_reduction_methods.use_pca(self.normalized_train, self.normalized_test,
                                                         self.normalized_query)
 
             # UMAP
-            elif self.dimensionality_reduction_algorithm == 'umap':
+            elif self.dimensionality_reduction_algorithm == 'UMAP':
                 self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
                     dimension_reduction_methods.use_umap(self.normalized_train, self.normalized_test,
                                                          self.normalized_query)
 
             # t-SNE
-            elif self.dimensionality_reduction_algorithm == 'tsne':
+            elif self.dimensionality_reduction_algorithm == 't-SNE':
                 self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
                     dimension_reduction_methods.use_tsne(self.normalized_train, self.normalized_test,
                                                          self.normalized_query)
@@ -254,25 +258,25 @@ class MultiLayerPerceptron:
         # Apply feature selection (if enabled)
         if self.use_feature_select == "yes":
             # f-score
-            if self.feature_selection_algorithm == "f-score":
+            if self.feature_selection_algorithm == "F-score":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
                     selectors.f_score_selection(self.normalized_train, self.normalized_test,
                                                 self.normalized_query, self.feature_number)
 
             # weight importance
-            elif self.feature_selection_algorithm == "weight":
+            elif self.feature_selection_algorithm == "Weight Importance":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
                     selectors.weight_importance_selection(self.model, self.normalized_train, self.normalized_test,
                                                           self.normalized_query, self.feature_number)
 
             # mutual information
-            elif self.feature_selection_algorithm == "mutual":
+            elif self.feature_selection_algorithm == "Mutual Information":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
                     selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
                                                            self.normalized_query, self.feature_number)
 
             # PCA
-            elif self.feature_selection_algorithm == "pca":
+            elif self.feature_selection_algorithm == "PCA":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
                     selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
                                             self.feature_number)
@@ -314,27 +318,57 @@ class MultiLayerPerceptron:
                 max_iter=[100, 200, 250][best['max_iter']]
             )
 
+        # Initialize arrays to store metrics for each fold
+        rmse_per_fold = []
+        r2_per_fold = []
+        mae_per_fold = []
+        two_fold_error_per_fold = []
+        percentage_2fold_error_per_fold = []
+
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
 
-        # Get cross-validated predictions
-        predictions = cross_val_predict(self.model, x_train, y_train, cv=k_fold)
+        # Loop over each fold in the cross-validation
+        for train_index, test_index in k_fold.split(x_train):
+            # Split data into training and test sets for this fold
+            x_train_fold, x_test_fold = x_train[train_index], x_train[test_index]
+            y_train_fold, y_test_fold = y_train[train_index], y_train[test_index]
+
+            # Fit the model on the training fold
+            self.model.fit(x_train_fold, y_train_fold)
+
+            # Make predictions on the test fold
+            predictions = self.model.predict(x_test_fold)
+
+            # Compute metrics for this fold and append to respective lists
+            rmse_per_fold.append(np.sqrt(mean_squared_error(y_test_fold, predictions)))
+            r2_per_fold.append(r2_score(y_test_fold, predictions))
+            mae_per_fold.append(mean_absolute_error(y_test_fold, predictions))
+            two_fold_error_per_fold.append(
+                np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)))
+            percentage_2fold_error_per_fold.append(
+                np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)) * 100)
+
+        # Calculate the average and standard deviation for each metric
 
         # Calculate RMSE
-        self.training_RMSE = np.sqrt(mean_squared_error(y_train, predictions))
+        self.training_RMSE = np.mean(rmse_per_fold)
+        self.training_RMSE_std = np.std(rmse_per_fold)
 
         # Calculate R-Squared
-        self.training_R_squared = r2_score(y_train, predictions)
+        self.training_R_squared = np.mean(r2_per_fold)
+        self.training_R_squared_std = np.std(r2_per_fold)
 
         # Calculate MAE
-        self.training_MAE = mean_absolute_error(y_train, predictions)
+        self.training_MAE = np.mean(mae_per_fold)
+        self.training_MAE_std = np.std(mae_per_fold)
 
         # Calculate Percentage within 2-Fold Error
-        self.training_percentage_2fold_error = \
-            np.mean((predictions / y_train <= 2) & (y_train / predictions <= 2)) * 100
+        self.training_percentage_2fold_error = np.mean(percentage_2fold_error_per_fold)
+        self.training_percentage_2fold_error_std = np.std(percentage_2fold_error_per_fold)
 
         # Calculate 2-fold error
-        self.training_2fold_error = np.mean((predictions / y_train <= 2) & (y_train / predictions <= 2))
+        self.training_2fold_error = np.mean(two_fold_error_per_fold)
 
         # Train the SVR model on the entire training set
         self.model.fit(x_train, y_train)

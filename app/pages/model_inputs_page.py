@@ -909,10 +909,10 @@ def feature_selection_algorithm_dropdown(model_count):
             dcc.Dropdown(
                 id={'type': 'feature-selection-dropdown', 'index': model_count},
                 options=[
-                    {'label': 'Regression F-score', 'value': 'f-score'},
-                    {'label': 'Weight Importance', 'value': 'weight'},
-                    {'label': 'Mutual Information', 'value': 'mutual'},
-                    {'label': 'PCA', 'value': 'pca'},
+                    {'label': 'Regression F-score', 'value': 'F-score'},
+                    {'label': 'Weight Importance', 'value': 'Weight Importance'},
+                    {'label': 'Mutual Information', 'value': 'Mutual Information'},
+                    {'label': 'PCA', 'value': 'PCA'},
                 ],
                 searchable=False,
                 persistence=True,
@@ -1009,9 +1009,9 @@ def dimension_reduction_algorithm_dropdown(model_count):
             dcc.Dropdown(
                 id={'type': 'dimension-reduction-dropdown', 'index': model_count},
                 options=[
-                    {'label': 'PCA', 'value': 'pca'},
-                    {'label': 't-SNE', 'value': 'tsne'},
-                    {'label': 'UMAP', 'value': 'umap'},
+                    {'label': 'PCA', 'value': 'PCA'},
+                    {'label': 't-SNE', 'value': 't-SNE'},
+                    {'label': 'UMAP', 'value': 'UMAP'},
                 ],
                 searchable=False,
                 persistence=True,
