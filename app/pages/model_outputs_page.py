@@ -69,6 +69,57 @@ def create_layout(model_count):
                             'display': 'flex',
                             'width': '100%',
                         }
+                    ),
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[training_input_output_distribution_card(model_count)],
+                                md=4
+                            ),
+                            dbc.Col(
+                                children=[testing_input_output_distribution_card(model_count)],
+                                md=3
+                            )
+                        ],
+                        justify="center",
+                        style={
+                            'display': 'flex',
+                            'width': '100%',
+                        }
+                    ),
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[querying_input_output_distribution_card(model_count)],
+                                md=4
+                            ),
+                            dbc.Col(
+                                children=[querying_file_download_card(model_count)],
+                                md=3
+                            )
+                        ],
+                        justify="center",
+                        style={
+                            'display': 'flex',
+                            'width': '100%',
+                        }
+                    ),
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[explained_variance_card(model_count)],
+                                md=4
+                            ),
+                            dbc.Col(
+                                children=[unsupervised_learning_plot_card(model_count)],
+                                md=3
+                            )
+                        ],
+                        justify="center",
+                        style={
+                            'display': 'flex',
+                            'width': '100%',
+                        }
                     )
                 ]
             )
@@ -354,3 +405,60 @@ def predicted_versus_actual_graph(model):
     )
 
     return figure
+
+
+def training_input_output_distribution_card(model_count):
+    """
+    This function generates the card containing the plot for the input-output
+    distribution for the training data.
+    """
+
+    pass
+
+
+def testing_input_output_distribution_card(model_count):
+    """
+    This function generates the card containing the plot for the input-output
+    distribution for the test data.
+    """
+
+    pass
+
+
+def querying_input_output_distribution_card(model_count):
+    """
+    This function generates the card containing the plot for the input-output
+    distribution for the querying data (displayed only if querying dataset is provided).
+    """
+
+    pass
+
+
+def querying_file_download_card(model_count):
+    """
+    This function generates the card containing the downloadable CSV file
+    containing the model's predictions for the uploaded querying data
+    (displayed only if querying dataset is provided).
+    """
+
+    pass
+
+
+def explained_variance_card(model_count):
+    """
+    This function generates the card containing the PCA plot for the explained variance
+    for the selected features using feature selection (displayed only if feature selection
+    is enabled).
+    """
+
+    pass
+
+
+def unsupervised_learning_plot_card(model_count):
+    """
+    This function generates the card containing the unsupervised learning plot based
+    on the unsupervised learning method selected (displayed only if unsupervised learning
+    is enabled).
+    """
+
+    pass
