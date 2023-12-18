@@ -1,6 +1,6 @@
 import app.globals
 import dash_bootstrap_components as dbc
-import plotly.express as px
+import plotly.graph_objects as go
 
 from dash import html, dcc, callback, Input, Output, MATCH
 from models.random_forest.random_forest import RandomForest
@@ -52,7 +52,24 @@ def create_layout(model_count):
             html.Div(
                 id='output-page-contents',
                 children=[
-                    model_summary_card(model_count)
+                    model_summary_card(model_count),
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[output_statistics_card(model_count)],
+                                md=4
+                            ),
+                            dbc.Col(
+                                children=[predicted_versus_actual_card(model_count)],
+                                md=3
+                            )
+                        ],
+                        justify="center",
+                        style={
+                            'display': 'flex',
+                            'width': '100%',
+                        }
+                    )
                 ]
             )
         ]
@@ -200,3 +217,140 @@ def model_summary_card(model_count):
             'margin-top': '50px'
         }
     )
+
+
+def output_statistics_card(model_count):
+    """
+    This function generates the card containing the spider plot of training versus
+    testing output statistics.
+    """
+
+    # Retrieve the model
+    model_key = f'Model {model_count}'
+    model = app.globals.MODELS_LIST[model_key]
+
+    return dbc.Card(
+        id={'type': 'train-test-statistics-card', 'index': model_count},
+        children=[
+            dbc.CardHeader(
+                id='card-header-stats',
+                children=['Training vs Testing statistics']
+            ),
+            dbc.CardBody(
+                id='card-body-stats',
+                children=[
+                    dcc.Graph(
+                        figure=output_statistics_graph(model)
+                    )
+                ]
+            )
+        ],
+        style={
+            'margin-left': '120px',
+            'border': '2px solid black',
+            'margin-top': '50px',
+            'width': '550px'
+        }
+    )
+
+
+def output_statistics_graph(model):
+    """
+    This function generates the spider plot for training versus testing
+    output statistics.
+    """
+
+    figure = go.Figure()
+
+    categories = ['RMSE', 'R-squared', 'MAE', 'Two-fold error', 'RMSE']
+
+    # Add training statistics trace
+    figure.add_trace(go.Scatterpolar(
+        r=[model.training_RMSE, model.training_R_squared, model.training_MAE,
+           model.training_2fold_error, model.training_RMSE],
+        theta=categories,
+        name='Training statistics'
+    ))
+
+    # Add testing statistics trace
+    figure.add_trace(go.Scatterpolar(
+        r=[model.testing_RMSE, model.testing_R_squared, model.testing_MAE,
+            model.testing_2fold_error, model.testing_RMSE],
+        theta=categories,
+        name='Testing statistics'
+    ))
+
+    figure.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[-1, 1]
+            )),
+        showlegend=True
+    )
+
+    return figure
+
+
+def predicted_versus_actual_card(model_count):
+    """
+    This function generates the card containing the scatter plot of predicted versus
+    actual output.
+    """
+
+    # Retrieve the model
+    model_key = f'Model {model_count}'
+    model = app.globals.MODELS_LIST[model_key]
+
+    return dbc.Card(
+        id={'type': 'predict-versus-actual-card', 'index': model_count},
+        children=[
+            dbc.CardHeader(
+                id='card-header-predict',
+                children=['Actual versus Predicted plot']
+            ),
+            dbc.CardBody(
+                id='card-body-predict',
+                children=[
+                    dcc.Graph(
+                        figure=predicted_versus_actual_graph(model)
+                    )
+                ]
+            )
+        ],
+        style={
+            'margin-left': '160px',
+            'border': '2px solid black',
+            'margin-top': '50px',
+            'width': '550px'
+        }
+    )
+
+
+def predicted_versus_actual_graph(model):
+    """
+    This function generates the scatter plot of predicted versus
+    actual output.
+    """
+
+    # Data
+    actual = model.testing_data['protein']
+    predictions = model.model_predictions
+
+    # Create scatter plot
+    figure = go.Figure()
+
+    # Add actual data trace
+    figure.add_trace(go.Scatter(x=actual, y=actual, mode='markers', name='Actual Values'))
+
+    # Add predictions trace
+    figure.add_trace(go.Scatter(x=actual, y=predictions, mode='markers', name='Model Predictions'))
+
+    # Customize layout
+    figure.update_layout(
+        xaxis_title='Actual Values',
+        yaxis_title='Predicted Values',
+        showlegend=True
+    )
+
+    return figure

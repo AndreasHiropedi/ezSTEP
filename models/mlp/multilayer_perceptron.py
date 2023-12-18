@@ -124,6 +124,7 @@ class MultiLayerPerceptron:
         self.unsupervised_train = None
         self.unsupervised_test = None
         self.unsupervised_query = None
+        self.model_predictions = None
 
         # normalizers
         self.z_score_feature_normaliser = None
@@ -385,8 +386,19 @@ class MultiLayerPerceptron:
         x_test = self.selected_test if self.selected_test is not None else self.normalized_test.drop('protein', axis=1)
         y_test = self.normalized_test['protein']
 
+        # Get the scaler (to un-normalise the predictions)
+        scaler = None
+        if self.feature_normalization_algorithm == 'zscore':
+            scaler = self.z_score_target_normaliser
+
+        elif self.feature_normalization_algorithm == 'minmax':
+            scaler = self.min_max_target_normaliser
+
         # Make predictions using the trained model
         test_predictions = self.model.predict(x_test)
+
+        # Un-normalise the predictions
+        self.model_predictions = scaler.inverse_transform(test_predictions.reshape(-1, 1)).flatten().tolist()
 
         # Calculate RMSE for test data
         self.testing_RMSE = np.sqrt(mean_squared_error(y_test, test_predictions))
