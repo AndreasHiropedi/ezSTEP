@@ -115,6 +115,8 @@ class RandomForest:
         self.unsupervised_test = None
         self.unsupervised_query = None
         self.model_predictions = None
+        self.query_predictions = None
+        self.model_query_created_file = None
 
         # normalizers
         self.z_score_feature_normaliser = None
@@ -437,12 +439,9 @@ class RandomForest:
         predictions_original_scale = scaler.inverse_transform(normalized_predictions.reshape(-1, 1))
 
         # Convert predictions to a DataFrame
-        predictions_df = pd.DataFrame(predictions_original_scale, columns=['protein'])
+        self.query_predictions = pd.DataFrame(predictions_original_scale, columns=['protein'])
 
         # Concatenate the raw data DataFrame with the predictions DataFrame
-        combined_df = pd.concat([self.querying_data['sequence'], predictions_df], axis=1)
-
-        # Write to a CSV file
-        combined_df.to_csv(f'{self.model_number}_query_data_predictions.csv', index=False)
+        self.model_query_created_file = pd.concat([self.querying_data['sequence'], self.query_predictions], axis=1)
 
         self.queried_model = True

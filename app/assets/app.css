@@ -625,6 +625,54 @@
     padding: 0.75rem 1.25rem;
 }
 
+#card-header-train-feature {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-test-feature {
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-query-feature{
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-query-predictions{
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-explained-variance{
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
+#card-header-unsupervised-plot{
+    font-weight: bold;
+    text-align: center;
+    font-size: 16pt;
+    background: rgb(228, 228, 228);
+    padding: 0.75rem 1.25rem;
+}
+
 #card-header {
     font-weight: bold;
     text-align: center;
@@ -635,6 +683,14 @@
 
 #card-body {
     margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    text-size: 12pt;
+}
+
+#card-body-query-predictions p {
+    margin-top: 70px;
     margin-left: 15px;
     margin-bottom: 15px;
     margin-right: 15px;

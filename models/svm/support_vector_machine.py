@@ -109,6 +109,8 @@ class SupportVectorMachine:
         self.unsupervised_test = None
         self.unsupervised_query = None
         self.model_predictions = None
+        self.query_predictions = None
+        self.model_query_created_file = None
 
         # normalizers
         self.z_score_feature_normaliser = None
@@ -308,11 +310,17 @@ class SupportVectorMachine:
         # Setup K-Fold cross-validation
         k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
 
+        # Assuming x_train and y_train are numpy arrays, convert them to pandas DataFrame or Series
+        x_train_df = pd.DataFrame(x_train)
+        y_train_series = pd.Series(y_train)
+
         # Loop over each fold in the cross-validation
-        for train_index, test_index in k_fold.split(x_train):
-            # Split data into training and test sets for this fold
-            x_train_fold, x_test_fold = x_train[train_index], x_train[test_index]
-            y_train_fold, y_test_fold = y_train[train_index], y_train[test_index]
+        for train_index, test_index in k_fold.split(x_train_df):
+            # Split data into training and test sets for this fold using iloc
+            x_train_fold = x_train_df.iloc[train_index]
+            x_test_fold = x_train_df.iloc[test_index]
+            y_train_fold = y_train_series.iloc[train_index]
+            y_test_fold = y_train_series.iloc[test_index]
 
             # Fit the model on the training fold
             self.model.fit(x_train_fold, y_train_fold)
@@ -324,8 +332,7 @@ class SupportVectorMachine:
             rmse_per_fold.append(np.sqrt(mean_squared_error(y_test_fold, predictions)))
             r2_per_fold.append(r2_score(y_test_fold, predictions))
             mae_per_fold.append(mean_absolute_error(y_test_fold, predictions))
-            two_fold_error_per_fold.append(
-                np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)))
+            two_fold_error_per_fold.append(np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)))
             percentage_2fold_error_per_fold.append(
                 np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)) * 100)
 
@@ -421,12 +428,9 @@ class SupportVectorMachine:
         predictions_original_scale = scaler.inverse_transform(normalized_predictions.reshape(-1, 1))
 
         # Convert predictions to a DataFrame
-        predictions_df = pd.DataFrame(predictions_original_scale, columns=['protein'])
+        self.query_predictions = pd.DataFrame(predictions_original_scale, columns=['protein'])
 
         # Concatenate the raw data DataFrame with the predictions DataFrame
-        combined_df = pd.concat([self.querying_data['sequence'], predictions_df], axis=1)
-
-        # Write to a CSV file
-        combined_df.to_csv(f'{self.model_number}_query_data_predictions.csv', index=False)
+        self.model_query_created_file = pd.concat([self.querying_data['sequence'], self.query_predictions], axis=1)
 
         self.queried_model = True
