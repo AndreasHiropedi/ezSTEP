@@ -8,6 +8,7 @@ from models.random_forest.random_forest import RandomForest
 from models.ridge_regressor.ridge_regressor import RidgeRegressor
 from models.mlp.multilayer_perceptron import MultiLayerPerceptron
 from models.svm.support_vector_machine import SupportVectorMachine
+from sklearn.decomposition import PCA
 
 
 def create_layout(model_count):
@@ -835,7 +836,41 @@ def explained_variance_plot(model):
     is enabled).
     """
 
-    pass
+    # Data
+    data = model.selected_train
+
+    # Apply PCA
+    pca = PCA(n_components=data.shape[1])
+    pca.fit(data)
+
+    # Get the explained and cumulative variance
+    explained_var = pca.explained_variance_ratio_
+    cumulative_var = explained_var.cumsum()
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Adding individual explained variance (bar chart)
+    figure.add_trace(go.Bar(
+        x=[f'PC{i + 1}' for i in range(data.shape[1])],
+        y=explained_var,
+        name='Individual Explained Variance'
+    ))
+
+    # Adding cumulative explained variance (line chart)
+    figure.add_trace(go.Scatter(
+        x=[f'PC{i + 1}' for i in range(data.shape[1])],
+        y=cumulative_var,
+        name='Cumulative Explained Variance'
+    ))
+
+    # Updating layout
+    figure.update_layout(
+        xaxis_title='Principal Components',
+        yaxis_title='Explained Variance Ratio',
+    )
+
+    return figure
 
 
 def unsupervised_learning_plot_card(model_count):
