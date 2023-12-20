@@ -905,7 +905,19 @@ def unsupervised_learning_plot_card(model_count):
                 id='card-body-unsupervised-plot',
                 children=[
                     dcc.Graph(
-                        figure=unsupervised_learning_plot(model)
+                        id={'type': 'pca-plot', 'index': model_count},
+                        figure=unsupervised_learning_pca_plot(model),
+                        style={'display': 'none'}
+                    ),
+                    dcc.Graph(
+                        id={'type': 'tsne-plot', 'index': model_count},
+                        figure=unsupervised_learning_tsne_plot(model),
+                        style={'display': 'none'}
+                    ),
+                    dcc.Graph(
+                        id={'type': 'umap-plot', 'index': model_count},
+                        figure=unsupervised_learning_umap_plot(model),
+                        style={'display': 'none'}
                     )
                 ]
             )
@@ -919,10 +931,25 @@ def unsupervised_learning_plot_card(model_count):
     )
 
 
-def unsupervised_learning_plot(model):
+def unsupervised_learning_pca_plot(model):
     """
-    This function generates the unsupervised learning plot based on the unsupervised learning
-    method selected (displayed only if unsupervised learning is enabled).
+    This function generates the PCA plot (displayed only if unsupervised learning is enabled).
+    """
+
+    pass
+
+
+def unsupervised_learning_tsne_plot(model):
+    """
+    This function generates the t-SNE plot (displayed only if unsupervised learning is enabled).
+    """
+
+    pass
+
+
+def unsupervised_learning_umap_plot(model):
+    """
+    This function generates the UMAP plot (displayed only if unsupervised learning is enabled).
     """
 
     pass
