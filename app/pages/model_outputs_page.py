@@ -2,6 +2,7 @@ import app.globals
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
+import umap
 
 from dash import html, dcc, callback, Input, Output, MATCH
 from models.random_forest.random_forest import RandomForest
@@ -9,6 +10,7 @@ from models.ridge_regressor.ridge_regressor import RidgeRegressor
 from models.mlp.multilayer_perceptron import MultiLayerPerceptron
 from models.svm.support_vector_machine import SupportVectorMachine
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 
 def create_layout(model_count):
@@ -121,6 +123,7 @@ def create_layout(model_count):
                         style={
                             'display': 'flex',
                             'width': '100%',
+                            'margin-bottom': '50px'
                         }
                     )
                 ]
@@ -824,7 +827,8 @@ def explained_variance_plot_card(model_count):
             'margin-left': '120px',
             'border': '2px solid black',
             'margin-top': '50px',
-            'width': '550px'
+            'width': '550px',
+            'height': '100%'
         }
     )
 
@@ -894,30 +898,115 @@ def unsupervised_learning_plot_card(model_count):
 
     unsupervised_learning_method = model.dimensionality_reduction_algorithm
 
+    # Display the correct graph based on the chosen unsupervised learning method
+    graph_container = None
+    if unsupervised_learning_method == 'PCA':
+        graph_container = html.Div(
+            id='pca-plot-container',
+            children=[
+                dcc.Graph(
+                    id={'type': 'pca-plot', 'index': model_count},
+                    figure=initial_pca_plot(model)
+                ),
+                html.Label('SVD Solver:'),
+                dcc.Dropdown(
+                    id={'type': 'svd-solver-dropdown', 'index': model_count},
+                    options=[
+                        {'label': 'Auto', 'value': 'auto'},
+                        {'label': 'Full', 'value': 'full'},
+                        {'label': 'Arpack', 'value': 'arpack'},
+                        {'label': 'Randomized', 'value': 'randomized'}
+                    ],
+                    value='auto',
+                    searchable=False,
+                    persistence=True,
+                ),
+                html.Label('Whiten:'),
+                dcc.RadioItems(
+                    id={'type': 'whiten-radio', 'index': model_count},
+                    options=[
+                        {'label': 'True', 'value': True},
+                        {'label': 'False', 'value': False}
+                    ],
+                    value=False,
+                    persistence=True,
+                )
+            ]
+        )
+
+    elif unsupervised_learning_method == 't-SNE':
+        graph_container = html.Div(
+            id='tsne-plot-container',
+            children=[
+                dcc.Graph(
+                    id={'type': 'tsne-plot', 'index': model_count},
+                    figure=initial_tsne_plot(model)
+                ),
+                html.Label('Perplexity:'),
+                dcc.Slider(
+                    id={'type': 'perplexity-slider', 'index': model_count},
+                    min=5,
+                    max=50,
+                    step=5,
+                    value=30,
+                    persistence=True,
+                ),
+                html.Label('Learning Rate:'),
+                dcc.Input(
+                    id={'type': 'learning-rate-input', 'index': model_count},
+                    type='number',
+                    value=200,
+                    min=10,
+                    max=1000,
+                    persistence=True,
+                )
+            ]
+        )
+
+    elif unsupervised_learning_method == 'UMAP':
+        graph_container = html.Div(
+            id='umap-plot-container',
+            children=[
+                dcc.Graph(
+                    id={'type': 'umap-plot', 'index': model_count},
+                    figure=initial_umap_plot(model)
+                ),
+                html.Label('n_neighbors'),
+                dcc.Slider(
+                    id={'type': 'n-neighbors-slider', 'index': model_count},
+                    min=2,
+                    max=50,
+                    value=15,
+                    marks={i: str(i) for i in range(2, 51, 5)},
+                    step=1,
+                    persistence=True,
+                ),
+                html.Label('min_dist'),
+                dcc.Slider(
+                    id={'type': 'min-dist-slider', 'index': model_count},
+                    min=0.0,
+                    max=1.0,
+                    value=0.0,
+                    marks={i / 10: str(i / 10) for i in range(0, 11, 2)},
+                    step=0.1,
+                    persistence=True,
+                )
+            ]
+        )
+
     return dbc.Card(
         id={'type': 'unsupervised-plot-card', 'index': model_count},
         children=[
             dbc.CardHeader(
                 id='card-header-unsupervised-plot',
-                children=[f"{unsupervised_learning_method} plot"]
+                children=[f"{unsupervised_learning_method} 2D plot"] if unsupervised_learning_method != 'UMAP' else
+                [f"{unsupervised_learning_method} 2D plot of the training data"]
             ),
             dbc.CardBody(
                 id='card-body-unsupervised-plot',
                 children=[
-                    dcc.Graph(
-                        id={'type': 'pca-plot', 'index': model_count},
-                        figure=unsupervised_learning_pca_plot(model),
-                        style={'display': 'none'}
-                    ),
-                    dcc.Graph(
-                        id={'type': 'tsne-plot', 'index': model_count},
-                        figure=unsupervised_learning_tsne_plot(model),
-                        style={'display': 'none'}
-                    ),
-                    dcc.Graph(
-                        id={'type': 'umap-plot', 'index': model_count},
-                        figure=unsupervised_learning_umap_plot(model),
-                        style={'display': 'none'}
+                    dcc.Loading(
+                        children=[graph_container]
                     )
                 ]
             )
@@ -926,33 +1015,143 @@ def unsupervised_learning_plot_card(model_count):
             'margin-left': '160px',
             'border': '2px solid black',
             'margin-top': '50px',
-            'width': '550px'
+            'width': '550px',
+            'height': '100%'
         }
     )
 
 
-def unsupervised_learning_pca_plot(model):
+def initial_pca_plot(model):
     """
-    This function generates the PCA plot (displayed only if unsupervised learning is enabled).
-    """
-
-    pass
-
-
-def unsupervised_learning_tsne_plot(model):
-    """
-    This function generates the t-SNE plot (displayed only if unsupervised learning is enabled).
+    This function generates the initial PCA plot based on the standard parameter values
     """
 
-    pass
+    # Data
+    components_train = model.unsupervised_train
+    components_test = model.unsupervised_test
+    components_query = model.unsupervised_query
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=components_train[:, 0],
+            y=components_train[:, 1],
+            mode='markers',
+            name='Training Data'
+        )
+    )
+
+    figure.add_trace(
+        go.Scatter(
+            x=components_test[:, 0],
+            y=components_test[:, 1],
+            mode='markers',
+            name='Test Data'
+        )
+    )
+
+    if components_query is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=components_query[:, 0],
+                y=components_query[:, 1],
+                mode='markers',
+                name='Query Data'
+            )
+        )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title="First Principal Component",
+        yaxis_title="Second Principal Component"
+    )
+
+    return figure
 
 
-def unsupervised_learning_umap_plot(model):
+def initial_tsne_plot(model):
     """
-    This function generates the UMAP plot (displayed only if unsupervised learning is enabled).
+    This function generates the initial t-SNE plot based on the standard parameter values
     """
 
-    pass
+    # Data
+    tsne_results_train = model.unsupervised_train
+    tsne_results_test = model.unsupervised_test
+    tsne_results_query = model.unsupervised_query
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=tsne_results_train[:, 0],
+            y=tsne_results_train[:, 1],
+            mode='markers',
+            name='Training Data'
+        )
+    )
+
+    figure.add_trace(
+        go.Scatter(
+            x=tsne_results_test[:, 0],
+            y=tsne_results_test[:, 1],
+            mode='markers',
+            name='Test Data'
+        )
+    )
+
+    if tsne_results_query is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=tsne_results_query[:, 0],
+                y=tsne_results_query[:, 1],
+                mode='markers',
+                name='Query Data'
+            )
+        )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title='Component 1',
+        yaxis_title='Component 2'
+    )
+
+    return figure
+
+
+def initial_umap_plot(model):
+    """
+    This function generates the initial UMAP plot based on the standard parameter values
+    """
+
+    # Data
+    umap_results_train = model.unsupervised_train
+    labels = model.normalized_train['protein']
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=umap_results_train[:, 0],
+            y=umap_results_train[:, 1],
+            mode='markers',
+            marker=dict(color=labels, colorscale='Viridis', showscale=True)
+        )
+    )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title='Component 1',
+        yaxis_title='Component 2'
+    )
+
+    return figure
 
 
 @callback(
@@ -992,3 +1191,220 @@ def generate_csv(_n_clicks):
 
     # Send the CSV string
     return dcc.send_data_frame(df.to_csv, file_name, index=False)
+
+
+@callback(
+    Output({'type': 'pca-plot', 'index': MATCH}, 'figure'),
+    [Input({'type': 'svd-solver-dropdown', 'index': MATCH}, 'value'),
+     Input({'type': 'whiten-radio', 'index': MATCH}, 'value')],
+    prevent_initial_call=True
+)
+def update_pca_graph(svd_solver, whiten):
+    """
+    This callback generates the interactive PCA plot (if unsupervised learning is enabled)
+    """
+
+    ctx = dash.callback_context
+
+    # Extract the index part from the triggered_id
+    triggered_id = ctx.triggered[0]['prop_id']
+    new_split = triggered_id.split(".")
+    big_string = new_split[0].strip("{}")
+    another_split = big_string.split(",")
+
+    # Get index value from index part
+    index_part = another_split[0]
+    index_value = index_part[-1]
+
+    model = app.globals.MODELS_LIST[f'Model {index_value}']
+
+    # Get the data and initially fitted PCA outputs
+    data_train = model.normalized_train
+    data_test = model.normalized_test
+    data_query = model.normalized_query
+
+    # Variable to keep track of query data (if provided)
+    components_query = None
+
+    # Refit PCA
+    pca = PCA(n_components=2, svd_solver=svd_solver, whiten=whiten)
+    components_train = pca.fit_transform(data_train)
+    components_test = pca.transform(data_test)
+    if data_query is not None:
+        components_query = pca.transform(data_query)
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=components_train[:, 0],
+            y=components_train[:, 1],
+            mode='markers',
+            name='Training Data'
+        )
+    )
+
+    figure.add_trace(
+        go.Scatter(
+            x=components_test[:, 0],
+            y=components_test[:, 1],
+            mode='markers',
+            name='Test Data'
+        )
+    )
+
+    if components_query is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=components_query[:, 0],
+                y=components_query[:, 1],
+                mode='markers',
+                name='Query Data'
+            )
+        )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title="First Principal Component",
+        yaxis_title="Second Principal Component"
+    )
+
+    return figure
+
+
+@callback(
+    Output({'type': 'tsne-plot', 'index': MATCH}, 'figure'),
+    [Input({'type': 'perplexity-slider', 'index': MATCH}, 'value'),
+     Input({'type': 'learning-rate-input', 'index': MATCH}, 'value')],
+    prevent_initial_call=True
+)
+def update_tsne_plot(perplexity, learning_rate):
+    """
+    This callback generates the interactive t-SNE plot (if unsupervised learning is enabled)
+    """
+
+    ctx = dash.callback_context
+
+    # Extract the index part from the triggered_id
+    triggered_id = ctx.triggered[0]['prop_id']
+    new_split = triggered_id.split(".")
+    big_string = new_split[0].strip("{}")
+    another_split = big_string.split(",")
+
+    # Get index value from index part
+    index_part = another_split[0]
+    index_value = index_part[-1]
+
+    model = app.globals.MODELS_LIST[f'Model {index_value}']
+
+    # Variable to keep track of query data (if provided)
+    tsne_results_query = None
+
+    # Data
+    data_train = model.normalized_train
+    data_test = model.normalized_test
+    data_query = model.normalized_query
+
+    # Refit the t-SNE
+    tsne = TSNE(n_components=2, perplexity=perplexity, learning_rate=learning_rate, init='pca')
+    tsne_results_train = tsne.fit_transform(data_train)
+    tsne_results_test = tsne.fit_transform(data_test)
+    if data_query is not None:
+        tsne_results_query = tsne.fit_transform(data_query)
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=tsne_results_train[:, 0],
+            y=tsne_results_train[:, 1],
+            mode='markers',
+            name='Training Data'
+        )
+    )
+
+    figure.add_trace(
+        go.Scatter(
+            x=tsne_results_test[:, 0],
+            y=tsne_results_test[:, 1],
+            mode='markers',
+            name='Test Data'
+        )
+    )
+
+    if tsne_results_query is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=tsne_results_query[:, 0],
+                y=tsne_results_query[:, 1],
+                mode='markers',
+                name='Query Data'
+            )
+        )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title='Component 1',
+        yaxis_title='Component 2'
+    )
+
+    return figure
+
+
+@callback(
+    Output({'type': 'umap-plot', 'index': MATCH}, 'figure'),
+    [Input({'type': 'n-neighbors-slider', 'index': MATCH}, 'value'),
+     Input({'type': 'min-dist-slider', 'index': MATCH}, 'value')],
+    prevent_initial_call=True
+)
+def update_umap_plot(n_neighbors, min_dist):
+    """
+    This callback generates the interactive UMAP plot (if unsupervised learning is enabled)
+    """
+
+    ctx = dash.callback_context
+
+    # Extract the index part from the triggered_id
+    triggered_id = ctx.triggered[0]['prop_id']
+    new_split = triggered_id.split(".")
+    big_string = new_split[0].strip("{}")
+    another_split = big_string.split(",")
+
+    # Get index value from index part
+    index_part = another_split[0]
+    index_value = index_part[-1]
+
+    model = app.globals.MODELS_LIST[f'Model {index_value}']
+
+    # Data
+    data_train = model.normalized_train
+    labels = model.normalized_train['protein']
+
+    # Re-fit the UMAP
+    umap_model = umap.UMAP(n_components=2, n_neighbors=n_neighbors, min_dist=min_dist)
+    umap_results_train = umap_model.fit_transform(data_train)
+
+    # Create the figure
+    figure = go.Figure()
+
+    # Add data to the figure
+    figure.add_trace(
+        go.Scatter(
+            x=umap_results_train[:, 0],
+            y=umap_results_train[:, 1],
+            mode='markers',
+            marker=dict(color=labels, colorscale='Viridis', showscale=True)
+        )
+    )
+
+    # Update the figure layout
+    figure.update_layout(
+        xaxis_title='Component 1',
+        yaxis_title='Component 2'
+    )
+
+    return figure
