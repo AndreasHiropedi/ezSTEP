@@ -158,13 +158,13 @@ def model_summary_card(model_count):
     if model.use_feature_select == 'no':
         feature_selection = 'Not enabled'
     else:
-        feature_selection = f'{model.feature_number} features selected using {model.feature_selection_algorithm}'
+        feature_selection = f'Top {model.feature_number} features selected using {model.feature_selection_algorithm}'
 
     # Unsupervised learning
     if model.use_unsupervised == 'no':
         unsupervised_learning = 'Not enabled'
     else:
-        unsupervised_learning = f'{model.dimensionality_reduction_algorithm} used'
+        unsupervised_learning = f'{model.dimensionality_reduction_algorithm} selected'
 
     # Hyperparameter optimization
     if model.use_hyper_opt == 'no':
@@ -811,7 +811,7 @@ def explained_variance_plot_card(model_count):
         children=[
             dbc.CardHeader(
                 id='card-header-explained-variance',
-                children=[f'Explained variance for the {selected_features} features selected using '
+                children=[f'Explained variance for the top {selected_features} features selected using '
                           f'{feature_selection_method}']
             ),
             dbc.CardBody(
@@ -908,28 +908,70 @@ def unsupervised_learning_plot_card(model_count):
                     id={'type': 'pca-plot', 'index': model_count},
                     figure=initial_pca_plot(model)
                 ),
-                html.Label('SVD Solver:'),
-                dcc.Dropdown(
-                    id={'type': 'svd-solver-dropdown', 'index': model_count},
-                    options=[
-                        {'label': 'Auto', 'value': 'auto'},
-                        {'label': 'Full', 'value': 'full'},
-                        {'label': 'Arpack', 'value': 'arpack'},
-                        {'label': 'Randomized', 'value': 'randomized'}
+                html.Div(
+                    children=[
+                        html.Label(
+                            'SVD Solver:',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.Dropdown(
+                            id={'type': 'svd-solver-dropdown', 'index': model_count},
+                            options=[
+                                {'label': 'Auto', 'value': 'auto'},
+                                {'label': 'Full', 'value': 'full'},
+                                {'label': 'Arpack', 'value': 'arpack'},
+                                {'label': 'Randomized', 'value': 'randomized'}
+                            ],
+                            value='auto',
+                            searchable=False,
+                            persistence=True,
+                            style={
+                                'width': '90%',
+                                'font-size': '12pt',
+                                'text-align': 'center',
+                                'margin-left': '20px'
+                            }
+                        ),
                     ],
-                    value='auto',
-                    searchable=False,
-                    persistence=True,
+                    style={
+                        'margin-top': '20px',
+                        'margin-bottom': '20px',
+                        'display': 'flex',
+                        'align-items': 'center'
+                    }
                 ),
-                html.Label('Whiten:'),
-                dcc.RadioItems(
-                    id={'type': 'whiten-radio', 'index': model_count},
-                    options=[
-                        {'label': 'True', 'value': True},
-                        {'label': 'False', 'value': False}
+                html.Div(
+                    children=[
+                        html.Label(
+                            'Whiten:',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.RadioItems(
+                            id={'type': 'whiten-radio', 'index': model_count},
+                            options=[
+                                {'label': 'True', 'value': True},
+                                {'label': 'False', 'value': False}
+                            ],
+                            value=False,
+                            persistence=True,
+                            inline=True,
+                            labelStyle={'margin-right': '50px', 'margin-left': '50px'},
+                            style={
+                                'width': '60%',
+                                'font-size': '12pt',
+                                'text-align': 'center'
+                            },
+                        )
                     ],
-                    value=False,
-                    persistence=True,
+                    style={
+                        'margin-top': '20px',
+                        'display': 'flex',
+                        'align-items': 'center'
+                    }
                 )
             ]
         )
@@ -942,23 +984,56 @@ def unsupervised_learning_plot_card(model_count):
                     id={'type': 'tsne-plot', 'index': model_count},
                     figure=initial_tsne_plot(model)
                 ),
-                html.Label('Perplexity:'),
-                dcc.Slider(
-                    id={'type': 'perplexity-slider', 'index': model_count},
-                    min=5,
-                    max=50,
-                    step=5,
-                    value=30,
-                    persistence=True,
+                html.Div(
+                    children=[
+                        html.Label(
+                            'Perplexity:',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.Slider(
+                            id={'type': 'perplexity-slider', 'index': model_count},
+                            min=5,
+                            max=50,
+                            step=5,
+                            value=30,
+                            persistence=True,
+                        )
+                    ],
+                    style={
+                        'margin-top': '20px',
+                        'margin-bottom': '20px'
+                    }
                 ),
-                html.Label('Learning Rate:'),
-                dcc.Input(
-                    id={'type': 'learning-rate-input', 'index': model_count},
-                    type='number',
-                    value=200,
-                    min=10,
-                    max=1000,
-                    persistence=True,
+                html.Div(
+                    children=[
+                        html.Label(
+                            'Learning Rate:',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.Input(
+                            id={'type': 'learning-rate-input', 'index': model_count},
+                            type='number',
+                            value=200,
+                            min=10,
+                            max=1000,
+                            persistence=True,
+                            style={
+                                'width': '70%',
+                                'font-size': '12pt',
+                                'text-align': 'center',
+                                'margin-left': '32px'
+                            }
+                        )
+                    ],
+                    style={
+                        'margin-top': '20px',
+                        'display': 'flex',
+                        'align-items': 'center'
+                    }
                 )
             ]
         )
@@ -971,25 +1046,50 @@ def unsupervised_learning_plot_card(model_count):
                     id={'type': 'umap-plot', 'index': model_count},
                     figure=initial_umap_plot(model)
                 ),
-                html.Label('n_neighbors'),
-                dcc.Slider(
-                    id={'type': 'n-neighbors-slider', 'index': model_count},
-                    min=2,
-                    max=50,
-                    value=15,
-                    marks={i: str(i) for i in range(2, 51, 5)},
-                    step=1,
-                    persistence=True,
+                html.Div(
+                    children=[
+                        html.Label(
+                            'n_neighbors',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.Slider(
+                            id={'type': 'n-neighbors-slider', 'index': model_count},
+                            min=2,
+                            max=50,
+                            value=15,
+                            marks={i: str(i) for i in range(2, 51, 5)},
+                            step=1,
+                            persistence=True,
+                        )
+                    ],
+                    style={
+                        'margin-top': '20px',
+                        'margin-bottom': '20px'
+                    }
                 ),
-                html.Label('min_dist'),
-                dcc.Slider(
-                    id={'type': 'min-dist-slider', 'index': model_count},
-                    min=0.0,
-                    max=1.0,
-                    value=0.0,
-                    marks={i / 10: str(i / 10) for i in range(0, 11, 2)},
-                    step=0.1,
-                    persistence=True,
+                html.Div(
+                    children=[
+                        html.Label(
+                            'min_dist',
+                            style={
+                                'margin-left': '20px'
+                            }
+                        ),
+                        dcc.Slider(
+                            id={'type': 'min-dist-slider', 'index': model_count},
+                            min=0.0,
+                            max=1.0,
+                            value=0.0,
+                            marks={i / 10: str(i / 10) for i in range(0, 11, 2)},
+                            step=0.1,
+                            persistence=True,
+                        )
+                    ],
+                    style={
+                        'margin-top': '20px'
+                    }
                 )
             ]
         )
