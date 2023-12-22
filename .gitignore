@@ -1,4 +1,7 @@
 .DS_Store
+venv
+*.pyc
+.env
 app/__pycache__/
 app/pages/__pycache__/
 app/assets/__pycache__/
