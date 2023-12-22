@@ -825,6 +825,7 @@ def explained_variance_plot_card(model_count):
         ],
         style={
             'margin-left': '120px',
+            'margin-right': '40px',
             'border': '2px solid black',
             'margin-top': '50px',
             'width': '550px',
@@ -1112,7 +1113,7 @@ def unsupervised_learning_plot_card(model_count):
             )
         ],
         style={
-            'margin-left': '160px',
+            'margin-left': '120px',
             'border': '2px solid black',
             'margin-top': '50px',
             'width': '550px',

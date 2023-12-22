@@ -198,7 +198,40 @@ def user_guide():
                                 "NOTE: for the training process, we always perform 5-fold cross validation on the "
                                 "uploaded training dataset. Therefore, it is worth noting that, if the length of the "
                                 "text input is less than 5 sequences long, even if the sequences are valid, the input "
-                                "will be rendered invalid."
+                                "will be rendered invalid. We provide a set of example files below, one for each of "
+                                "the three steps (training, testing, querying), which can be downloaded and used for "
+                                "running the app's machine learning pipeline."
+                            ),
+                            html.Div(
+                                children=[
+                                    html.A(
+                                        'example_train_data.csv',
+                                        download='example_train_data.csv',
+                                        href='./assets/example_train_data.csv',
+                                        style={
+                                            'margin-left': '220px'
+                                        }
+                                    ),
+                                    html.A(
+                                        'example_test_data.csv',
+                                        download='example_test_data.csv',
+                                        href='./assets/example_test_data.csv',
+                                        style={
+                                            'margin-left': '220px'
+                                        }
+                                    ),
+                                    html.A(
+                                        'example_query_data.csv',
+                                        download='example_query_data.csv',
+                                        href='./assets/example_query_data.csv',
+                                        style={
+                                            'margin-left': '220px'
+                                        }
+                                    ),
+                                ],
+                                style={
+                                    'margin-bottom': '15px'
+                                }
                             )
                         ],
                         style={
@@ -226,11 +259,12 @@ def user_guide():
                                 "optimise the model's hyperparameters or not."
                             ),
                             html.P(
-                                "Under this tab, the user will see one (or more) hyperlink(s) depending on "
+                                "The user will see one (or more) hyperlink(s) depending on "
                                 "the number of models they have added. In order to input all the necessary "
                                 "information, the user will need to click on these hyperlinks individually, "
                                 "which will prompt them to a new page where they can input all the data for a "
-                                "specific model."
+                                "specific model. More information about the specifics of model inputs can be found "
+                                "in the user guidelines on the individual model input pages."
                             )
                         ],
                         style={
@@ -247,33 +281,12 @@ def user_guide():
                             html.H4("4. Model outputs"),
                             html.Hr(),
                             html.P(
-                                "Once the data has been uploaded and the user has set all the input "
-                                "parameters, the visualisations for the specific model, along with some "
-                                "statistics (such as the root mean squared error (RMSE)) are generated. "
-                                "If the user has added several models, then the visualisations for each "
-                                "model will be displayed on the model's own page, and a table showing "
-                                "all models and their performance statistics will be displayed on the main page. "
-                            ),
-                            html.P(
-                                "Similar to the model inputs, in order to see the visualisations for each "
-                                "individual model created, the user will need to click on the appropriate "
-                                "hyperlink, which will prompt them to the correct page. However, it is worth "
-                                "noting that the table containing all the models and the selected performance "
-                                "statistics will be displayed on the main page."
-                            ),
-                            html.P(
-                                "If the user has uploaded a querying dataset, the output of the model on that "
-                                "dataset will also be made available on the individual hyperlink pages. This will be "
-                                "in the form of a hyperlink that will allow users to download a CSV file containing "
-                                "the model's output on the querying dataset."
-                            ),
-                            html.P(
                                 children=[
-                                    "The user will be able to select the summary statistics; these statistics will "
-                                    "be displayed individually using bar charts (to access these charts, the user "
-                                    "will need to click on the respective hyperlink which is automatically generated"
-                                    "when a statistic is selected from the dropdown. The four main summary statistics "
-                                    "available are: ",
+                                    "Once the data has been uploaded and the user has set all the input parameters, "
+                                    "the visualisations for the specific model, along with a sipder plot showing "
+                                    "several output statistics, are generated. These statistics are calculated for "
+                                    "each model, and these are all displayed in the spider plot for each model. "
+                                    "The four main summary statistics used are: ",
                                     html.Br(),
                                     html.Br(),
                                     "1. Root Mean Squared Error (RMSE)",
@@ -287,8 +300,21 @@ def user_guide():
                                     html.Br(),
                                     "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
                                     " data that are within the 2-fold error interval: 1/2 × correct value ≤ "
-                                    "predicted value ≤ 2 × correct value)"
+                                    "predicted value ≤ 2 × correct value)",
+                                    "NOTE: This plot is interactive, and using the legend on the side, the user can "
+                                    "which models they wish to have displayed in the graph, and they can simply "
+                                    "enable/ disable by clicking on the respective item in the legend. "
                                 ]
+                            ),
+                            html.P(
+                                "Similarly to model inputs, the user will see one (or more) hyperlink(s) depending on "
+                                "the number of models they have added. On each of these pages, there will be several "
+                                "graphs displayed (such as a scatter plot of predicted versus actual values, or bar "
+                                "charts showing the feature correlation to the target variable (protein)), along with "
+                                "a summary of the user's selected inputs and the model's performance in training and "
+                                "testing. Depending on the additional inputs the user provides (such as query data, or "
+                                "enabling feature selection), additional graphs will be generated and displayed on "
+                                "these individual pages."
                             )
                         ],
                         style={

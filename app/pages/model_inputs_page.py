@@ -543,12 +543,21 @@ def model_input_guidelines():
                             html.H4("1. Input parameters"),
                             html.Hr(),
                             html.P(
-                                "Here the user selects all the necessary information to create a model (to train and "
-                                "test). This includes information such as the model type, the feature descriptor, "
-                                "the kmer size (if kmer is selected as a feature descriptor), and the feature "
-                                "normalisation algorithm. In addition, the user can opt to enable feature selection, "
-                                "unsupervised learning, and hyperparameter optimisation, which would then prompt them "
-                                "to input more information (see the sections below)."
+                                children=[
+                                    "Here the user selects all the necessary information to create a model (for "
+                                    "training "
+                                    "and testing). This includes information such as the model type (a choice between "
+                                    "Random Forest, Multi-layer Perceptron, Ridge Regressor, and Support Vector "
+                                    "Machine), the feature "
+                                    "encoder (kmer or one-hot), the kmer size (if kmer is selected as a feature "
+                                    "encoder), "
+                                    "and the feature normalisation algorithm (MinMax or Z-score). ",
+                                    html.Br(),
+                                    html.Br(),
+                                    "In addition, the user can opt to enable feature selection, unsupervised learning, "
+                                    "and hyperparameter optimisation, which would then prompt them to input more "
+                                    "information (see the sections below)."
+                                ]
                             )
                         ],
                         style={
@@ -563,9 +572,30 @@ def model_input_guidelines():
                             html.H4("2. Feature selection"),
                             html.Hr(),
                             html.P(
-                                "If the user enables feature selection, they will then need to choose a "
-                                "feature selection algorithm, as well as the number of features in the selected model "
-                                "to be used by the feature selection algorithm. "
+                                children=[
+                                    "If the user enables feature selection, they will then need to choose a "
+                                    "feature selection algorithm, as well as the number of features in the selected "
+                                    "model "
+                                    "to be used by the feature selection algorithm. The upper limit on the number of "
+                                    "features is set to 100, and the user can opt for one of the following "
+                                    "algorithms: ",
+                                    html.Br(),
+                                    html.Br(),
+                                    "1. Regression F-score",
+                                    html.Br(),
+                                    html.Br(),
+                                    "2. Weight Importance",
+                                    html.Br(),
+                                    html.Br(),
+                                    "3. Mutual Information",
+                                    html.Br(),
+                                    html.Br(),
+                                    "4. Principal Component Analysis (PCA)",
+                                    html.Br(),
+                                    html.Br(),
+                                    "These algorithms were chosen since the are the most appropriate ones to use in "
+                                    "the case of regressor models, as is the case in our app."
+                                ]
                             )
                         ],
                         style={
@@ -580,9 +610,26 @@ def model_input_guidelines():
                             html.H4("3. Unsupervised learning"),
                             html.Hr(),
                             html.P(
-                                "If the user enables unsupervised learning, they will then need to choose a "
-                                "dimensionality reduction algorithm, as well as the number of dimensions of "
-                                "dimensions to be used by the dimensionality reduction algorithm. "
+                                children=[
+                                    "If the user enables unsupervised learning, they will then need to choose a "
+                                    "dimensionality reduction algorithm. We have set the number of dimensions to 2, as "
+                                    "this makes the generated plot easier to visualise (a 2D plot is easier to "
+                                    "visualise "
+                                    "than for instance a 3D or even higher dimensional plot). The user can choose one "
+                                    "of "
+                                    "the following three dimensionality reduction algorithms: ",
+                                    html.Br(),
+                                    html.Br(),
+                                    "1. Principal Component Analysis (PCA)",
+                                    html.Br(),
+                                    html.Br(),
+                                    "2. Uniform Manifold Approximation and Projection for Dimension Reduction (UMAP)",
+                                    html.Br(),
+                                    html.Br(),
+                                    "3. t-distributed Stochastic Neighbor Embedding (t-SNE)",
+                                    html.Br(),
+                                    html.Br()
+                                ]
                             )
                         ],
                         style={
@@ -599,7 +646,9 @@ def model_input_guidelines():
                             html.P(
                                 "If the user enables hyperparameter optimisation, they will then need to input the "
                                 "number of iterations for which they wish to run the Bayesian-Opt hyperparameter "
-                                "optimisation algorithm. "
+                                "optimisation algorithm. The upper limit on the number of iterations has been set to "
+                                "30 iterations; this limit was set as a compromise between model performance and time "
+                                "taken to optimise the model."
                             )
                         ],
                         style={

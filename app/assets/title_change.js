@@ -9,7 +9,7 @@ window.dash_clientside.clientside = {
             let model_num = pathname.split('/').pop().slice(-1);
             // Check if model_num is not a number
             if (isNaN(model_num)) {
-                title = "Invalid";
+                title = "Invalid model number";
             } else {
                 title = `Model ${model_num} input`;
             }
@@ -17,7 +17,7 @@ window.dash_clientside.clientside = {
             let model_num = pathname.split('/').pop().slice(-1);
             // Check if model_num is not a number
             if (isNaN(model_num)) {
-                title = "Invalid";
+                title = "Invalid model number";
             } else {
                 title = `Model ${model_num} output`;
             }
