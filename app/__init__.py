@@ -1,5 +1,3 @@
-from pages import model_inputs_page
-from pages import model_outputs_page
-from pages import output_statistics_page
+from app.pages import model_inputs_page, model_outputs_page, output_statistics_page
 import app.globals
 

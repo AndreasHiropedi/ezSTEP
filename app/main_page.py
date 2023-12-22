@@ -7,7 +7,7 @@ import pandas as pd
 import os
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
-from pages import model_inputs_page, model_outputs_page, output_statistics_page
+from app.pages import model_inputs_page, model_outputs_page, output_statistics_page
 from urllib.parse import urlparse
 
 my_app = Dash(__name__)
