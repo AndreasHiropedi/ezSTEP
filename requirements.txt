@@ -50,7 +50,7 @@ GitPython==3.1.27
 gunicorn==21.2.0
 hijri-converter==2.2.3
 holidays==0.13
-httpstan==4.7.2
+httpstan==4.7.1
 hyperopt==0.2.7
 idna==3.3
 importlib-metadata==4.11.3
@@ -157,6 +157,7 @@ tzdata==2022.1
 tzlocal==4.2
 ujson==5.2.0
 umap-learn==0.5.5
+UNKNOWN @ git+https://github.com/benoitc/gunicorn.git@26aba9ed9d55f6465fd2271169b71bc119ea8186
 urllib3==1.26.8
 validators==0.18.2
 wcwidth==0.2.5
