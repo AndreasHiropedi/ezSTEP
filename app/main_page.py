@@ -6,10 +6,13 @@ import io
 import pandas as pd
 import os
 
-from app.app_init import my_app
-from dash import html, dcc, callback, Input, Output, State, clientside_callback
+from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 from pages import model_inputs_page, model_outputs_page, output_statistics_page
 from urllib.parse import urlparse
+
+my_app = Dash(__name__)
+server = my_app.server
+my_app.config.suppress_callback_exceptions = True
 
 
 def app_header():
