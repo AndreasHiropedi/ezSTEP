@@ -763,7 +763,7 @@ def model_input_hyperparameter_optimisation_card(model_count):
                 children=[hyperparameter_optimisation_number_input(model_count)]
             ),
             html.P(
-                "NOTE: the maximum number of iterations allowed as input is 30",
+                "NOTE: the maximum number of iterations allowed as input is 50",
                 style={
                     'margin-top': '-40px',
                     'font-size': '10pt',
@@ -1126,7 +1126,7 @@ def hyperparameter_optimisation_number_input(model_count):
                 id={'type': 'iteration-number-input', 'index': model_count},
                 type='number',
                 min=1,
-                max=30,
+                max=50,
                 step=1,
                 persistence=True,
                 style={

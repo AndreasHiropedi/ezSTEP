@@ -397,7 +397,7 @@ def predicted_versus_actual_graph(model):
     figure = go.Figure()
 
     # Add actual data trace
-    figure.add_trace(go.Scatter(x=actual, y=actual, mode='markers', name='Actual Values'))
+    figure.add_trace(go.Scatter(x=actual, y=actual, mode='lines', name='Actual Values'))
 
     # Add predictions trace
     figure.add_trace(go.Scatter(x=actual, y=predictions, mode='markers', name='Model Predictions'))
