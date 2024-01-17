@@ -196,17 +196,10 @@ def model_summary_card(model_count):
                                 }
                             ),
                             html.Div(
-                                id='model-input-details',
+                                id='model-input-details-table',
                                 children=[
-                                    html.P(f"Model Type: {model_type}"),
-                                    html.P(f"Feature Selection: {feature_selection}"),
-                                    html.P(f"Unsupervised Learning: {unsupervised_learning}"),
-                                    html.P(f"Hyperparameter Optimization: {hyper_opt}")
-                                ],
-                                style={
-                                    'justify-content': 'space-between',
-                                    'text-align': 'center'
-                                }
+
+                                ]
                             )
                         ]
                     ),
@@ -233,7 +226,9 @@ def model_summary_card(model_count):
                             ),
                             html.Div(
                                 id='summary-statistics-table',
+                                children=[
 
+                                ]
                             )
                         ]
                     ),
