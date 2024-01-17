@@ -1,10 +1,12 @@
+import pandas as pd
+
 import app.globals
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import umap
 
-from dash import html, dcc, callback, Input, Output, MATCH
+from dash import html, dcc, callback, Input, Output, MATCH, dash_table
 from models.random_forest.random_forest import RandomForest
 from models.ridge_regressor.ridge_regressor import RidgeRegressor
 from models.mlp.multilayer_perceptron import MultiLayerPerceptron
@@ -172,6 +174,37 @@ def model_summary_card(model_count):
     else:
         hyper_opt = f'Bayesian Hyperparameter Optimization with {model.hyper_opt_iterations} iterations'
 
+    # Training output statistics
+    training_rmse = f"{round(model.training_RMSE, 2)} ± {round(model.training_RMSE_std, 4)}"
+    training_r_squared = f"{round(model.training_R_squared, 2)} ± {round(model.training_R_squared_std, 4)}"
+    training_mae = f"{round(model.training_MAE, 2)} ± {round(model.training_MAE_std, 4)}"
+    training_2fold = f"{round(model.training_percentage_2fold_error, 2)} ± " \
+                     f"{round(model.training_percentage_2fold_error_std, 4)}"
+
+    # Testing output statistics
+    testing_rmse = f"{round(model.testing_RMSE, 2)}"
+    testing_r_squared = f"{round(model.testing_R_squared, 2)}"
+    testing_mae = f"{round(model.testing_MAE, 2)}"
+    testing_2fold = f"{round(model.testing_percentage_2fold_error, 2)}"
+
+    # Dataframe that stores the model summary information
+    model_summary_data = pd.DataFrame(
+        {
+            'Information type': ['Model type', 'Feature selection', 'Unsupervised learning',
+                                 'Hyperparameter optimization'],
+            'Details': [model_type, feature_selection, unsupervised_learning, hyper_opt]
+        }
+    )
+
+    # Dataframe that stores the model's output statistics
+    model_output_statistics = pd.DataFrame(
+        {
+           'Statistic name': ['RMSE', 'R-squared', 'MAE', 'Percentage within 2-fold error (%)'],
+           'Training value': [training_rmse, training_r_squared, training_mae, training_2fold],
+           'Testing value': [testing_rmse, testing_r_squared, testing_mae, testing_2fold]
+        }
+    )
+
     return dbc.Card(
         id={'type': 'model-summary-card', 'index': model_count},
         children=[
@@ -198,8 +231,28 @@ def model_summary_card(model_count):
                             html.Div(
                                 id='model-input-details-table',
                                 children=[
-
-                                ]
+                                    dash_table.DataTable(
+                                        id='summary-table',
+                                        columns=[{"name": i, "id": i} for i in model_summary_data.columns],
+                                        data=model_summary_data.to_dict('records'),
+                                        style_cell={
+                                            'text-align': 'center',
+                                            'font-size': '12pt',
+                                            'font-family': 'Times',
+                                            'border': '1px solid black'
+                                        },
+                                        style_header={
+                                            'font-weight': 'bold',
+                                            'background': 'blue',
+                                            'color': 'white',
+                                        },
+                                        editable=False,
+                                        cell_selectable=False
+                                    )
+                                ],
+                                style={
+                                    'margin-bottom': '40px'
+                                }
                             )
                         ]
                     ),
@@ -227,41 +280,31 @@ def model_summary_card(model_count):
                             html.Div(
                                 id='summary-statistics-table',
                                 children=[
-
-                                ]
+                                    dash_table.DataTable(
+                                        id='statistics-table',
+                                        columns=[{"name": i, "id": i} for i in model_output_statistics.columns],
+                                        data=model_output_statistics.to_dict('records'),
+                                        style_cell={
+                                            'text-align': 'center',
+                                            'font-size': '12pt',
+                                            'font-family': 'Times',
+                                            'border': '1px solid black'
+                                        },
+                                        style_header={
+                                            'font-weight': 'bold',
+                                            'background': 'orange',
+                                            'color': 'black',
+                                        },
+                                        editable=False,
+                                        cell_selectable=False
+                                    )
+                                ],
+                                style={
+                                    'margin-bottom': '40px'
+                                }
                             )
                         ]
-                    ),
-
-                    """
-                    html.Div(
-                        id='card-body-model-training',
-                        children=
-                        [
-                            html.H4(
-                                "Training Statistics",
-                                style={
-                                    'text-align': 'center'
-                                }
-                            ),
-                            html.P(f"RMSE: {round(model.training_RMSE, 2)} ± {round(model.training_RMSE_std, 4)}"),
-                            html.P(f"R-squared: {round(model.training_R_squared, 2)} ± "
-                                   f"{round(model.training_R_squared_std, 4)}"),
-                            html.P(f"MAE: {round(model.training_MAE, 2)} ± {round(model.training_MAE_std, 4)}"),
-                            html.P(f"Percentage within 2-fold error: {round(model.training_percentage_2fold_error, 2)} "
-                                   f"± {round(model.training_percentage_2fold_error_std, 4)}"),
-                        ],
-                        style={
-                            'flex': 1,
-                            'display': 'flex',
-                            'flex-direction': 'column',
-                            'justify-content': 'space-between',
-                            'borderRight': '1px solid black',
-                            'paddingRight': '10px',
-                            'paddingLeft': '10px',
-                        }
-                    ),
-                    """
+                    )
                 ]
             )
         ],
