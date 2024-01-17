@@ -17,9 +17,7 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    mlp = MLPRegressor(activation=params['activation'],
-                       hidden_layer_sizes=params['hidden_layer_sizes'],
-                       max_iter=params['max_iter'])
+    mlp = MLPRegressor(activation=params['activation'], hidden_layer_sizes=params['hidden_layer_sizes'])
 
     # Assuming X, y are your data
     score = cross_val_score(mlp, x, y, scoring='r2', cv=5).mean()
@@ -292,13 +290,14 @@ class MultiLayerPerceptron:
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
+            hidden_layer_sizes = [100, 150, 200, 250, 300, 350, 400]
+            hidden_layer_numbers = list(range(1, 6))
+            hidden_layers = tuple(hidden_layer_size for hidden_layer_size in hidden_layer_sizes
+                                  for _ in hidden_layer_numbers)
+
             space = {
-                'activation': hp.choice('activation', ['logistic', 'relu', 'tanh']),
-                'hidden_layer_sizes': hp.choice('hidden_layer_sizes', [
-                    (100, 100), (100, 100, 100), (200, 200),
-                    (200, 200, 200), (250, 250), (250, 250, 250)
-                ]),
-                'max_iter': hp.choice('max_iter', [100, 200, 250])
+                'activation': hp.choice('activation', ['relu', 'tanh']),
+                'hidden_layer_sizes': hp.choice('hidden_layer_sizes', hidden_layers)
             }
 
             # Initialize trials object to store details of each iteration
@@ -313,12 +312,8 @@ class MultiLayerPerceptron:
 
             # Select the best model
             self.model = MLPRegressor(
-                activation=['logistic', 'relu', 'tanh'][best['activation']],
-                hidden_layer_sizes=[
-                    (100, 100), (100, 100, 100), (200, 200),
-                    (200, 200, 200), (250, 250), (250, 250, 250)
-                ][best['hidden_layer_sizes']],
-                max_iter=[100, 200, 250][best['max_iter']]
+                activation=['relu', 'tanh'][best['activation']],
+                hidden_layer_sizes=hidden_layers[best['hidden_layer_sizes']]
             )
 
         # Initialize arrays to store metrics for each fold

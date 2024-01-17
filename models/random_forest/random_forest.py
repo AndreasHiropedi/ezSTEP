@@ -18,9 +18,7 @@ def hyper_opt_func(params, x, y):
     """
 
     rf = RandomForestRegressor(
-        bootstrap=params['bootstrap'],
         max_depth=params['max_depth'],
-        max_features=params['max_features'],
         min_samples_leaf=params['min_samples_leaf'],
         min_samples_split=params['min_samples_split'],
         n_estimators=params['n_estimators']
@@ -283,12 +281,11 @@ class RandomForest:
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
             space = {
-                'bootstrap': hp.choice('bootstrap', [True]),
-                'max_depth': hp.choice('max_depth', [80, 90, 100, 110]),
-                'max_features': hp.choice('max_features', [2, 3]),
-                'min_samples_leaf': hp.choice('min_samples_leaf', [3, 4, 5]),
-                'min_samples_split': hp.choice('min_samples_split', [8, 10, 12]),
-                'n_estimators': hp.choice('n_estimators', [100, 200, 300, 1000])
+                'max_depth': hp.choice('max_depth',
+                                       [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]),
+                'min_samples_leaf': hp.choice('min_samples_leaf', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+                'min_samples_split': hp.choice('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+                'n_estimators': hp.choice('n_estimators', [5, 15, 25, 35, 45, 55, 65, 75, 85, 95])
             }
 
             # Initialize trials object to store details of each iteration
@@ -303,12 +300,10 @@ class RandomForest:
 
             # Select the best model
             self.model = RandomForestRegressor(
-                bootstrap=[True][best['bootstrap']],
-                max_depth=[80, 90, 100, 110][best['max_depth']],
-                max_features=[2, 3][best['max_features']],
-                min_samples_leaf=[3, 4, 5][best['min_samples_leaf']],
-                min_samples_split=[8, 10, 12][best['min_samples_split']],
-                n_estimators=[100, 200, 300, 1000][best['n_estimators']]
+                max_depth=[15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100][best['max_depth']],
+                min_samples_leaf=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_leaf']],
+                min_samples_split=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_split']],
+                n_estimators=[5, 15, 25, 35, 45, 55, 65, 75, 85, 95][best['n_estimators']]
             )
 
         # Initialize arrays to store metrics for each fold

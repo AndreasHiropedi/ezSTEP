@@ -18,7 +18,6 @@ def hyper_opt_func(params, x, y):
     """
 
     svr = SVR(
-        kernel=params['kernel'],
         C=params['C'],
         epsilon=params['epsilon']
     )
@@ -274,13 +273,14 @@ class SupportVectorMachine:
         y_train = self.normalized_train['protein']
 
         # Apply hyperparameter optimisation (if enabled)
-        # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
+            c_choice = list(range(1, 51))
+            epsilon_choice = np.arange(0.1, 2, 0.1)
+
             space = {
-                'kernel': hp.choice('kernel', ['rbf', 'poly', 'linear']),
-                'C': hp.choice('C', [1, 10, 20, 30, 40, 50]),
-                'epsilon': hp.choice('epsilon', [0.1, 0.3, 0.5, 0.7, 1.0])
+                'C': hp.choice('C', c_choice),
+                'epsilon': hp.choice('epsilon', epsilon_choice)
             }
 
             # Initialize trials object to store details of each iteration
@@ -295,9 +295,8 @@ class SupportVectorMachine:
 
             # Select the best model
             self.model = SVR(
-                kernel=['rbf', 'poly', 'linear'][best['kernel']],
-                C=[1, 10, 20, 30, 40, 50][best['C']],
-                epsilon=[0.1, 0.3, 0.5, 0.7, 1.0][best['epsilon']]
+                C=c_choice[best['C']],
+                epsilon=epsilon_choice[best['epsilon']]
             )
 
         # Initialize arrays to store metrics for each fold
