@@ -647,7 +647,7 @@ def model_input_guidelines():
                                 "If the user enables hyperparameter optimisation, they will then need to input the "
                                 "number of iterations for which they wish to run the Bayesian-Opt hyperparameter "
                                 "optimisation algorithm. The upper limit on the number of iterations has been set to "
-                                "30 iterations; this limit was set as a compromise between model performance and time "
+                                "50 iterations; this limit was set as a compromise between model performance and time "
                                 "taken to optimise the model."
                             )
                         ],

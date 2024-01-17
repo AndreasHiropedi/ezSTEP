@@ -182,6 +182,7 @@ def model_summary_card(model_count):
             dbc.CardBody(
                 id='card-body-model',
                 children=[
+
                     # Model Input Details
                     html.Div(
                         id='card-body-model-info',
@@ -191,24 +192,53 @@ def model_summary_card(model_count):
                                 "Model Input Details",
                                 style={
                                     'text-align': 'center',
+                                    'font-size': '14pt'
                                 }
                             ),
-                            html.P(f"Model Type: {model_type}"),
-                            html.P(f"Feature Selection: {feature_selection}"),
-                            html.P(f"Unsupervised Learning: {unsupervised_learning}"),
-                            html.P(f"Hyperparameter Optimization: {hyper_opt}"),
-                        ],
+                            html.Div(
+                                id='model-input-details',
+                                children=[
+                                    html.P(f"Model Type: {model_type}"),
+                                    html.P(f"Feature Selection: {feature_selection}"),
+                                    html.P(f"Unsupervised Learning: {unsupervised_learning}"),
+                                    html.P(f"Hyperparameter Optimization: {hyper_opt}")
+                                ],
+                                style={
+                                    'justify-content': 'space-between',
+                                    'text-align': 'center'
+                                }
+                            )
+                        ]
+                    ),
+                    html.Hr(
                         style={
-                            'flex': 1,
-                            'display': 'flex',
-                            'flex-direction': 'column',
-                            'justify-content': 'space-between',
-                            'borderRight': '1px solid black',
-                            'paddingRight': '10px',
+                            'margin-left': '-15px',
+                            'margin-right': '-15px',
+                            'height': '2px',
+                            'color': 'black',
+                            'background': 'black'
                         }
                     ),
 
-                    # Training Statistics
+                    # Output Statistics
+                    html.Div(
+                        id='card-body-model-statistics',
+                        children=[
+                            html.H4(
+                                "Model training and testing output statistics",
+                                style={
+                                    'text-align': 'center',
+                                    'font-size': '14pt'
+                                }
+                            ),
+                            html.Div(
+                                id='summary-statistics-table',
+
+                            )
+                        ]
+                    ),
+
+                    """
                     html.Div(
                         id='card-body-model-training',
                         children=
@@ -236,39 +266,13 @@ def model_summary_card(model_count):
                             'paddingLeft': '10px',
                         }
                     ),
-
-                    # Testing Statistics
-                    html.Div(
-                        id='card-body-model-testing',
-                        children=[
-                            html.H4(
-                                "Testing Statistics",
-                                style={
-                                    'text-align': 'center'
-                                }
-                            ),
-                            html.P(f"RMSE: {round(model.testing_RMSE, 2)}"),
-                            html.P(f"R-squared: {round(model.testing_R_squared, 2)}"),
-                            html.P(f"MAE: {round(model.testing_MAE, 2)}"),
-                            html.P(f"Percentage within 2-fold error: {round(model.testing_percentage_2fold_error, 2)}%")
-                        ],
-                        style={
-                            'flex': 1,
-                            'display': 'flex',
-                            'flex-direction': 'column',
-                            'justify-content': 'space-between',
-                            'paddingLeft': '10px',
-                        }
-                    )
-                ],
-                style={
-                    'display': 'flex'
-                }
+                    """
+                ]
             )
         ],
         style={
-            'width': '75%',
-            'margin-left': '200px',
+            'width': '83.5%',
+            'margin-left': '120px',
             'border': '2px solid black',
             'margin-top': '50px'
         }
