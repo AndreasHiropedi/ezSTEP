@@ -1149,7 +1149,19 @@ def unsupervised_learning_plot_card(model_count):
                 id='card-body-unsupervised-plot',
                 children=[
                     dcc.Loading(
-                        children=[graph_container]
+                        children=[graph_container] if unsupervised_learning_method != 't-SNE' else
+                                 [
+                                     graph_container,
+                                     html.P(
+                                         "NOTE: the allowed range of values is 10 to 1000",
+                                         style={
+                                             'margin-top': '10px',
+                                             'font-size': '10pt',
+                                             'text-align': 'center',
+                                             'margin-bottom': '-20px'
+                                         }
+                                     )
+                                 ]
                     )
                 ]
             )
