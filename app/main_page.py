@@ -303,10 +303,7 @@ def user_guide():
                                     html.Br(),
                                     "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
                                     " data that are within the 2-fold error interval: 1/2 × correct value ≤ "
-                                    "predicted value ≤ 2 × correct value)",
-                                    "NOTE: This plot is interactive, and using the legend on the side, the user can "
-                                    "which models they wish to have displayed in the graph, and they can simply "
-                                    "enable/ disable by clicking on the respective item in the legend. "
+                                    "predicted value ≤ 2 × correct value)"
                                 ]
                             ),
                             html.P(
@@ -318,6 +315,14 @@ def user_guide():
                                 "testing. Depending on the additional inputs the user provides (such as query data, or "
                                 "enabling feature selection), additional graphs will be generated and displayed on "
                                 "these individual pages."
+                            ),
+                            html.P(
+                                "NOTE: All plots available in this app are interactive, "
+                                "and using the legend on the side, the user can select "
+                                "which models they wish to have displayed in the graph, and they can simply "
+                                "enable/ disable them by clicking on the respective item in the legend. Additionally, "
+                                "all graphs provide features such as zooming in/ out, saving the graph as a PNG to "
+                                "the user's local device, and selecting to focus only on certain regions of the graph."
                             )
                         ],
                         style={

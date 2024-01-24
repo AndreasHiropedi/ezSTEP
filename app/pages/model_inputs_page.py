@@ -29,7 +29,7 @@ def create_layout(model_count):
             html.Div(
                 id='input-page-contents',
                 children=[
-                    model_input_guidelines(),
+                    model_input_guidelines(model_count),
                     html.Div(
                         id='input-cards-container',
                         children=[
@@ -521,7 +521,7 @@ def file_validation_popup(model_count):
     )
 
 
-def model_input_guidelines():
+def model_input_guidelines(model_count):
     """
     This function handles the user guidelines for the model inputs page.
     """
@@ -656,7 +656,38 @@ def model_input_guidelines():
                             'color': '#856404',
                             'borderColor': '#ffeeba'
                         }
-                    )
+                    ),
+                    html.Div(
+                        id='model-creation-guidelines',
+                        children=[
+                            html.H4("5. Model creation"),
+                            html.Hr(),
+                            html.P(
+                                "Once the user has provided all the necessary inputs, there are two buttons at the "
+                                "bottom of the page: a blue 'Submit model' button, and a red 'Delete model' button. "
+                                "In order to delete the model entry altogether, the user will need to press the "
+                                "red delete button, and will be prompted to confirm this decision. If the user presses "
+                                "the blue submit button, then their inputs will be validated, and should anything be "
+                                "invalid, the user will be alerted in that regard. If, however, the validation is "
+                                "successful, then a new pop-up will appear, prompting the user to press the 'Update' "
+                                "button in order to create the model with their provided inputs. Once the model has "
+                                "been created successfully, pressing the submit button will NOT result in retraining "
+                                "unless the input parameters are modified."
+                            ),
+                            html.P(
+                                "NOTE: after pressing the 'Update' button, the text of the tab (in the browser) will "
+                                f"temporarily change from 'Model {model_count} input' to 'Updating...', and will only "
+                                f"revert back to 'Model {model_count} input' once training is finished (when this "
+                                f"happens, the user will need to press the 'Update' button again to confirm the "
+                                f"creation of the model)."
+                            )
+                        ],
+                        style={
+                            'background': '#9BDE95',
+                            'color': '#176636',
+                            'borderColor': '#ffeeba'
+                        }
+                    ),
                 ]
             )
         ]
