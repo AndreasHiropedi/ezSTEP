@@ -790,6 +790,7 @@ def update_training_output(content, name, stored_train_file_name):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
+                df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
                 app.globals.TRAINING_FILE = name
                 app.globals.TRAINING_DATA = df
@@ -883,7 +884,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                     'width': '97.5%',
@@ -898,6 +899,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -940,7 +942,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                     'width': '97.5%',
@@ -955,6 +957,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -997,7 +1000,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                     'width': '97.5%',
@@ -1012,6 +1015,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -1157,6 +1161,7 @@ def update_testing_output(content, name, stored_test_file_name):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
+                df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
                 app.globals.TESTING_FILE = name
                 app.globals.TESTING_DATA = df
@@ -1250,7 +1255,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                    'width': '97.5%',
@@ -1265,6 +1270,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -1307,7 +1313,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                    'width': '97.5%',
@@ -1322,6 +1328,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -1364,7 +1371,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             # check that all sequences are the same length
             # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
 
-            allowed_chars = {'a', 'c', 't', 'g'}
+            allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
                    'width': '97.5%',
@@ -1379,6 +1386,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
             proteins.append(protein_value)
@@ -1518,6 +1526,7 @@ def update_querying_output(content, name, stored_query_file_name):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
+                df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
                 app.globals.QUERYING_FILE = name
                 app.globals.QUERYING_DATA = df
@@ -1591,6 +1600,7 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
                'border': '2px solid #dc3545'
             }, counter, value
 
+        sequence_value = sequence_value.lower()
         # Otherwise, data is valid
         sequences.append(sequence_value)
 
