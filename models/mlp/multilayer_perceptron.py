@@ -19,7 +19,6 @@ def hyper_opt_func(params, x, y):
 
     mlp = MLPRegressor(activation=params['activation'], hidden_layer_sizes=params['hidden_layer_sizes'])
 
-    # Assuming X, y are your data
     score = cross_val_score(mlp, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}

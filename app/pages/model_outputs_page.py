@@ -156,6 +156,20 @@ def model_summary_card(model_count):
     elif isinstance(model, RidgeRegressor):
         model_type = 'Ridge Regressor'
 
+    # Feature encoding
+    feature_encoding = ''
+    if model.feature_encoding_method == 'binary':
+        feature_encoding = 'One-hot'
+    elif model.feature_encoding_method == 'kmer':
+        feature_encoding = f'Kmer ({model.kmer_size})'
+
+    # Feature normalisation
+    feature_normalisation = ''
+    if model.feature_normalization_algorithm == 'minmax':
+        feature_normalisation = 'MinMax'
+    elif model.feature_normalization_algorithm == 'zscore':
+        feature_normalisation = 'Z-score'
+
     # Feature selection
     if model.use_feature_select == 'no':
         feature_selection = 'Not enabled'
@@ -190,9 +204,11 @@ def model_summary_card(model_count):
     # Dataframe that stores the model summary information
     model_summary_data = pd.DataFrame(
         {
-            'Information type': ['Model type', 'Feature selection', 'Unsupervised learning',
+            'Information type': ['Model type', 'Feature encoding', 'Feature normalisation',
+                                 'Feature selection', 'Unsupervised learning',
                                  'Hyperparameter optimization'],
-            'Details': [model_type, feature_selection, unsupervised_learning, hyper_opt]
+            'Details': [model_type, feature_encoding, feature_normalisation, feature_selection,
+                        unsupervised_learning, hyper_opt]
         }
     )
 

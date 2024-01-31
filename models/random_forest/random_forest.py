@@ -24,7 +24,6 @@ def hyper_opt_func(params, x, y):
         n_estimators=params['n_estimators']
     )
 
-    # Assuming X, y are your data
     score = cross_val_score(rf, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}

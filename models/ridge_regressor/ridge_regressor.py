@@ -21,7 +21,6 @@ def hyper_opt_func(params, x, y):
         alpha=params['alpha']
     )
 
-    # Assuming X, y are your data
     score = cross_val_score(ridge, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}
