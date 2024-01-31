@@ -680,7 +680,14 @@ def model_input_guidelines(model_count):
                                 f"revert back to 'Model {model_count} input' once training is finished (when this "
                                 f"happens, the user will need to press the 'Update' button again to confirm the "
                                 f"creation of the model)."
-                            )
+                            ),
+                            html.P(
+                                "NOTE: after the 'Update' button has been pressed a second time and the text of the tab"
+                                f" (in the browser) has changed from 'Model {model_count} input' to 'Updating...', then"
+                                " pressing it again will only overwrite the progress made in training the model (so "
+                                "ideally the user should wait until the text reverts back to "
+                                f"'Model {model_count} input' before clicking the 'Update' button again)."
+                            ),
                         ],
                         style={
                             'background': '#9BDE95',
