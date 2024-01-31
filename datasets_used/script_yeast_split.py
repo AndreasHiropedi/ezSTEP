@@ -3,7 +3,8 @@ from sklearn.model_selection import train_test_split
 
 # To create the split, the named file below was downloaded from the following link
 # and included in the same directory as the Python script
-#
+# https://www.nature.com/articles/s41586-022-04506-6
+# the dataset used here is taken from Supplementary Figure 4F of the linked paper
 df = pd.read_csv('yeast_data.csv')
 
 df_cleaned = df.dropna(how='any')
