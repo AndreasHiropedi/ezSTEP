@@ -302,8 +302,8 @@ def user_guide():
                                     html.Br(),
                                     html.Br(),
                                     "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
-                                    " data that are within the 2-fold error interval: 1/2 × correct value ≤ "
-                                    "predicted value ≤ 2 × correct value)"
+                                    " data that are within the 2-fold error interval: 1/2 × correct value <= "
+                                    "predicted value <= 2 × correct value)"
                                 ]
                             ),
                             html.P(
