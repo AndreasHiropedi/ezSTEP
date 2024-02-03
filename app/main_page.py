@@ -1,14 +1,17 @@
-import app.globals
 import base64
+import io
+import os
+from urllib.parse import urlparse
+
 import dash
 import dash_bootstrap_components as dbc
-import io
 import pandas as pd
-import os
-
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
-from app.pages import model_inputs_page, model_outputs_page, output_statistics_page
-from urllib.parse import urlparse
+
+import globals
+import model_inputs_page
+import model_outputs_page
+import output_statistics_page
 
 my_app = Dash(__name__)
 server = my_app.server
@@ -628,8 +631,8 @@ def model_input_ref(model_key):
     model input (for each model created).
     """
 
-    if model_key not in app.globals.MODELS_LIST.keys():
-        app.globals.MODELS_LIST[model_key] = None
+    if model_key not in globals.MODELS_LIST.keys():
+        globals.MODELS_LIST[model_key] = None
 
     return html.A(
         children=[
@@ -792,8 +795,8 @@ def update_training_output(content, name, stored_train_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                app.globals.TRAINING_FILE = name
-                app.globals.TRAINING_DATA = df
+                globals.TRAINING_FILE = name
+                globals.TRAINING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1037,11 +1040,11 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
-        app.globals.TRAINING_DATA = pd.DataFrame({
+        globals.TRAINING_DATA = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
         })
-        app.globals.TRAINING_FILE = f"training_text_input_{counter}"
+        globals.TRAINING_FILE = f"training_text_input_{counter}"
 
     return {
         'width': '97.5%',
@@ -1163,8 +1166,8 @@ def update_testing_output(content, name, stored_test_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                app.globals.TESTING_FILE = name
-                app.globals.TESTING_DATA = df
+                globals.TESTING_FILE = name
+                globals.TESTING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1408,11 +1411,11 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
-        app.globals.TESTING_DATA = pd.DataFrame({
+        globals.TESTING_DATA = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
         })
-        app.globals.TESTING_FILE = f"testing_text_input_{counter}"
+        globals.TESTING_FILE = f"testing_text_input_{counter}"
 
     return {
         'width': '97.5%',
@@ -1528,8 +1531,8 @@ def update_querying_output(content, name, stored_query_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                app.globals.QUERYING_FILE = name
-                app.globals.QUERYING_DATA = df
+                globals.QUERYING_FILE = name
+                globals.QUERYING_DATA = df
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1606,10 +1609,10 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
-        app.globals.QUERYING_DATA = pd.DataFrame({
+        globals.QUERYING_DATA = pd.DataFrame({
             'sequence': sequences,
         })
-        app.globals.QUERYING_FILE = f"querying_text_input_{counter}"
+        globals.QUERYING_FILE = f"querying_text_input_{counter}"
 
     return {
         'width': '97.5%',
@@ -1683,7 +1686,7 @@ def render_tabs_content(
         if stored_count:
             return dbc.Row(
                 id='tabs-content-input',
-                children=[model_input_ref(model_key) for model_key in app.globals.MODELS_LIST.keys()] +
+                children=[model_input_ref(model_key) for model_key in globals.MODELS_LIST.keys()] +
                          [
                              html.Button(
                                  'Add a new model',
@@ -1712,7 +1715,7 @@ def render_tabs_content(
         return dbc.Row(
             id='tabs-content-output',
             children=[output_statistics_card(), html.Div(id='table-container')] +
-                     [model_output_ref(model_key) for model_key in app.globals.MODELS_LIST.keys()]
+                     [model_output_ref(model_key) for model_key in globals.MODELS_LIST.keys()]
         )
 
     # Validation check
@@ -1766,7 +1769,7 @@ def display_page(href):
         try:
             model_num = int(pathname.split('/')[-1][-1])
             model_key = f"Model {model_num}"
-            if model_key in app.globals.MODELS_LIST.keys():
+            if model_key in globals.MODELS_LIST.keys():
                 return model_inputs_page.create_layout(model_num)
             else:
                 return html.Div('Invalid model number.')
@@ -1778,7 +1781,7 @@ def display_page(href):
         try:
             model_num = int(pathname.split('/')[-1][-1])
             model_key = f"Model {model_num}"
-            if model_key in app.globals.MODELS_LIST.keys():
+            if model_key in globals.MODELS_LIST.keys():
                 return model_outputs_page.create_layout(model_num)
             else:
                 return html.Div('Invalid model number.')

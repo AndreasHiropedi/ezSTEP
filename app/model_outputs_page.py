@@ -1,16 +1,16 @@
 import pandas as pd
 
-import app.globals
+import globals
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import umap
 
 from dash import html, dcc, callback, Input, Output, MATCH, dash_table
-from models.random_forest.random_forest import RandomForest
-from models.ridge_regressor.ridge_regressor import RidgeRegressor
-from models.mlp.multilayer_perceptron import MultiLayerPerceptron
-from models.svm.support_vector_machine import SupportVectorMachine
+from random_forest import RandomForest
+from ridge_regressor import RidgeRegressor
+from multilayer_perceptron import MultiLayerPerceptron
+from support_vector_machine import SupportVectorMachine
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
@@ -23,7 +23,7 @@ def create_layout(model_count):
     # Check if model has been created successfully
     model_key = f'Model {model_count}'
 
-    if app.globals.MODELS_LIST[model_key] is None:
+    if globals.MODELS_LIST[model_key] is None:
         return html.Div(
             id='output-page',
             children=[
@@ -141,7 +141,7 @@ def model_summary_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     # Retrieve all necessary summary information
 
@@ -341,7 +341,7 @@ def output_statistics_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     return dbc.Card(
         id={'type': 'train-test-statistics-card', 'index': model_count},
@@ -414,7 +414,7 @@ def predicted_versus_actual_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     return dbc.Card(
         id={'type': 'predict-versus-actual-card', 'index': model_count},
@@ -478,7 +478,7 @@ def training_feature_correlation_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     return dbc.Card(
         id={'type': 'train-feature-correlation-card', 'index': model_count},
@@ -570,7 +570,7 @@ def testing_feature_correlation_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     return dbc.Card(
         id={'type': 'test-feature-correlation-card', 'index': model_count},
@@ -663,7 +663,7 @@ def querying_feature_correlation_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     if model.querying_data is None:
         return html.Div(
@@ -764,7 +764,7 @@ def querying_file_download_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     # Generate file name
     file_name = f"{model.model_number}_query_predictions.csv"
@@ -851,7 +851,7 @@ def explained_variance_plot_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     if model.use_feature_select == 'no':
         return html.Div(
@@ -945,7 +945,7 @@ def unsupervised_learning_plot_card(model_count):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = app.globals.MODELS_LIST[model_key]
+    model = globals.MODELS_LIST[model_key]
 
     if model.use_unsupervised == 'no':
         return html.Div(
@@ -1352,7 +1352,7 @@ def generate_csv(_n_clicks):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = app.globals.MODELS_LIST[f'Model {index_value}']
+    model = globals.MODELS_LIST[f'Model {index_value}']
 
     # Data
     df = model.model_query_created_file
@@ -1387,7 +1387,7 @@ def update_pca_graph(svd_solver, whiten):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = app.globals.MODELS_LIST[f'Model {index_value}']
+    model = globals.MODELS_LIST[f'Model {index_value}']
 
     # Get the data and initially fitted PCA outputs
     data_train = model.normalized_train
@@ -1468,7 +1468,7 @@ def update_tsne_plot(perplexity, learning_rate):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = app.globals.MODELS_LIST[f'Model {index_value}']
+    model = globals.MODELS_LIST[f'Model {index_value}']
 
     # Variable to keep track of query data (if provided)
     tsne_results_query = None
@@ -1549,7 +1549,7 @@ def update_umap_plot(n_neighbors, min_dist):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = app.globals.MODELS_LIST[f'Model {index_value}']
+    model = globals.MODELS_LIST[f'Model {index_value}']
 
     # Data
     data_train = model.normalized_train

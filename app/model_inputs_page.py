@@ -1,13 +1,13 @@
-import app.globals
+import globals
 import dash
 import dash_bootstrap_components as dbc
 import json
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
-from models.random_forest.random_forest import RandomForest
-from models.ridge_regressor.ridge_regressor import RidgeRegressor
-from models.mlp.multilayer_perceptron import MultiLayerPerceptron
-from models.svm.support_vector_machine import SupportVectorMachine
+from random_forest import RandomForest
+from ridge_regressor import RidgeRegressor
+from multilayer_perceptron import MultiLayerPerceptron
+from support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count):
@@ -1307,7 +1307,7 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
         return False
 
     elif yes_clicks >= 0:
-        del app.globals.MODELS_LIST[f'Model {index_value}']
+        del globals.MODELS_LIST[f'Model {index_value}']
         return False
 
     return is_open
@@ -1665,11 +1665,11 @@ def press_submit_button(
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    current_model = app.globals.MODELS_LIST[f'Model {index_value}']
+    current_model = globals.MODELS_LIST[f'Model {index_value}']
 
     if current_model and (not current_model.trained_model or not current_model.tested_model):
         # check if querying_data has been uploaded
-        querying_data = app.globals.QUERYING_DATA
+        querying_data = globals.QUERYING_DATA
         # perform the necessary model operations
         current_model.train_model()
         current_model.test_model()
@@ -1685,10 +1685,10 @@ def press_submit_button(
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm,
                                         hyperopt_ans, hyperopt_iterations) \
-            and not check_dataset_change(current_model, app.globals.TRAINING_FILE, app.globals.TESTING_FILE,
-                                         app.globals.QUERYING_FILE):
+            and not check_dataset_change(current_model, globals.TRAINING_FILE, globals.TESTING_FILE,
+                                         globals.QUERYING_FILE):
         # check if querying_data has been uploaded
-        querying_data = app.globals.QUERYING_DATA
+        querying_data = globals.QUERYING_DATA
         if querying_data is not None:
             # if that process has finished
             if current_model.queried_model:
@@ -1700,15 +1700,15 @@ def press_submit_button(
         return False, False, False, True
 
     # if the data has changed
-    elif current_model and check_dataset_change(current_model, app.globals.TRAINING_FILE,
-                                                app.globals.TESTING_FILE, app.globals.QUERYING_FILE):
+    elif current_model and check_dataset_change(current_model, globals.TRAINING_FILE,
+                                                globals.TESTING_FILE, globals.QUERYING_FILE):
         # get necessary information
-        training_data = app.globals.TRAINING_DATA
-        testing_data = app.globals.TESTING_DATA
-        querying_data = app.globals.QUERYING_DATA
-        training_file = app.globals.TRAINING_FILE
-        testing_file = app.globals.TESTING_FILE
-        querying_file = app.globals.QUERYING_FILE
+        training_data = globals.TRAINING_DATA
+        testing_data = globals.TESTING_DATA
+        querying_data = globals.QUERYING_DATA
+        training_file = globals.TRAINING_FILE
+        testing_file = globals.TESTING_FILE
+        querying_file = globals.QUERYING_FILE
 
         # set model data
         current_model.set_training_data(training_data)
@@ -1729,12 +1729,12 @@ def press_submit_button(
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks):
 
-        training_data = app.globals.TRAINING_DATA
-        testing_data = app.globals.TESTING_DATA
-        querying_data = app.globals.QUERYING_DATA
-        training_file = app.globals.TRAINING_FILE
-        testing_file = app.globals.TESTING_FILE
-        querying_file = app.globals.QUERYING_FILE
+        training_data = globals.TRAINING_DATA
+        testing_data = globals.TESTING_DATA
+        querying_data = globals.QUERYING_DATA
+        training_file = globals.TRAINING_FILE
+        testing_file = globals.TESTING_FILE
+        querying_file = globals.QUERYING_FILE
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
@@ -1804,7 +1804,7 @@ def press_submit_button(
             model.set_use_unsupervised("no")
 
         # Store model in the globally available list
-        app.globals.MODELS_LIST[f'Model {index_value}'] = model
+        globals.MODELS_LIST[f'Model {index_value}'] = model
 
         return True, False, False, False
 

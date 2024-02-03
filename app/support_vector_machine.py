@@ -3,13 +3,13 @@ import pandas as pd
 
 from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-from models.features import encoders
-from models.features import normalizers
-from models.features import selectors
-from models.unsupervised_learning import dimension_reduction_methods
-from sklearn.linear_model import Ridge
+import feature_encoders
+import feature_normalizers
+import feature_selectors
+import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.svm import SVR
 
 
 def hyper_opt_func(params, x, y):
@@ -17,28 +17,33 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    ridge = Ridge(
-        alpha=params['alpha']
+    svr = SVR(
+        C=params['C'],
+        epsilon=params['epsilon']
     )
 
-    score = cross_val_score(ridge, x, y, scoring='r2', cv=5).mean()
+    score = cross_val_score(svr, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}
 
 
-class RidgeRegressor:
+class SupportVectorMachine:
     """
-    This is the implementation of the Ridge Regressor
+    This is the implementation of the Support Vector Machine
     machine learning model.
     """
 
     def __init__(self):
         # model parameters
-        self.alpha = 1.0
+        self.kernel = 'rbf'
+        self.C = 30
+        self.epsilon = 0.5
 
         # model itself
-        self.model = Ridge(
-            alpha=self.alpha
+        self.model = SVR(
+            kernel=self.kernel,
+            C=self.C,
+            epsilon=self.epsilon
         )
 
         # model data
@@ -179,11 +184,11 @@ class RidgeRegressor:
 
         if self.feature_encoding_method == 'binary':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
+                feature_encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
 
         elif self.feature_encoding_method == 'kmer':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
+                feature_encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
 
     def normalize_features(self):
         """
@@ -194,14 +199,14 @@ class RidgeRegressor:
         if self.feature_normalization_algorithm == 'zscore':
             self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
                 self.z_score_target_normaliser = \
-                normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
 
         elif self.feature_normalization_algorithm == 'minmax':
             self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
                 self.min_max_target_normaliser = \
-                normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
 
@@ -240,26 +245,27 @@ class RidgeRegressor:
             # f-score
             if self.feature_selection_algorithm == "F-score":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.f_score_selection(self.normalized_train, self.normalized_test,
-                                                self.normalized_query, self.feature_number)
+                    feature_selectors.f_score_selection(self.normalized_train, self.normalized_test,
+                                                        self.normalized_query, self.feature_number)
 
             # weight importance
             elif self.feature_selection_algorithm == "Weight Importance":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.weight_importance_selection(self.model, self.normalized_train, self.normalized_test,
-                                                          self.normalized_query, self.feature_number)
+                    feature_selectors.weight_importance_selection(self.model, self.normalized_train,
+                                                                  self.normalized_test,
+                                                                  self.normalized_query, self.feature_number)
 
             # mutual information
             elif self.feature_selection_algorithm == "Mutual Information":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
-                                                           self.normalized_query, self.feature_number)
+                    feature_selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
+                                                                   self.normalized_query, self.feature_number)
 
             # PCA
             elif self.feature_selection_algorithm == "PCA":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
-                                            self.feature_number)
+                    feature_selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
+                                                    self.feature_number)
 
         # Prepare the training data
         x_train = self.selected_train if self.selected_train is not None else \
@@ -267,13 +273,14 @@ class RidgeRegressor:
         y_train = self.normalized_train['protein']
 
         # Apply hyperparameter optimisation (if enabled)
-        # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
-            alpha_list = 10 ** (np.linspace(-1, 2, 50))
+            c_choice = list(range(1, 51))
+            epsilon_choice = np.arange(0.1, 2, 0.1)
 
             space = {
-                'alpha': hp.choice('alpha', alpha_list)
+                'C': hp.choice('C', c_choice),
+                'epsilon': hp.choice('epsilon', epsilon_choice)
             }
 
             # Initialize trials object to store details of each iteration
@@ -287,8 +294,9 @@ class RidgeRegressor:
                         trials=trials)
 
             # Select the best model
-            self.model = Ridge(
-                alpha=alpha_list[best['alpha']]
+            self.model = SVR(
+                C=c_choice[best['C']],
+                epsilon=epsilon_choice[best['epsilon']]
             )
 
         # Initialize arrays to store metrics for each fold
@@ -348,7 +356,7 @@ class RidgeRegressor:
         # Calculate 2-fold error
         self.training_2fold_error = np.mean(two_fold_error_per_fold)
 
-        # Retrain on the entire training dataset
+        # Train the SVR model on the entire training set
         self.model.fit(x_train, y_train)
 
         self.trained_model = True

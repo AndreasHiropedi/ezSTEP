@@ -3,11 +3,11 @@ import pandas as pd
 
 from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-from models.features import encoders
-from models.features import normalizers
-from models.features import selectors
-from models.unsupervised_learning import dimension_reduction_methods
-from sklearn.ensemble import RandomForestRegressor
+import feature_encoders
+import feature_normalizers
+import selectors
+import dimension_reduction_methods
+from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import KFold, cross_val_score
 
@@ -17,38 +17,28 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    rf = RandomForestRegressor(
-        max_depth=params['max_depth'],
-        min_samples_leaf=params['min_samples_leaf'],
-        min_samples_split=params['min_samples_split'],
-        n_estimators=params['n_estimators']
+    ridge = Ridge(
+        alpha=params['alpha']
     )
 
-    score = cross_val_score(rf, x, y, scoring='r2', cv=5).mean()
+    score = cross_val_score(ridge, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}
 
 
-class RandomForest:
+class RidgeRegressor:
     """
-    This is the implementation of the Random Forest
+    This is the implementation of the Ridge Regressor
     machine learning model.
     """
 
     def __init__(self):
-
         # model parameters
-        self.n_estimator = 25
-        self.max_depth = 30
-        self.min_samples_leaf = 3
-        self.min_samples_split = 2
+        self.alpha = 1.0
 
         # model itself
-        self.model = RandomForestRegressor(
-            n_estimators=self.n_estimator,
-            max_depth=self.max_depth,
-            min_samples_leaf=self.min_samples_leaf,
-            min_samples_split=self.min_samples_split
+        self.model = Ridge(
+            alpha=self.alpha
         )
 
         # model data
@@ -277,14 +267,13 @@ class RandomForest:
         y_train = self.normalized_train['protein']
 
         # Apply hyperparameter optimisation (if enabled)
+        # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
+            alpha_list = 10 ** (np.linspace(-1, 2, 50))
+
             space = {
-                'max_depth': hp.choice('max_depth',
-                                       [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]),
-                'min_samples_leaf': hp.choice('min_samples_leaf', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
-                'min_samples_split': hp.choice('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
-                'n_estimators': hp.choice('n_estimators', [5, 15, 25, 35, 45, 55, 65, 75, 85, 95])
+                'alpha': hp.choice('alpha', alpha_list)
             }
 
             # Initialize trials object to store details of each iteration
@@ -298,11 +287,8 @@ class RandomForest:
                         trials=trials)
 
             # Select the best model
-            self.model = RandomForestRegressor(
-                max_depth=[15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100][best['max_depth']],
-                min_samples_leaf=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_leaf']],
-                min_samples_split=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_split']],
-                n_estimators=[5, 15, 25, 35, 45, 55, 65, 75, 85, 95][best['n_estimators']]
+            self.model = Ridge(
+                alpha=alpha_list[best['alpha']]
             )
 
         # Initialize arrays to store metrics for each fold

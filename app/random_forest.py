@@ -3,13 +3,13 @@ import pandas as pd
 
 from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-from models.features import encoders
-from models.features import normalizers
-from models.features import selectors
-from models.unsupervised_learning import dimension_reduction_methods
+import feature_encoders
+import feature_normalizers
+import feature_selectors
+import dimension_reduction_methods
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import KFold, cross_val_score
-from sklearn.svm import SVR
 
 
 def hyper_opt_func(params, x, y):
@@ -17,33 +17,38 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    svr = SVR(
-        C=params['C'],
-        epsilon=params['epsilon']
+    rf = RandomForestRegressor(
+        max_depth=params['max_depth'],
+        min_samples_leaf=params['min_samples_leaf'],
+        min_samples_split=params['min_samples_split'],
+        n_estimators=params['n_estimators']
     )
 
-    score = cross_val_score(svr, x, y, scoring='r2', cv=5).mean()
+    score = cross_val_score(rf, x, y, scoring='r2', cv=5).mean()
 
     return {'loss': -score, 'status': STATUS_OK}
 
 
-class SupportVectorMachine:
+class RandomForest:
     """
-    This is the implementation of the Support Vector Machine
+    This is the implementation of the Random Forest
     machine learning model.
     """
 
     def __init__(self):
+
         # model parameters
-        self.kernel = 'rbf'
-        self.C = 30
-        self.epsilon = 0.5
+        self.n_estimator = 25
+        self.max_depth = 30
+        self.min_samples_leaf = 3
+        self.min_samples_split = 2
 
         # model itself
-        self.model = SVR(
-            kernel=self.kernel,
-            C=self.C,
-            epsilon=self.epsilon
+        self.model = RandomForestRegressor(
+            n_estimators=self.n_estimator,
+            max_depth=self.max_depth,
+            min_samples_leaf=self.min_samples_leaf,
+            min_samples_split=self.min_samples_split
         )
 
         # model data
@@ -184,11 +189,11 @@ class SupportVectorMachine:
 
         if self.feature_encoding_method == 'binary':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
+                feature_encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
 
         elif self.feature_encoding_method == 'kmer':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
+                feature_encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
 
     def normalize_features(self):
         """
@@ -199,14 +204,14 @@ class SupportVectorMachine:
         if self.feature_normalization_algorithm == 'zscore':
             self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
                 self.z_score_target_normaliser = \
-                normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
 
         elif self.feature_normalization_algorithm == 'minmax':
             self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
                 self.min_max_target_normaliser = \
-                normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
 
@@ -245,26 +250,27 @@ class SupportVectorMachine:
             # f-score
             if self.feature_selection_algorithm == "F-score":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.f_score_selection(self.normalized_train, self.normalized_test,
-                                                self.normalized_query, self.feature_number)
+                    feature_selectors.f_score_selection(self.normalized_train, self.normalized_test,
+                                                        self.normalized_query, self.feature_number)
 
             # weight importance
             elif self.feature_selection_algorithm == "Weight Importance":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.weight_importance_selection(self.model, self.normalized_train, self.normalized_test,
-                                                          self.normalized_query, self.feature_number)
+                    feature_selectors.weight_importance_selection(self.model, self.normalized_train,
+                                                                  self.normalized_test,
+                                                                  self.normalized_query, self.feature_number)
 
             # mutual information
             elif self.feature_selection_algorithm == "Mutual Information":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
-                                                           self.normalized_query, self.feature_number)
+                    feature_selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
+                                                                   self.normalized_query, self.feature_number)
 
             # PCA
             elif self.feature_selection_algorithm == "PCA":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
-                                            self.feature_number)
+                    feature_selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
+                                                    self.feature_number)
 
         # Prepare the training data
         x_train = self.selected_train if self.selected_train is not None else \
@@ -274,12 +280,12 @@ class SupportVectorMachine:
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
             # set up the parameter space for hyper-opt
-            c_choice = list(range(1, 51))
-            epsilon_choice = np.arange(0.1, 2, 0.1)
-
             space = {
-                'C': hp.choice('C', c_choice),
-                'epsilon': hp.choice('epsilon', epsilon_choice)
+                'max_depth': hp.choice('max_depth',
+                                       [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]),
+                'min_samples_leaf': hp.choice('min_samples_leaf', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+                'min_samples_split': hp.choice('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+                'n_estimators': hp.choice('n_estimators', [5, 15, 25, 35, 45, 55, 65, 75, 85, 95])
             }
 
             # Initialize trials object to store details of each iteration
@@ -293,9 +299,11 @@ class SupportVectorMachine:
                         trials=trials)
 
             # Select the best model
-            self.model = SVR(
-                C=c_choice[best['C']],
-                epsilon=epsilon_choice[best['epsilon']]
+            self.model = RandomForestRegressor(
+                max_depth=[15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100][best['max_depth']],
+                min_samples_leaf=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_leaf']],
+                min_samples_split=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][best['min_samples_split']],
+                n_estimators=[5, 15, 25, 35, 45, 55, 65, 75, 85, 95][best['n_estimators']]
             )
 
         # Initialize arrays to store metrics for each fold
@@ -355,7 +363,7 @@ class SupportVectorMachine:
         # Calculate 2-fold error
         self.training_2fold_error = np.mean(two_fold_error_per_fold)
 
-        # Train the SVR model on the entire training set
+        # Retrain on the entire training dataset
         self.model.fit(x_train, y_train)
 
         self.trained_model = True

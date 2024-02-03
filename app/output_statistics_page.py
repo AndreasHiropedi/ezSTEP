@@ -1,4 +1,4 @@
-import app.globals
+import globals
 import plotly.graph_objects as go
 
 from dash import html, dcc, callback, Input, Output
@@ -47,7 +47,7 @@ def update_statistics_graph(_id):
     # only stores the created models (in case the user adds more models but doesn't initialise all of them)
     # to avoid errors when plotting the graph
     existing_models = {}
-    for key, value in app.globals.MODELS_LIST.items():
+    for key, value in globals.MODELS_LIST.items():
         if value is not None:
             existing_models[key] = value
 
