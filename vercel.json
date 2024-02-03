@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "main_page.py",
+      "src": "app/main_page.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "main_page.py"
+      "dest": "app/main_page.py"
     }
   ]
 }
