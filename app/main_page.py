@@ -101,7 +101,7 @@ def app_footer():
 
             # Copyright
             html.H3(
-                "Biomolecular Control Group ©2024",
+                "Biomolecular Control Group 2024",
             )
         ],
         style={
