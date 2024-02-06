@@ -900,7 +900,7 @@ def explained_variance_plot(model):
     """
 
     # Data
-    data = model.selected_train
+    data = model.normalized_train
 
     # Apply PCA
     pca = PCA(n_components=data.shape[1])
@@ -908,29 +908,30 @@ def explained_variance_plot(model):
 
     # Get the explained and cumulative variance
     explained_var = pca.explained_variance_ratio_
-    cumulative_var = explained_var.cumsum()
+    explained_var_percentage = explained_var * 100
+    cumulative_var = explained_var_percentage.cumsum()
 
     # Create the figure
     figure = go.Figure()
 
     # Adding individual explained variance (bar chart)
     figure.add_trace(go.Bar(
-        x=[f'PC{i + 1}' for i in range(data.shape[1])],
-        y=explained_var,
-        name='Individual Explained Variance'
+        x=[f'PC{i + 1}' for i in range(model.feature_number)],
+        y=explained_var_percentage,
+        name='Individual Explained Variance (%)'
     ))
 
     # Adding cumulative explained variance (line chart)
     figure.add_trace(go.Scatter(
-        x=[f'PC{i + 1}' for i in range(data.shape[1])],
+        x=[f'PC{i + 1}' for i in range(model.feature_number)],
         y=cumulative_var,
-        name='Cumulative Explained Variance'
+        name='Cumulative Explained Variance (%)'
     ))
 
     # Updating layout
     figure.update_layout(
         xaxis_title='Principal Components',
-        yaxis_title='Explained Variance Ratio',
+        yaxis_title='Explained Variance (%)',
     )
 
     return figure
