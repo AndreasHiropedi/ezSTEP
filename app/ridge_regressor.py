@@ -5,7 +5,7 @@ from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 import feature_encoders
 import feature_normalizers
-import selectors
+import feature_selectors
 import dimension_reduction_methods
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
@@ -179,11 +179,11 @@ class RidgeRegressor:
 
         if self.feature_encoding_method == 'binary':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
+                feature_encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
 
         elif self.feature_encoding_method == 'kmer':
             self.encoded_train, self.encoded_test, self.encoded_query = \
-                encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
+                feature_encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
 
     def normalize_features(self):
         """
@@ -194,14 +194,14 @@ class RidgeRegressor:
         if self.feature_normalization_algorithm == 'zscore':
             self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
                 self.z_score_target_normaliser = \
-                normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
 
         elif self.feature_normalization_algorithm == 'minmax':
             self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
                 self.min_max_target_normaliser = \
-                normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+                feature_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
 
@@ -240,26 +240,27 @@ class RidgeRegressor:
             # f-score
             if self.feature_selection_algorithm == "F-score":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.f_score_selection(self.normalized_train, self.normalized_test,
-                                                self.normalized_query, self.feature_number)
+                    feature_selectors.f_score_selection(self.normalized_train, self.normalized_test,
+                                                        self.normalized_query, self.feature_number)
 
             # weight importance
             elif self.feature_selection_algorithm == "Weight Importance":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.weight_importance_selection(self.model, self.normalized_train, self.normalized_test,
-                                                          self.normalized_query, self.feature_number)
+                    feature_selectors.weight_importance_selection(self.model, self.normalized_train,
+                                                                  self.normalized_test,
+                                                                  self.normalized_query, self.feature_number)
 
             # mutual information
             elif self.feature_selection_algorithm == "Mutual Information":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
-                                                           self.normalized_query, self.feature_number)
+                    feature_selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
+                                                                   self.normalized_query, self.feature_number)
 
             # PCA
             elif self.feature_selection_algorithm == "PCA":
                 self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
-                                            self.feature_number)
+                    feature_selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
+                                                    self.feature_number)
 
         # Prepare the training data
         x_train = self.selected_train if self.selected_train is not None else \
