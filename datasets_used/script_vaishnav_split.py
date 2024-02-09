@@ -23,7 +23,7 @@ invalid_sequences = filtered_df['sequence'].str.lower().str.contains('[^actg]')
 # Step 2: Remove the rows with invalid sequences
 filtered_df = filtered_df[~invalid_sequences]
 
-selected_rows = filtered_df.sample(4200)
+selected_rows = filtered_df.sample(30000)
 
 # Calculate the number of rows for 90% and 10% splits
 num_rows = len(selected_rows)
