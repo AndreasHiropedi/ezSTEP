@@ -44,9 +44,20 @@ def app_header():
                 target='_blank'
             ),
 
-            # Web app title
-            html.H2(
-                "BioNetTrain",
+            # App logo
+            html.A(
+                id='app-logo',
+                children=[
+                    html.Img(
+                        src='data:image/png;base64,{}'.format(
+                            base64.b64encode(
+                                open(
+                                    './assets/app-logo.png', 'rb'
+                                ).read()
+                            ).decode()
+                        ),
+                    ),
+                ]
             ),
 
             # GitHub repo link
