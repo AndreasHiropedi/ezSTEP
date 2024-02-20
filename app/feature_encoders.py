@@ -44,7 +44,7 @@ def encode_one_hot(train_data, test_data, query_data):
     if query_data is not None:
         one_hot_encoded_query = np.array([encode_dna_seq_one_hot(sequence) for sequence in query_data['sequence']])
         query_nsamples, query_nx, query_ny = one_hot_encoded_query.shape
-        query_reshaped = one_hot_encoded_test.reshape((query_nsamples, query_nx * query_ny))
+        query_reshaped = one_hot_encoded_query.reshape((query_nsamples, query_nx * query_ny))
         query_encoded_df = pd.DataFrame(query_reshaped, columns=[f'base_{i}' for i in range(train_nx * train_ny)])
 
         return train_final, test_final, query_encoded_df

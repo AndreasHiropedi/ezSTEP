@@ -433,10 +433,9 @@ class MultiLayerPerceptron:
         elif self.feature_normalization_algorithm == 'minmax':
             scaler = self.min_max_target_normaliser
 
-        normalized_x_df = pd.DataFrame(self.normalized_query, columns=self.encoded_query.columns)
+        normalized_x_df = pd.DataFrame(self.normalized_query)
         if self.selected_query is not None:
-            normalized_x_df = pd.DataFrame(self.selected_query,
-                                           columns=self.encoded_query.columns[self.selected_features])
+            normalized_x_df = pd.DataFrame(self.selected_query)
 
         normalized_predictions = self.model.predict(normalized_x_df)
 
