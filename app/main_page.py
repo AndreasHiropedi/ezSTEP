@@ -57,7 +57,8 @@ def app_header():
                             ).decode()
                         ),
                     ),
-                ]
+                ],
+                href='/'
             ),
 
             # GitHub repo link
