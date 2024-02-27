@@ -1313,7 +1313,7 @@ def initial_umap_plot(model):
             x=umap_results_train[:, 0],
             y=umap_results_train[:, 1],
             mode='markers',
-            marker=dict(color=labels, colorscale='Viridis', showscale=True)
+            marker=dict(color=labels, colorscale='Viridis', showscale=True, opacity=0.8)
         )
     )
 
@@ -1569,7 +1569,7 @@ def update_umap_plot(n_neighbors, min_dist):
             x=umap_results_train[:, 0],
             y=umap_results_train[:, 1],
             mode='markers',
-            marker=dict(color=labels, colorscale='Viridis', showscale=True)
+            marker=dict(color=labels, colorscale='Viridis', showscale=True, opacity=0.8)
         )
     )
 
