@@ -61,6 +61,19 @@ def create_layout(model_count):
                     submit_model_popup(model_count),
                     input_validation_popup(model_count),
                     file_validation_popup(model_count),
+                    dcc.Loading(
+                        id={'type': 'loading-animation', 'index': model_count},
+                        style={
+                            'top': '480px',
+                            'width': '33%',
+                            'margin-left': '200px',
+                            'position': 'fixed',
+                            'background': 'white',
+                            'color': 'black',
+                            'border': '3px solid black'
+                        }
+                    ),
+                    confirmation_popup(model_count),
                     completion_popup(model_count)
                 ]
             ),
@@ -272,24 +285,21 @@ def submit_model_popup(model_count):
         children=[
             dbc.ModalHeader(
                 id='submit-modal-header',
-                children=[dbc.ModalTitle(f"Creating model {model_count} using given input")],
+                children=[dbc.ModalTitle(f"Create model {model_count} using given input")],
                 close_button=False
             ),
             dbc.ModalBody(
                 id='submit-modal-body',
                 children=[
-                    html.Div(
-                        id='loader'
-                    ),
                     dbc.Button(
                         html.H4(
-                            "Update",
+                            "Create",
                             style={
                                 'font-size': '12pt',
                                 'margin-top': '5px'
                             }
                         ),
-                        id={'type': "update-button", 'index': model_count},
+                        id={'type': "create-button", 'index': model_count},
                         n_clicks=0,
                         style={
                             'margin-top': '20px',
@@ -320,7 +330,7 @@ def submit_model_popup(model_count):
     )
 
 
-def completion_popup(model_count):
+def completion_popup(model_count, opened=False):
     """
     This function creates a popup for when a model selection was
     submitted and executed successfully.
@@ -360,6 +370,75 @@ def completion_popup(model_count):
                         }
                     ),
                     id={'type': "close-complete-button", 'index': model_count},
+                    n_clicks=0,
+                    style={
+                        'margin-left': '190px',
+                        'border': '2px solid black',
+                        'cursor': 'pointer',
+                        'height': '40px',
+                        'background': 'blue',
+                        'color': 'white',
+                        'margin-bottom': '20px',
+                    }
+                ),
+                id='complete-modal-body'
+            )
+        ],
+        keyboard=False,
+        is_open=opened,
+        backdrop='static',
+        style={
+            'top': '340px',
+            'width': '30%',
+            'margin-left': '600px',
+            'position': 'fixed',
+            'background': 'white',
+            'color': 'black',
+            'border': '3px solid black'
+        }
+    )
+
+
+def confirmation_popup(model_count):
+    """
+    This function creates a popup for when a model selection was
+    already executed successfully.
+    """
+
+    return dbc.Modal(
+        id={'type': 'complete-creation-popup', 'index': model_count},
+        children=[
+            dbc.ModalHeader(
+                id='complete-modal-header',
+                children=[
+                    dbc.ModalTitle(f"Model {model_count} has already been successfully created"),
+                    html.Div("✓", style={
+                        'color': 'white',
+                        'fontSize': '20px',
+                        'fontWeight': 'bold',
+                        'backgroundColor': 'green',
+                        'borderRadius': '50%',
+                        'width': '30px',
+                        'height': '30px',
+                        'textAlign': 'center',
+                        'lineHeight': '30px',
+                        'marginRight': '10px',
+                        'display': 'inline-block',
+                        'margin-left': '20px'
+                    })
+                ],
+                close_button=False
+            ),
+            dbc.ModalBody(
+                dbc.Button(
+                    html.H4(
+                        "Close",
+                        style={
+                            'font-size': '12pt',
+                            'margin-top': '5px'
+                        }
+                    ),
+                    id={'type': "close-reconfirm-model-button", 'index': model_count},
                     n_clicks=0,
                     style={
                         'margin-left': '190px',
@@ -669,25 +748,11 @@ def model_input_guidelines(model_count):
                                 "red delete button, and will be prompted to confirm this decision. If the user presses "
                                 "the blue submit button, then their inputs will be validated, and should anything be "
                                 "invalid, the user will be alerted in that regard. If, however, the validation is "
-                                "successful, then a new pop-up will appear, prompting the user to press the 'Update' "
+                                "successful, then a new pop-up will appear, prompting the user to press the 'Create' "
                                 "button in order to create the model with their provided inputs. Once the model has "
                                 "been created successfully, pressing the submit button will NOT result in retraining "
                                 "unless the input parameters are modified."
-                            ),
-                            html.P(
-                                "NOTE: after pressing the 'Update' button, the text of the tab (in the browser) will "
-                                f"temporarily change from 'Model {model_count} input' to 'Updating...', and will only "
-                                f"revert back to 'Model {model_count} input' once training is finished (when this "
-                                f"happens, the user will need to press the 'Update' button again to confirm the "
-                                f"creation of the model)."
-                            ),
-                            html.P(
-                                "NOTE: after the 'Update' button has been pressed a second time and the text of the tab"
-                                f" (in the browser) has changed from 'Model {model_count} input' to 'Updating...', then"
-                                " pressing it again will only overwrite the progress made in training the model (so "
-                                "ideally the user should wait until the text reverts back to "
-                                f"'Model {model_count} input' before clicking the 'Update' button again)."
-                            ),
+                            )
                         ],
                         style={
                             'background': '#9BDE95',
@@ -1347,13 +1412,15 @@ def deletion_confirmation_popup(close_clicks, yes_clicks, is_open):
      Input({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Input({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      Input({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
-     Input({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')],
+     Input({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open'),
+     Input({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open')],
     [State({'type': 'confirm-model-deletion-popup', 'index': MATCH}, 'id'),
      State({'type': 'delete-model-popup', 'index': MATCH}, 'id'),
      State({'type': 'submit-model-popup', 'index': MATCH}, 'id'),
      State({'type': 'input-validation-popup', 'index': MATCH}, 'id'),
      State({'type': 'file-validation-popup', 'index': MATCH}, 'id'),
-     State({'type': 'complete-submission-popup', 'index': MATCH}, 'id')]
+     State({'type': 'complete-submission-popup', 'index': MATCH}, 'id'),
+     State({'type': 'complete-creation-popup', 'index': MATCH}, 'id')]
 )
 def convert_to_json(
         is_open1,
@@ -1362,12 +1429,14 @@ def convert_to_json(
         is_open4,
         is_open5,
         is_open6,
+        is_open7,
         modal1_id,
         modal2_id,
         modal3_id,
         modal4_id,
         modal5_id,
-        modal6_id
+        modal6_id,
+        modal7_id
 ):
     """
     This callback converts data to JSON format (used when freezing background
@@ -1381,12 +1450,14 @@ def convert_to_json(
         "is_open4": is_open4,
         "is_open5": is_open5,
         "is_open6": is_open6,
+        "is_open7": is_open7,
         "modal1_id": modal1_id,
         "modal2_id": modal2_id,
         "modal3_id": modal3_id,
         "modal4_id": modal4_id,
         "modal5_id": modal5_id,
-        "modal6_id": modal6_id
+        "modal6_id": modal6_id,
+        "modal7_id": modal7_id
     }
 
     return json.dumps(data)
@@ -1414,6 +1485,9 @@ clientside_callback(
             disablePageInteractions(modalId);
         } else if (details.is_open6) {
             var modalId = details.modal6_id.type + '-' + details.modal6_id.index;
+            disablePageInteractions(modalId);
+        } else if (details.is_open7) {
+            var modalId = details.modal7_id.type + '-' + details.modal7_id.index;
             disablePageInteractions(modalId);
         } else {
             enablePageInteractions();
@@ -1597,15 +1671,16 @@ def check_dataset_change(
 
 
 @callback(
-    [Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
+    [Output({'type': 'loading-animation', 'index': MATCH}, 'children'),
+     Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
+     Output({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open'),
      Output({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')],
     [Input({'type': 'submit-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'close-alert-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'close-file-button', 'index': MATCH}, 'n_clicks'),
-     Input({'type': "update-button", 'index': MATCH}, 'n_clicks'),
-     Input({'type': "close-complete-button", 'index': MATCH}, 'n_clicks'),
+     Input({'type': "close-reconfirm-model-button", 'index': MATCH}, 'n_clicks'),
      Input({'type': 'model-type-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'feature-encoder-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'kmer-size-dropdown', 'index': MATCH}, 'value'),
@@ -1616,18 +1691,20 @@ def check_dataset_change(
      Input({'type': 'unsupervised-learning-question', 'index': MATCH}, 'value'),
      Input({'type': 'dimension-reduction-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'hyper-opt-question', 'index': MATCH}, 'value'),
-     Input({'type': 'iteration-number-input', 'index': MATCH}, 'value')],
+     Input({'type': 'iteration-number-input', 'index': MATCH}, 'value'),
+     Input({'type': "create-button", 'index': MATCH}, 'n_clicks'),
+     Input({'type': "close-complete-button", 'index': MATCH}, 'n_clicks')],
     [State({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
+     State({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')]
 )
 def press_submit_button(
         submit_clicks,
         close_input_clicks,
         close_file_clicks,
-        _update_clicks,
-        close_complete_clicks,
+        close_created_clicks,
         model_type,
         feature_encoder,
         kmer_size,
@@ -1639,10 +1716,13 @@ def press_submit_button(
         dimension_reduction_algorithm,
         hyperopt_ans,
         hyperopt_iterations,
+        create_button_clicks,
+        close_button_clicks,
         is_submit_open,
         is_invalid_open,
         is_file_open,
-        is_finished_open
+        is_created_open,
+        is_complete_open
 ):
     """
     This callback handles the functionality of the submit button
@@ -1652,7 +1732,7 @@ def press_submit_button(
 
     if not ctx.triggered:
         # No buttons were clicked
-        return is_submit_open, is_invalid_open, is_file_open, is_finished_open
+        return [], is_submit_open, is_invalid_open, is_file_open, is_created_open, is_complete_open
 
     # Extract the index part from the triggered_id
     triggered_id = ctx.triggered[0]['prop_id']
@@ -1666,20 +1746,26 @@ def press_submit_button(
 
     current_model = globals.MODELS_LIST[f'Model {index_value}']
 
-    if current_model and (not current_model.trained_model or not current_model.tested_model):
-        # check if querying_data has been uploaded
-        querying_data = globals.QUERYING_DATA
-        # perform the necessary model operations
-        current_model.train_model()
-        current_model.test_model()
-        if querying_data is not None:
-            current_model.query_model()
+    # If we are waiting to create the model
+    if create_button_clicks > close_button_clicks:
+        if current_model and (not current_model.trained_model or not current_model.tested_model):
+            # check if querying_data has been uploaded
+            querying_data = globals.QUERYING_DATA
+            # perform the necessary model operations
+            current_model.train_model()
+            current_model.test_model()
+            if querying_data is not None:
+                current_model.query_model()
 
-        return True, False, False, False
+            return [], False, False, False, False, True
 
-    # if the model has been created successfully, inform the user
+    # If we close the confirmation pop-up
+    elif close_button_clicks >= submit_clicks:
+        return [], False, False, False, False, False
+
+    # if the model has already been created successfully, inform the user
     elif current_model and current_model.trained_model and current_model.tested_model \
-            and submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks) \
+            and submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks) \
             and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, feature_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm,
@@ -1688,15 +1774,10 @@ def press_submit_button(
                                          globals.QUERYING_FILE):
         # check if querying_data has been uploaded
         querying_data = globals.QUERYING_DATA
-        if querying_data is not None:
-            # if that process has finished
-            if current_model.queried_model:
-                return False, False, False, True
-            else:
-                current_model.query_model()
-                return True, False, False, False
+        if querying_data is not None and not current_model.queried_model:
+            return [], True, False, False, False, False
 
-        return False, False, False, True
+        return [], False, False, False, True, False
 
     # if the data has changed
     elif current_model and check_dataset_change(current_model, globals.TRAINING_FILE,
@@ -1723,10 +1804,10 @@ def press_submit_button(
         current_model.tested_model = False
         current_model.queried_model = False
 
-        return True, False, False, False
+        return [], True, False, False, False, False
 
     # if the submit button was clicked
-    elif submit_clicks > (close_input_clicks + close_file_clicks + close_complete_clicks):
+    elif submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks):
 
         training_data = globals.TRAINING_DATA
         testing_data = globals.TESTING_DATA
@@ -1737,13 +1818,13 @@ def press_submit_button(
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
-            return False, False, True, False
+            return [], False, False, True, False, False
 
         # perform input validation
         if not validate_user_input(model_type, feature_encoder, kmer_size, feature_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
                                    dimension_reduction_algorithm, hyperopt_ans, hyperopt_iterations):
-            return False, True, False, False
+            return [], False, True, False, False, False
 
         # set model based on input parameters
         model = None
@@ -1805,6 +1886,6 @@ def press_submit_button(
         # Store model in the globally available list
         globals.MODELS_LIST[f'Model {index_value}'] = model
 
-        return True, False, False, False
+        return [], True, False, False, False, False
 
-    return False, False, False, False
+    return [], False, False, False, False, False

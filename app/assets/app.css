@@ -1052,18 +1052,6 @@
     margin-left: 60px;
 }
 
-#loader {
-    margin-top: 10px;
-    border: 5px solid grey;
-    border-top: 5px solid blue;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-left: 200px;
-    margin-bottom: 10px;
-}
-
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
