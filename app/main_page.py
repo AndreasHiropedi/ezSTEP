@@ -67,7 +67,7 @@ def app_header():
                 children=[
                     "View on GitHub"
                 ],
-                href='https://github.com/AndreasHiropedi/BioNetTrain',
+                href='https://github.com/AndreasHiropedi/ezSTEP',
                 target='_blank'
             ),
 
@@ -83,7 +83,7 @@ def app_header():
             )
         ],
         style={
-            'background': '#5F276A',
+            'background': 'black',
             'color': 'white'
         }
     )
