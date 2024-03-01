@@ -8,7 +8,7 @@ ezSTEP (Sequence-to-expression Predictor) is the first machine-learning platform
 ## Methods
 Below you can see an outline of the pipeline used in our app. These are all the steps that our platform performs based on the user's inputs, and the underlying computations are abstracted from the user to ensure a nice and user-friendly experience.
 
-![ezSTEP]()
+![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/pipeline.png)
 
 ## Accessibility
 ezSTEP can be accessed in two different ways:
