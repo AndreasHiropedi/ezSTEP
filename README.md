@@ -1,5 +1,7 @@
 # ezSTEP: an online platform for training and testing machine learning models for protein expression
 
+![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/logo.png)
+
 ## Introduction
 ezSTEP (Sequence-to-expression Predictor) is the first machine-learning platform with a web-based user interface that enables the construction of automated machine-learning pipelines for computational analysis and predictions using regression.
 
