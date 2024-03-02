@@ -986,7 +986,6 @@ def unsupervised_learning_plot_card(model_count):
                             ],
                             value='auto',
                             searchable=False,
-                            persistence=True,
                             style={
                                 'width': '90%',
                                 'font-size': '12pt',
@@ -1017,7 +1016,6 @@ def unsupervised_learning_plot_card(model_count):
                                 {'label': 'False', 'value': False}
                             ],
                             value=False,
-                            persistence=True,
                             inline=True,
                             labelStyle={'margin-right': '50px', 'margin-left': '50px'},
                             style={
@@ -1058,7 +1056,6 @@ def unsupervised_learning_plot_card(model_count):
                             max=50,
                             step=5,
                             value=30,
-                            persistence=True,
                         )
                     ],
                     style={
@@ -1080,7 +1077,6 @@ def unsupervised_learning_plot_card(model_count):
                             value=200,
                             min=10,
                             max=1000,
-                            persistence=True,
                             style={
                                 'width': '70%',
                                 'font-size': '12pt',
@@ -1121,7 +1117,6 @@ def unsupervised_learning_plot_card(model_count):
                             value=15,
                             marks={i: str(i) for i in range(2, 51, 5)},
                             step=1,
-                            persistence=True,
                         )
                     ],
                     style={
@@ -1144,7 +1139,6 @@ def unsupervised_learning_plot_card(model_count):
                             value=0.0,
                             marks={i / 10: str(i / 10) for i in range(0, 11, 2)},
                             step=0.1,
-                            persistence=True,
                         )
                     ],
                     style={
