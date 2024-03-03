@@ -2,7 +2,7 @@ if (!window.dash_clientside) { window.dash_clientside = {}; }
 window.dash_clientside.clientside = {
     updateTitle: function(href) {
         // Logic to determine the title based on the URL
-        let title = "BioNetTrain";  // Default title
+        let title = "ezSTEP";  // Default title
         let pathname = new URL(href).pathname;
 
         if (pathname.startsWith('/model-input/')) {
