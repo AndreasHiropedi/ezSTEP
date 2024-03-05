@@ -31,10 +31,16 @@ To install the app and run it locally, the users can follow the procedure outlin
 pip install -r requirements. txt
 ```
 
-3) Once all dependencies are installed, the app can be launched by running the following command:
+3) Once all dependencies are installed, you will need to change directories to the app folder:
 
 ```sh
-python app/main_page.py
+cd <Path to ezSTEP folder>/ezSTEP/app
+```
+
+4) Once in the app directory, the app can be run with the following command:
+
+```sh
+python main_page.py
 ```
 
 This command will create a localhost link, which, when clicked, will redirect you to your local instance of the app.
