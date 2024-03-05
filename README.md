@@ -25,19 +25,33 @@ To install the app and run it locally, the users can follow the procedure outlin
 
 1) Ensure Python is installed on your device. For advice on how to do that, see https://www.python.org
 
-2) Install all the necessary dependencies. This can be done by installing everything contained within the requirements.txt file using the following command:
+2) Ensure that you have Git configured on your device (see https://github.com/git-guides/install-git for details on how to install Git)
+
+3) Once Python and git are set up, clone this repo using the following command:
+
+```sh
+git clone https://github.com/AndreasHiropedi/ezSTEP.git
+```
+
+4) After cloning the repository, change directory so that you are in the repository directory using the following command:
+
+```sh
+cd ezSTEP
+```
+
+5) Next, install all the necessary dependencies. This can be done by installing everything contained within the requirements.txt file using the following command:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-3) Once all dependencies are installed, you will need to change directories to the app folder:
+6) Once all dependencies are installed, you will need to change directories to the app folder using the following command:
 
 ```sh
-cd <Path to ezSTEP folder>/ezSTEP/app
+cd app
 ```
 
-4) Once in the app directory, the app can be run with the following command:
+7) Once in the app directory, the app can be run with the following command:
 
 ```sh
 python main_page.py
