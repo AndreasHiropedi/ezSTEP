@@ -28,7 +28,7 @@ To install the app and run it locally, the users can follow the procedure outlin
 2) Install all the necessary dependencies. This can be done by installing everything contained within the requirements.txt file using the following command:
 
 ```sh
-pip install -r requirements. txt
+pip install -r requirements.txt
 ```
 
 3) Once all dependencies are installed, you will need to change directories to the app folder:
