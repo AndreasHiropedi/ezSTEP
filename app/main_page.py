@@ -125,7 +125,7 @@ def app_footer():
         }
     )
 
-
+# TODO: MODIFY THE TEXT IN UPLOAD, INPUT AND OUTPUT TO USE IMAGE
 def user_guide():
     """
     This function builds the user guidelines section of the web app,
@@ -188,6 +188,15 @@ def user_guide():
                         children=[
                             html.H4("2. File upload"),
                             html.Hr(),
+                            html.Img(
+                                src='data:image/png;base64,{}'.format(
+                                    base64.b64encode(
+                                        open(
+                                            './assets/upload.png', 'rb'
+                                        ).read()
+                                    ).decode()
+                                ),
+                            ),
                             html.P(
                                 "This section contains three upload boxes, two of which is a required "
                                 "field, and one optional field. The required fields are for uploading "
@@ -265,6 +274,15 @@ def user_guide():
                         children=[
                             html.H4("3. Model input parameters"),
                             html.Hr(),
+                            html.Img(
+                                src='data:image/png;base64,{}'.format(
+                                    base64.b64encode(
+                                        open(
+                                            './assets/inputs.png', 'rb'
+                                        ).read()
+                                    ).decode()
+                                ),
+                            ),
                             html.P(
                                 "In this section, the user gets to select a model and input all the "
                                 "necessary information in order to train and test that model. This "
@@ -298,6 +316,15 @@ def user_guide():
                         children=[
                             html.H4("4. Model outputs"),
                             html.Hr(),
+                            html.Img(
+                                src='data:image/png;base64,{}'.format(
+                                    base64.b64encode(
+                                        open(
+                                            './assets/outputs.png', 'rb'
+                                        ).read()
+                                    ).decode()
+                                ),
+                            ),
                             html.P(
                                 children=[
                                     "Once the data has been uploaded and the user has set all the input parameters, "
