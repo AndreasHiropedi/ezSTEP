@@ -125,7 +125,7 @@ def app_footer():
         }
     )
 
-# TODO: MODIFY THE TEXT IN UPLOAD, INPUT AND OUTPUT TO USE IMAGE
+
 def user_guide():
     """
     This function builds the user guidelines section of the web app,
@@ -198,16 +198,10 @@ def user_guide():
                                 ),
                             ),
                             html.P(
-                                "This section contains three upload boxes, two of which is a required "
-                                "field, and one optional field. The required fields are for uploading "
-                                "the training and testing data (in order to train the selected model). The "
-                                "optional field is for uploading a dataset for querying the model on new "
-                                "unseen data that was not part of the training or testing dataset. The user "
-                                "will also have the option to choose cross-validation on the training dataset ("
-                                "under model inputs) which would override the default setting of using the whole "
-                                "dataset uploaded for training and the uploaded test dataset for testing."
-                            ),
-                            html.P(
+                                "As can be seen in the image above, this section contains three upload boxes. "
+                                "The required fields are for uploading "
+                                "the training and testing data (in order to train the selected model), and the "
+                                "optional field is for uploading a dataset for querying the model on unlabelled data. "
                                 "For each of the three fields, the user has a choice of how they wish to "
                                 "upload the data: they can either upload a file, or paste their data in a "
                                 "textbox. If they choose to upload a file, they must ensure the file "
@@ -216,7 +210,8 @@ def user_guide():
                                 "they choose to use the textbox, they must ensure the data is formatted in "
                                 "the following order: sequence + separator (such as , or | or ;) + label + "
                                 "new line character. If the user fails to ensure these conditions, then "
-                                "the app may not be able to process their inputted data. However, it is worth noting "
+                                "the app will not be able to process their inputted data and will inform the user. "
+                                "However, it is worth noting "
                                 "that these conditions only apply for training and testing, since for the querying "
                                 "data the user will only need to provide the sequences (in the format of one sequence "
                                 "per line)."
@@ -296,10 +291,12 @@ def user_guide():
                             ),
                             html.P(
                                 "The user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added. In order to input all the necessary "
+                                "the number of models they have added (see image). "
+                                "In order to input all the necessary "
                                 "information, the user will need to click on these hyperlinks individually, "
                                 "which will prompt them to a new page where they can input all the data for a "
-                                "specific model. More information about the specifics of model inputs can be found "
+                                "specific model (see image). More information about the specifics of "
+                                "model inputs can be found "
                                 "in the user guidelines on the individual model input pages."
                             )
                         ],
@@ -328,9 +325,10 @@ def user_guide():
                             html.P(
                                 children=[
                                     "Once the data has been uploaded and the user has set all the input parameters, "
-                                    "the visualisations for the specific model, along with a sipder plot showing "
+                                    "the visualisations for the specific model, along with a spider plot showing "
                                     "several output statistics, are generated. These statistics are calculated for "
-                                    "each model, and these are all displayed in the spider plot for each model. "
+                                    "each model, and these are all displayed in the spider plot for each model "
+                                    "(see image). "
                                     "The four main summary statistics used are: ",
                                     html.Br(),
                                     html.Br(),
@@ -350,7 +348,8 @@ def user_guide():
                             ),
                             html.P(
                                 "Similarly to model inputs, the user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added. On each of these pages, there will be several "
+                                "the number of models they have added (see image). "
+                                "On each of these pages, there will be several "
                                 "graphs displayed (such as a scatter plot of predicted versus actual values, or bar "
                                 "charts showing the feature correlation to the target variable (protein)), along with "
                                 "a summary of the user's selected inputs and the model's performance in training and "
