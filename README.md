@@ -15,7 +15,7 @@ ezSTEP can be accessed in two different ways:
 
 - our web app is hosted on the following server, which users can access using the following link:
 
-  *insert link*
+  http://calbuco.inf.ed.ac.uk/ezSTEP
 
 - alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
 
