@@ -1800,6 +1800,10 @@ def display_page(href):
     individual model inputs/ outputs.
     """
 
+    print(globals.MODELS_LIST)
+    print(globals.TRAINING_FILE)
+    print(globals.TESTING_FILE)
+
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
     pathname = parsed_url.path
@@ -1857,10 +1861,6 @@ clientside_callback(
     Output('page-title', 'children'),
     Input('url', 'href')
 )
-
-print(globals.MODELS_LIST)
-print(globals.TRAINING_FILE)
-print(globals.TESTING_FILE)
 
 my_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
