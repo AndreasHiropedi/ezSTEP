@@ -1858,6 +1858,10 @@ clientside_callback(
     Input('url', 'href')
 )
 
+print(globals.MODELS_LIST)
+print(globals.TRAINING_FILE)
+print(globals.TESTING_FILE)
+
 my_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-title', style={'display': 'none'}),
