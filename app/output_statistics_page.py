@@ -1,4 +1,4 @@
-import globals
+from . import globals
 import plotly.graph_objects as go
 
 from dash import html, dcc, callback, Input, Output

@@ -7,10 +7,10 @@ import plotly.graph_objects as go
 import umap
 
 from dash import html, dcc, callback, Input, Output, MATCH, dash_table
-from random_forest import RandomForest
-from ridge_regressor import RidgeRegressor
-from multilayer_perceptron import MultiLayerPerceptron
-from support_vector_machine import SupportVectorMachine
+from .random_forest import RandomForest
+from .ridge_regressor import RidgeRegressor
+from .multilayer_perceptron import MultiLayerPerceptron
+from .support_vector_machine import SupportVectorMachine
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 

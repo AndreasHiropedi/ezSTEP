@@ -3,10 +3,10 @@ import pandas as pd
 
 from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-import feature_encoders
-import feature_normalizers
-import feature_selectors
-import dimension_reduction_methods
+from . import feature_encoders
+from . import feature_normalizers
+from . import feature_selectors
+from . import dimension_reduction_methods
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.svm import SVR

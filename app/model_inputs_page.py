@@ -4,10 +4,10 @@ import dash_bootstrap_components as dbc
 import json
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
-from random_forest import RandomForest
-from ridge_regressor import RidgeRegressor
-from multilayer_perceptron import MultiLayerPerceptron
-from support_vector_machine import SupportVectorMachine
+from .random_forest import RandomForest
+from .ridge_regressor import RidgeRegressor
+from .multilayer_perceptron import MultiLayerPerceptron
+from .support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count):

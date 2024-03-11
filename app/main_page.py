@@ -8,10 +8,10 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 
-import globals
-import model_inputs_page
-import model_outputs_page
-import output_statistics_page
+from . import globals
+from . import model_inputs_page
+from . import model_outputs_page
+from . import output_statistics_page
 
 my_app = Dash(__name__)
 server = my_app.server
