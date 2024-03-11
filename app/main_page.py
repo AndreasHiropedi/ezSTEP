@@ -23,6 +23,24 @@ def app_header():
     This function builds the header for the web app.
     """
 
+    # Determine the absolute path of the current file (e.g., main_page.py)
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the absolute path to the image file
+    plotly_image_path = os.path.join(current_directory, 'assets', 'plotly-dash-bio-logo.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_plotly_image = base64.b64encode(open(plotly_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    logo_image_path = os.path.join(current_directory, 'assets', 'app-logo.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_logo_image = base64.b64encode(open(logo_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    github_image_path = os.path.join(current_directory, 'assets', 'GitHub-Mark-Light-64px.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_github_image = base64.b64encode(open(github_image_path, 'rb').read()).decode()
+
     return html.Header(
         id='app-header',
         children=[
@@ -31,13 +49,7 @@ def app_header():
                 id='dash-logo',
                 children=[
                     html.Img(
-                        src='data:image/png;base64,{}'.format(
-                            base64.b64encode(
-                                open(
-                                    './assets/plotly-dash-bio-logo.png', 'rb'
-                                ).read()
-                            ).decode()
-                        ),
+                        src=f'data:image/png;base64,{encoded_plotly_image}'
                     )
                 ],
                 href='https://plotly.com',
@@ -49,13 +61,7 @@ def app_header():
                 id='app-logo',
                 children=[
                     html.Img(
-                        src='data:image/png;base64,{}'.format(
-                            base64.b64encode(
-                                open(
-                                    './assets/app-logo.png', 'rb'
-                                ).read()
-                            ).decode()
-                        ),
+                        src=f'data:image/png;base64,{encoded_logo_image}'
                     ),
                 ],
                 href='/'
@@ -73,13 +79,7 @@ def app_header():
 
             # GitHub logo
             html.Img(
-                src='data:image/png;base64,{}'.format(
-                    base64.b64encode(
-                        open(
-                            './assets/GitHub-Mark-Light-64px.png', 'rb'
-                        ).read()
-                    ).decode()
-                ),
+                src=f'data:image/png;base64,{encoded_github_image}'
             )
         ],
         style={
@@ -94,6 +94,14 @@ def app_footer():
     This function builds the footer for the web app.
     """
 
+    # Determine the absolute path of the current file (e.g., main_page.py)
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the absolute path to the image file
+    uni_image_path = os.path.join(current_directory, 'assets', 'eduni-logo.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_uni_image = base64.b64encode(open(uni_image_path, 'rb').read()).decode()
+
     return html.Footer(
         id='app-footer',
         children=[
@@ -101,13 +109,7 @@ def app_footer():
             html.A(
                 children=[
                     html.Img(
-                        src='data:image/png;base64,{}'.format(
-                            base64.b64encode(
-                                open(
-                                    './assets/eduni-logo.png', 'rb'
-                                ).read()
-                            ).decode()
-                        ),
+                        src=f'data:image/png;base64,{encoded_uni_image}'
                     )
                 ],
                 href='https://homepages.inf.ed.ac.uk/doyarzun/',
@@ -132,6 +134,24 @@ def user_guide():
     which provides detailed information about how the user can interact
     with the platform.
     """
+
+    # Determine the absolute path of the current file (e.g., main_page.py)
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the absolute path to the image file
+    upload_image_path = os.path.join(current_directory, 'assets', 'upload.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_upload_image = base64.b64encode(open(upload_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    input_image_path = os.path.join(current_directory, 'assets', 'inputs.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_input_image = base64.b64encode(open(input_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    output_image_path = os.path.join(current_directory, 'assets', 'outputs.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_output_image = base64.b64encode(open(output_image_path, 'rb').read()).decode()
 
     return html.Div(
         id='user-guide',
@@ -189,13 +209,7 @@ def user_guide():
                             html.H4("2. File upload"),
                             html.Hr(),
                             html.Img(
-                                src='data:image/png;base64,{}'.format(
-                                    base64.b64encode(
-                                        open(
-                                            './assets/upload.png', 'rb'
-                                        ).read()
-                                    ).decode()
-                                ),
+                                src=f'data:image/png;base64,{encoded_upload_image}'
                             ),
                             html.P(
                                 "As can be seen in the image above, this section contains three upload boxes. "
@@ -229,7 +243,7 @@ def user_guide():
                                     html.A(
                                         'example_train_data.csv',
                                         download='example_train_data.csv',
-                                        href='./assets/example_train_data.csv',
+                                        href='/downloadable_data/example_train_data.csv',
                                         style={
                                             'margin-left': '220px'
                                         }
@@ -237,7 +251,7 @@ def user_guide():
                                     html.A(
                                         'example_test_data.csv',
                                         download='example_test_data.csv',
-                                        href='./assets/example_test_data.csv',
+                                        href='/downloadable_data/example_test_data.csv',
                                         style={
                                             'margin-left': '220px'
                                         }
@@ -270,13 +284,7 @@ def user_guide():
                             html.H4("3. Model input parameters"),
                             html.Hr(),
                             html.Img(
-                                src='data:image/png;base64,{}'.format(
-                                    base64.b64encode(
-                                        open(
-                                            './assets/inputs.png', 'rb'
-                                        ).read()
-                                    ).decode()
-                                ),
+                                src=f'data:image/png;base64,{encoded_input_image}'
                             ),
                             html.P(
                                 "In this section, the user gets to select a model and input all the "
@@ -314,13 +322,7 @@ def user_guide():
                             html.H4("4. Model outputs"),
                             html.Hr(),
                             html.Img(
-                                src='data:image/png;base64,{}'.format(
-                                    base64.b64encode(
-                                        open(
-                                            './assets/outputs.png', 'rb'
-                                        ).read()
-                                    ).decode()
-                                ),
+                                src=f'data:image/png;base64,{encoded_output_image}'
                             ),
                             html.P(
                                 children=[
