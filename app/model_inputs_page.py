@@ -1,4 +1,4 @@
-import globals
+from . import globals
 import dash
 import dash_bootstrap_components as dbc
 import json
