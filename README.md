@@ -45,10 +45,10 @@ cd ezSTEP
 pip install -r requirements.txt
 ```
 
-6) Once all dependencies are installed, you will need to change directories to the app folder using the following command:
+6) Once all dependencies are installed, you will need to change directories to the local_version folder, and then the app folder using the following command:
 
 ```sh
-cd app
+cd local_version/app
 ```
 
 7) Once in the app directory, the app can be run with the following command:
