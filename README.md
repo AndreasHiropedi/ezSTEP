@@ -26,11 +26,11 @@ Below you can see an outline of the pipeline used in our app. These are all the 
 
 Below we provide a breakdown of the most important folders in this repository, and what they each contain:
 
-  - app:
+  - ```app```:
 
-  - datasets_used:
+  - ```datasets_used```:
 
-  - local_version:
+  - ```local_version```:
 
 ## Installation
 
