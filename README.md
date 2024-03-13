@@ -36,7 +36,7 @@ Below we provide a breakdown of the most important folders in this repository, a
 
 To install the app and run it locally, the users can follow the procedure outlined below:
 
-1) Ensure Python is installed on your device. For advice on how to do that, see https://www.python.org
+1) Ensure Python is installed on your device. For advice on how to do that, see https://www.python.org (please ensure the Python version used is >= 3.8 and <= 3.11)
 
 2) Ensure that you have Git configured on your device (see https://github.com/git-guides/install-git for details on how to install Git)
 
