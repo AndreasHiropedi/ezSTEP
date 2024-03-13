@@ -215,7 +215,7 @@ def model_summary_card(model_count):
     # Dataframe that stores the model's output statistics
     model_output_statistics = pd.DataFrame(
         {
-           'Statistic name': ['RMSE', 'R-squared', 'MAE', 'Percentage within 2-fold error (%)'],
+           'Evaluation metric': ['RMSE', 'R-squared', 'MAE', 'Percentage within 2-fold error (%)'],
            'Training value': [training_rmse, training_r_squared, training_mae, training_2fold],
            'Testing value': [testing_rmse, testing_r_squared, testing_mae, testing_2fold]
         }
