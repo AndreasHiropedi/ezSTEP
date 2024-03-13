@@ -26,11 +26,11 @@ Below you can see an outline of the pipeline used in our app. These are all the 
 
 Below we provide a breakdown of the most important folders in this repository, and what they each contain:
 
-  - ```app```:
+  - ```app```: this contains all the code for the app currently hosted on the server; this version differs from ```local_version``` due to changes that were needed in order to ensure the server can handle a multi-user enviornment in a safe and secure manner
 
-  - ```datasets_used```:
+  - ```datasets_used```: this contains all the datasets used for training and testing the app, as well as the Python scripts used for obtaining those datasets (NOTE: since the splits were done with random sampling, re-running the scripts may result in different datasets)
 
-  - ```local_version```:
+  - ```local_version```: this contains all the code for the version of the app that can be installed and set up on one's local device
 
 ## Installation
 
