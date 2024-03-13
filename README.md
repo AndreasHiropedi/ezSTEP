@@ -3,14 +3,11 @@
 ![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/logo.png)
 
 ## Introduction
+
 ezSTEP (Sequence-to-expression Predictor) is the first machine-learning platform with a web-based user interface that enables the construction of automated machine-learning pipelines for computational analysis and predictions using regression.
 
-## Methods
-Below you can see an outline of the pipeline used in our app. These are all the steps that our platform performs based on the user's inputs, and the underlying computations are abstracted from the user to ensure a nice and user-friendly experience.
-
-![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/pipeline.png)
-
 ## Accessibility
+
 ezSTEP can be accessed in two different ways:
 
 - our web app is hosted on the following server, which users can access using the following link:
@@ -18,6 +15,22 @@ ezSTEP can be accessed in two different ways:
   https://ezstep-f617792399bb.herokuapp.com
 
 - alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
+
+## Methods
+
+Below you can see an outline of the pipeline used in our app. These are all the steps that our platform performs based on the user's inputs, and the underlying computations are abstracted from the user to ensure a nice and user-friendly experience.
+
+![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/pipeline.png)
+
+## Repository structure
+
+Below we provide a breakdown of the most important folders in this repository, and what they each contain:
+
+  - app:
+
+  - datasets_used:
+
+  - local_version:
 
 ## Installation
 
