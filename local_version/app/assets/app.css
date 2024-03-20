@@ -14,6 +14,27 @@
     padding-bottom: 0px;
 }
 
+#file-upload > img {
+    height: 400px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: 170px;
+}
+
+#model-input > img {
+    height: 310px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: 100px;
+}
+
+#model-output > img {
+    height: 500px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: 170px;
+}
+
 #app-header > a > img:hover {
     filter: brightness(2);
 }

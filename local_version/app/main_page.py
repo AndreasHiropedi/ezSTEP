@@ -133,6 +133,24 @@ def user_guide():
     with the platform.
     """
 
+    # Determine the absolute path of the current file (e.g., main_page.py)
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the absolute path to the image file
+    upload_image_path = os.path.join(current_directory, 'assets', 'upload.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_upload_image = base64.b64encode(open(upload_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    input_image_path = os.path.join(current_directory, 'assets', 'inputs.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_input_image = base64.b64encode(open(input_image_path, 'rb').read()).decode()
+
+    # Construct the absolute path to the image file
+    output_image_path = os.path.join(current_directory, 'assets', 'outputs.png')
+    # Open the image, read it, and encode it into Base64
+    encoded_output_image = base64.b64encode(open(output_image_path, 'rb').read()).decode()
+
     return html.Div(
         id='user-guide',
         children=[
@@ -188,17 +206,14 @@ def user_guide():
                         children=[
                             html.H4("2. File upload"),
                             html.Hr(),
-                            html.P(
-                                "This section contains three upload boxes, two of which is a required "
-                                "field, and one optional field. The required fields are for uploading "
-                                "the training and testing data (in order to train the selected model). The "
-                                "optional field is for uploading a dataset for querying the model on new "
-                                "unseen data that was not part of the training or testing dataset. The user "
-                                "will also have the option to choose cross-validation on the training dataset ("
-                                "under model inputs) which would override the default setting of using the whole "
-                                "dataset uploaded for training and the uploaded test dataset for testing."
+                            html.Img(
+                                src=f'data:image/png;base64,{encoded_upload_image}'
                             ),
                             html.P(
+                                "As can be seen in the image above, this section contains three upload boxes. "
+                                "The required fields are for uploading "
+                                "the training and testing data (in order to train the selected model), and the "
+                                "optional field is for uploading a dataset for querying the model on unlabelled data. "
                                 "For each of the three fields, the user has a choice of how they wish to "
                                 "upload the data: they can either upload a file, or paste their data in a "
                                 "textbox. If they choose to upload a file, they must ensure the file "
@@ -207,7 +222,8 @@ def user_guide():
                                 "they choose to use the textbox, they must ensure the data is formatted in "
                                 "the following order: sequence + separator (such as , or | or ;) + label + "
                                 "new line character. If the user fails to ensure these conditions, then "
-                                "the app may not be able to process their inputted data. However, it is worth noting "
+                                "the app will not be able to process their inputted data and will inform the user. "
+                                "However, it is worth noting "
                                 "that these conditions only apply for training and testing, since for the querying "
                                 "data the user will only need to provide the sequences (in the format of one sequence "
                                 "per line)."
@@ -225,7 +241,7 @@ def user_guide():
                                     html.A(
                                         'example_train_data.csv',
                                         download='example_train_data.csv',
-                                        href='./assets/example_train_data.csv',
+                                        href='/downloadable_data/example_train_data.csv',
                                         style={
                                             'margin-left': '220px'
                                         }
@@ -233,7 +249,7 @@ def user_guide():
                                     html.A(
                                         'example_test_data.csv',
                                         download='example_test_data.csv',
-                                        href='./assets/example_test_data.csv',
+                                        href='/downloadable_data/example_test_data.csv',
                                         style={
                                             'margin-left': '220px'
                                         }
@@ -265,6 +281,9 @@ def user_guide():
                         children=[
                             html.H4("3. Model input parameters"),
                             html.Hr(),
+                            html.Img(
+                                src=f'data:image/png;base64,{encoded_input_image}'
+                            ),
                             html.P(
                                 "In this section, the user gets to select a model and input all the "
                                 "necessary information in order to train and test that model. This "
@@ -278,10 +297,12 @@ def user_guide():
                             ),
                             html.P(
                                 "The user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added. In order to input all the necessary "
+                                "the number of models they have added (see image). "
+                                "In order to input all the necessary "
                                 "information, the user will need to click on these hyperlinks individually, "
                                 "which will prompt them to a new page where they can input all the data for a "
-                                "specific model. More information about the specifics of model inputs can be found "
+                                "specific model (see image). More information about the specifics of "
+                                "model inputs can be found "
                                 "in the user guidelines on the individual model input pages."
                             )
                         ],
@@ -298,41 +319,34 @@ def user_guide():
                         children=[
                             html.H4("4. Model outputs"),
                             html.Hr(),
+                            html.Img(
+                                src=f'data:image/png;base64,{encoded_output_image}'
+                            ),
                             html.P(
                                 children=[
                                     "Once the data has been uploaded and the user has set all the input parameters, "
-                                    "the visualisations for the specific model, along with a sipder plot showing "
+                                    "the visualisations for the specific model, along with a spider plot showing "
                                     "several output statistics, are generated. These statistics are calculated for "
-                                    "each model, and these are all displayed in the spider plot for each model. "
-                                    "The four main summary statistics used are: ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "1. Root Mean Squared Error (RMSE)",
-                                    html.Br(),
-                                    html.Br(),
-                                    "2. R-squared ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "3. Mean Absolute Error (MAE)",
-                                    html.Br(),
-                                    html.Br(),
-                                    "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
-                                    " data that are within the 2-fold error interval: 1/2 x correct value <= "
-                                    "predicted value <= 2 x correct value)"
+                                    "each model, and these are all displayed in the spider plot for each model "
+                                    "(see image). "
+                                    "The four main summary statistics used are: "
+                                    "Root Mean Squared Error (RMSE), "
+                                    "R-squared, "
+                                    "Mean Absolute Error (MAE), "
+                                    "and Percentage (%) within 2-fold error."
                                 ]
                             ),
                             html.P(
                                 "Similarly to model inputs, the user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added. On each of these pages, there will be several "
+                                "the number of models they have added (see image). "
+                                "On each of these pages, there will be several "
                                 "graphs displayed (such as a scatter plot of predicted versus actual values, or bar "
                                 "charts showing the feature correlation to the target variable (protein)), along with "
                                 "a summary of the user's selected inputs and the model's performance in training and "
                                 "testing. Depending on the additional inputs the user provides (such as query data, or "
                                 "enabling feature selection), additional graphs will be generated and displayed on "
                                 "these individual pages."
-                            ),
-                            html.P(
-                                "NOTE: All plots available in this app are interactive, "
+                                "All plots available in this app are interactive, "
                                 "and using the legend on the side, the user can select "
                                 "which models they wish to have displayed in the graph, and they can simply "
                                 "enable/ disable them by clicking on the respective item in the legend. Additionally, "

@@ -259,7 +259,7 @@ def user_guide():
                                     html.A(
                                         'example_query_data.csv',
                                         download='example_query_data.csv',
-                                        href='./assets/example_query_data.csv',
+                                        href='/downloadable_data/example_query_data.csv',
                                         style={
                                             'margin-left': '220px'
                                         }
@@ -331,21 +331,11 @@ def user_guide():
                                     "several output statistics, are generated. These statistics are calculated for "
                                     "each model, and these are all displayed in the spider plot for each model "
                                     "(see image). "
-                                    "The four main summary statistics used are: ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "1. Root Mean Squared Error (RMSE)",
-                                    html.Br(),
-                                    html.Br(),
-                                    "2. R-squared ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "3. Mean Absolute Error (MAE)",
-                                    html.Br(),
-                                    html.Br(),
-                                    "4. Percentage (%) within 2-fold error (this essentially measures the proportion of"
-                                    " data that are within the 2-fold error interval: 1/2 x correct value <= "
-                                    "predicted value <= 2 x correct value)"
+                                    "The four main summary statistics used are: "
+                                    "Root Mean Squared Error (RMSE), "
+                                    "R-squared, "
+                                    "Mean Absolute Error (MAE), "
+                                    "and Percentage (%) within 2-fold error."
                                 ]
                             ),
                             html.P(
@@ -358,9 +348,7 @@ def user_guide():
                                 "testing. Depending on the additional inputs the user provides (such as query data, or "
                                 "enabling feature selection), additional graphs will be generated and displayed on "
                                 "these individual pages."
-                            ),
-                            html.P(
-                                "NOTE: All plots available in this app are interactive, "
+                                "All plots available in this app are interactive, "
                                 "and using the legend on the side, the user can select "
                                 "which models they wish to have displayed in the graph, and they can simply "
                                 "enable/ disable them by clicking on the respective item in the legend. Additionally, "
