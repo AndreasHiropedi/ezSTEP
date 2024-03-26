@@ -1855,23 +1855,9 @@ clientside_callback(
 
 
 # Serve static example training file route
-@server.route('/downloadable_data/example_train_data.csv')
+@server.route('/downloadable_data/<path:filename>')
 def download_training_file(filename):
-    directory = "/downloadable_data"
-    return send_from_directory(directory, filename, as_attachment=True)
-
-
-# Serve static example testing file route
-@server.route('/downloadable_data/example_test_data.csv')
-def download_testing_file(filename):
-    directory = "/downloadable_data"
-    return send_from_directory(directory, filename, as_attachment=True)
-
-
-# Serve static example querying file route
-@server.route('/downloadable_data/example_query_data.csv')
-def download_querying_file(filename):
-    directory = "/downloadable_data"
+    directory = os.path.join(os.getcwd(), 'downloadable_data')
     return send_from_directory(directory, filename, as_attachment=True)
 
 
