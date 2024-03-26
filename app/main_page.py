@@ -1,17 +1,20 @@
 import base64
+import dash
 import io
 import os
-from urllib.parse import urlparse
 
-import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 
 from . import globals
 from . import model_inputs_page
 from . import model_outputs_page
 from . import output_statistics_page
+
+from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
+from flask import send_from_directory
+from urllib.parse import urlparse
+
 
 my_app = Dash(__name__)
 server = my_app.server
@@ -1850,6 +1853,29 @@ clientside_callback(
     Input('url', 'href')
 )
 
+
+# Serve static example training file route
+@server.route('/downloadable_data/example_train_data.csv')
+def download_training_file(filename):
+    directory = "/downloadable_data"
+    return send_from_directory(directory, filename, as_attachment=True)
+
+
+# Serve static example testing file route
+@server.route('/downloadable_data/example_test_data.csv')
+def download_testing_file(filename):
+    directory = "/downloadable_data"
+    return send_from_directory(directory, filename, as_attachment=True)
+
+
+# Serve static example querying file route
+@server.route('/downloadable_data/example_query_data.csv')
+def download_querying_file(filename):
+    directory = "/downloadable_data"
+    return send_from_directory(directory, filename, as_attachment=True)
+
+
+# Main layout of the home page
 my_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-title', style={'display': 'none'}),
