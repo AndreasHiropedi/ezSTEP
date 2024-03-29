@@ -678,7 +678,7 @@ def model_input_ref(model_key, session_id):
     user_data = globals.get_user_session_data(session_id)
     models_list = user_data['MODEL_LIST']
 
-    print('number of models: ', len(models_list))
+    print('number of models showing: ', len(models_list))
 
     if model_key not in models_list.keys():
         models_list[model_key] = None
