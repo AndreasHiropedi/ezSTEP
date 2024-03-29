@@ -1778,11 +1778,13 @@ def press_submit_button(
     except Exception:
         current_model = None
 
+    print(current_model.training_data)
+
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
-            querying_data = query_data
+            querying_data = pd.read_json(query_data) if query_data is not None else None
             # perform the necessary model operations
             current_model.train_model()
             current_model.test_model()
@@ -1804,7 +1806,7 @@ def press_submit_button(
                                         hyperopt_ans, hyperopt_iterations) \
             and not check_dataset_change(current_model, training_file, test_file, query_file):
         # check if querying_data has been uploaded
-        querying_data = query_data
+        querying_data = pd.read_json(query_data) if query_data is not None else None
         if querying_data is not None and not current_model.queried_model:
             return [], True, False, False, False, False
 
@@ -1845,8 +1847,6 @@ def press_submit_button(
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
-
-        print(training_data)
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
