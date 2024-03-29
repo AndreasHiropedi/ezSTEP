@@ -1792,6 +1792,11 @@ def press_submit_button(
             if querying_data is not None:
                 current_model.query_model()
 
+            # Store model in the globally available list
+            models_list[f'Model {index_value}'] = base64.b64encode(pickle.dumps(current_model)).decode('utf-8')
+            user_data['MODELS_LIST'] = models_list
+            globals.store_user_session_data(session_id, user_data)
+
             return [], False, False, False, False, True
 
     # If we close the confirmation pop-up
@@ -1812,6 +1817,40 @@ def press_submit_button(
             return [], True, False, False, False, False
 
         return [], False, False, False, True, False
+
+    # if the data has changed
+    elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
+
+        print('should not enter here now')
+
+        # get necessary information
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
+        training_file = training_file
+        testing_file = test_file
+        querying_file = query_file
+
+        # set model data
+        current_model.set_training_data(training_data)
+        current_model.set_training_file(training_file)
+        current_model.set_testing_data(testing_data)
+        current_model.set_testing_file(testing_file)
+        if querying_data is not None:
+            current_model.set_querying_data(querying_data)
+            current_model.set_querying_file(querying_file)
+
+        # set the trained, tested, and queried attributes to False
+        current_model.trained_model = False
+        current_model.tested_model = False
+        current_model.queried_model = False
+
+        # Store model in the globally available list
+        models_list[f'Model {index_value}'] = base64.b64encode(pickle.dumps(current_model)).decode('utf-8')
+        user_data['MODELS_LIST'] = models_list
+        globals.store_user_session_data(session_id, user_data)
+
+        return [], True, False, False, False, False
 
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks):
@@ -1899,35 +1938,6 @@ def press_submit_button(
         models_list[f'Model {index_value}'] = base64.b64encode(pickle.dumps(model)).decode('utf-8')
         user_data['MODELS_LIST'] = models_list
         globals.store_user_session_data(session_id, user_data)
-
-        return [], True, False, False, False, False
-
-    # if the data has changed
-    elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
-
-        print('should not enter here now')
-
-        # get necessary information
-        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
-        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
-        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
-        training_file = training_file
-        testing_file = test_file
-        querying_file = query_file
-
-        # set model data
-        current_model.set_training_data(training_data)
-        current_model.set_training_file(training_file)
-        current_model.set_testing_data(testing_data)
-        current_model.set_testing_file(testing_file)
-        if querying_data is not None:
-            current_model.set_querying_data(querying_data)
-            current_model.set_querying_file(querying_file)
-
-        # set the trained, tested, and queried attributes to False
-        current_model.trained_model = False
-        current_model.tested_model = False
-        current_model.queried_model = False
 
         return [], True, False, False, False, False
 
