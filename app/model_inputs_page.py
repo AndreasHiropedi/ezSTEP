@@ -1,10 +1,13 @@
-from . import globals
+import base64
 import dash
 import dash_bootstrap_components as dbc
 import json
 import pickle
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
+
+from . import globals
+
 from .random_forest import RandomForest
 from .ridge_regressor import RidgeRegressor
 from .multilayer_perceptron import MultiLayerPerceptron
@@ -1911,7 +1914,7 @@ def press_submit_button(
             model.set_use_unsupervised("no")
 
         # Store model in the globally available list
-        models_list[f'Model {index_value}'] = pickle.dumps(model)
+        models_list[f'Model {index_value}'] = base64.b64encode(pickle.dumps(model)).decode('utf-8')
         user_data['MODELS_LIST'] = models_list
         globals.store_user_session_data(session_id, user_data)
 

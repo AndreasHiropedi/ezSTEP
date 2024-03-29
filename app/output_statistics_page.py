@@ -1,3 +1,4 @@
+import base64
 import pickle
 
 import plotly.graph_objects as go
@@ -58,7 +59,8 @@ def update_statistics_graph(_id, session_data):
     existing_models = {}
     for key, value in models_list.items():
         if value is not None:
-            existing_models[key] = pickle.loads(value)
+            model_bytes = base64.b64decode(value)
+            existing_models[key] = pickle.loads(model_bytes)
 
     figure = go.Figure()
 

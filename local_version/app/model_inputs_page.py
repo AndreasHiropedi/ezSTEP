@@ -1698,7 +1698,8 @@ def check_dataset_change(
      State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open'),
-     State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')]
+     State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')],
+    prevent_initial_call=True
 )
 def press_submit_button(
         submit_clicks,

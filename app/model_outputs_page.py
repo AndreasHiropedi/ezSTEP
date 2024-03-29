@@ -1,3 +1,4 @@
+import base64
 import dash
 import pickle
 import umap
@@ -154,7 +155,7 @@ def model_summary_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     # Retrieve all necessary summary information
 
@@ -359,7 +360,7 @@ def output_statistics_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     return dbc.Card(
         id={'type': 'train-test-statistics-card', 'index': model_count},
@@ -437,7 +438,7 @@ def predicted_versus_actual_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     return dbc.Card(
         id={'type': 'predict-versus-actual-card', 'index': model_count},
@@ -506,7 +507,7 @@ def training_feature_correlation_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     return dbc.Card(
         id={'type': 'train-feature-correlation-card', 'index': model_count},
@@ -603,7 +604,7 @@ def testing_feature_correlation_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     return dbc.Card(
         id={'type': 'test-feature-correlation-card', 'index': model_count},
@@ -701,7 +702,7 @@ def querying_feature_correlation_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     if model.querying_data is None:
         return html.Div(
@@ -807,7 +808,7 @@ def querying_file_download_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     # Generate file name
     file_name = f"{model.model_number}_query_predictions.csv"
@@ -899,7 +900,7 @@ def explained_variance_plot_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     if model.use_feature_select == 'no':
         return html.Div(
@@ -999,7 +1000,7 @@ def unsupervised_learning_plot_card(model_count, session_data):
 
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = pickle.loads(models_list[model_key])
+    model = pickle.loads(base64.b64decode(models_list[model_key]))
 
     if model.use_unsupervised == 'no':
         return html.Div(
@@ -1406,7 +1407,7 @@ def generate_csv(_n_clicks, session_data):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = pickle.loads(models_list[f'Model {index_value}'])
+    model = pickle.loads(base64.b64decode(models_list[f'Model {index_value}']))
 
     # Data
     df = model.model_query_created_file
@@ -1447,7 +1448,7 @@ def update_pca_graph(svd_solver, whiten, session_data):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = pickle.loads(models_list[f'Model {index_value}'])
+    model = pickle.loads(base64.b64decode(models_list[f'Model {index_value}']))
 
     # Get the data and initially fitted PCA outputs
     data_train = model.normalized_train
@@ -1534,7 +1535,7 @@ def update_tsne_plot(perplexity, learning_rate, session_data):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = pickle.loads(models_list[f'Model {index_value}'])
+    model = pickle.loads(base64.b64decode(models_list[f'Model {index_value}']))
 
     # Variable to keep track of query data (if provided)
     tsne_results_query = None
@@ -1621,7 +1622,7 @@ def update_umap_plot(n_neighbors, min_dist, session_data):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = pickle.loads(models_list[f'Model {index_value}'])
+    model = pickle.loads(base64.b64decode(models_list[f'Model {index_value}']))
 
     # Data
     data_train = model.normalized_train
