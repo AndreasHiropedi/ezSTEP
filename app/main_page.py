@@ -1856,10 +1856,13 @@ def display_page(href, session_data):
     individual model inputs/ outputs.
     """
 
-    # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
-    user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    print(session_data)
+
+    if session_data:
+        # Get the session ID for that user, and the data in REDIS
+        session_id = session_data['session_id']
+        user_data = globals.get_user_session_data(session_id)
+        models_list = user_data['MODELS_LIST']
 
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
