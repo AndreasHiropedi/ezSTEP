@@ -1863,6 +1863,8 @@ def display_page(href, session_data):
     individual model inputs/ outputs.
     """
 
+    print('then this runs')
+
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data['session_id']
     user_data = globals.get_user_session_data(session_id)
@@ -1946,8 +1948,12 @@ def create_or_fetch_session_id(_pathname):
     This callback sets the session ID for each user
     """
 
+    print('this runs first')
+
     # Check if the session ID already exists
     if 'user_session_id' not in session:
+
+        print('then this runs')
         # Generate a new session ID if it does not exist
         session['user_session_id'] = str(uuid.uuid4())
         # Initialize empty values in Redis for this session ID
