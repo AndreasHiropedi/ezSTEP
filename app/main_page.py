@@ -1863,8 +1863,6 @@ def display_page(href, session_data):
     individual model inputs/ outputs.
     """
 
-    print(session_data)
-
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data['session_id']
     user_data = globals.get_user_session_data(session_id)
@@ -1952,18 +1950,18 @@ def create_or_fetch_session_id(_pathname):
     if 'user_session_id' not in session:
         # Generate a new session ID if it does not exist
         session['user_session_id'] = str(uuid.uuid4())
-        # Initialize empty values in Redis for this session ID
-        data = {
-            'MODELS_LIST': {'Model 1': None},
-            'TRAINING_DATA': None,
-            'TRAINING_FILE': None,
-            'TESTING_DATA': None,
-            'TESTING_FILE': None,
-            'QUERYING_DATA': None,
-            'QUERYING_FILE': None
-        }
-        print(session['user_session_id'])
-        globals.store_user_session_data(session['user_session_id'], data)
+
+    # Initialize empty values in Redis for this session ID
+    data = {
+        'MODELS_LIST': {'Model 1': None},
+        'TRAINING_DATA': None,
+        'TRAINING_FILE': None,
+        'TESTING_DATA': None,
+        'TESTING_FILE': None,
+        'QUERYING_DATA': None,
+        'QUERYING_FILE': None
+    }
+    globals.store_user_session_data(session['user_session_id'], data)
 
     # Return the session ID
     return {'session_id': session['user_session_id']}
