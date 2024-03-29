@@ -1708,7 +1708,8 @@ def check_dataset_change(
      State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open'),
-     State('session-id', 'data')]
+     State('session-id', 'data')],
+    prevent_initial_call=True
 )
 def press_submit_button(
         submit_clicks,
@@ -1749,6 +1750,8 @@ def press_submit_button(
     test_file = user_data['TESTING_FILE']
     query_file = user_data['QUERYING_FILE']
     models_list = user_data['MODELS_LIST']
+
+    print(user_data)
 
     ctx = dash.callback_context
 
