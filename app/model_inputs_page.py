@@ -1800,7 +1800,8 @@ def press_submit_button(
     except Exception:
         current_model = None
 
-    print(current_model.training_data)
+    print(type(current_model.training_data))
+    print(current_model.training_data.columns)
 
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
