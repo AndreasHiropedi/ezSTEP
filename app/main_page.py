@@ -851,7 +851,7 @@ def update_training_output(content, name, stored_train_file_name, session_data):
 
                 # Set the training file name and data in REDIS for that user
                 user_data['TRAINING_FILE'] = name
-                user_data['TRAINING_DATA'] = df.to_json(orient='split')
+                user_data['TRAINING_DATA'] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
                 return final_display, {'filename': name}
@@ -1106,7 +1106,7 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
         user_data['TRAINING_DATA'] = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
-        }).to_json(orient='split')
+        }).to_json()
         globals.store_user_session_data(session_id, user_data)
 
     return {
@@ -1237,7 +1237,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
 
                 # Set the training file name and data in REDIS for that user
                 user_data['TESTING_FILE'] = name
-                user_data['TESTING_DATA'] = df.to_json(orient='split')
+                user_data['TESTING_DATA'] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
                 return final_display, {'filename': name}
@@ -1492,7 +1492,7 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
         user_data['TESTING_DATA'] = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
-        }).to_json(orient='split')
+        }).to_json()
         globals.store_user_session_data(session_id, user_data)
 
     return {
@@ -1617,7 +1617,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
 
                 # Set the training file name and data in REDIS for that user
                 user_data['QUERYING_FILE'] = name
-                user_data['QUERYING_DATA'] = df.to_json(orient='split')
+                user_data['QUERYING_DATA'] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
                 return final_display, {'filename': name}
@@ -1704,7 +1704,7 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
         user_data['QUERYING_FILE'] = f"querying_text_input_{counter}"
         user_data['QUERYING_DATA'] = pd.DataFrame({
             'sequence': sequences,
-        }).to_json(orient='split')
+        }).to_json()
         globals.store_user_session_data(session_id, user_data)
 
     return {
