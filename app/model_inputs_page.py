@@ -1754,8 +1754,6 @@ def press_submit_button(
     query_file = user_data['QUERYING_FILE']
     models_list = user_data['MODELS_LIST']
 
-    print(user_data)
-
     ctx = dash.callback_context
 
     if not ctx.triggered:
@@ -1778,8 +1776,10 @@ def press_submit_button(
     except Exception:
         current_model = None
 
+    print('model here: ', current_model)
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
+        print('should be here')
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
             querying_data = query_data
