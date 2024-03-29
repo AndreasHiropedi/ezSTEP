@@ -1,8 +1,10 @@
 import base64
 import dash
-import dash_bootstrap_components as dbc
 import json
 import pickle
+
+import dash_bootstrap_components as dbc
+import pandas as pd
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
 
@@ -1776,10 +1778,8 @@ def press_submit_button(
     except Exception:
         current_model = None
 
-    print('model here: ', current_model)
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
-        print('should be here')
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
             querying_data = query_data
@@ -1813,9 +1813,9 @@ def press_submit_button(
     # if the data has changed
     elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
         # get necessary information
-        training_data = train_data
-        testing_data = test_data
-        querying_data = query_data
+        training_data = pd.read_json(train_data)
+        testing_data = pd.read_json(test_data)
+        querying_data = pd.read_json(query_data)
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
@@ -1839,9 +1839,9 @@ def press_submit_button(
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks):
 
-        training_data = train_data
-        testing_data = test_data
-        querying_data = query_data
+        training_data = pd.read_json(train_data)
+        testing_data = pd.read_json(test_data)
+        querying_data = pd.read_json(query_data)
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
