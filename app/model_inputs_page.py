@@ -1,5 +1,6 @@
 import base64
 import dash
+import io
 import json
 import pickle
 
@@ -1784,7 +1785,7 @@ def press_submit_button(
     if create_button_clicks > close_button_clicks:
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
-            querying_data = pd.read_json(query_data) if query_data is not None else None
+            querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
             # perform the necessary model operations
             current_model.train_model()
             current_model.test_model()
@@ -1806,7 +1807,7 @@ def press_submit_button(
                                         hyperopt_ans, hyperopt_iterations) \
             and not check_dataset_change(current_model, training_file, test_file, query_file):
         # check if querying_data has been uploaded
-        querying_data = pd.read_json(query_data) if query_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         if querying_data is not None and not current_model.queried_model:
             return [], True, False, False, False, False
 
@@ -1815,9 +1816,9 @@ def press_submit_button(
     # if the data has changed
     elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
         # get necessary information
-        training_data = pd.read_json(train_data) if train_data is not None else None
-        testing_data = pd.read_json(test_data) if test_data is not None else None
-        querying_data = pd.read_json(query_data) if query_data is not None else None
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
@@ -1841,9 +1842,9 @@ def press_submit_button(
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks):
 
-        training_data = pd.read_json(train_data) if train_data is not None else None
-        testing_data = pd.read_json(test_data) if test_data is not None else None
-        querying_data = pd.read_json(query_data) if query_data is not None else None
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
