@@ -1779,7 +1779,6 @@ def press_submit_button(
         current_model = None
 
     print(type(current_model.training_data))
-    print(current_model.training_data.columns)
 
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
@@ -1848,6 +1847,8 @@ def press_submit_button(
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
+
+        print(type(training_data))
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
