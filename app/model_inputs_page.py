@@ -1772,7 +1772,7 @@ def press_submit_button(
 
     # Try-except loop in case the model is undefined
     try:
-        current_model = pickle.loads(models_list[f'Model {index_value}'])
+        current_model = pickle.loads(base64.b64decode(models_list[f'Model {index_value}']))
     except Exception:
         current_model = None
 
