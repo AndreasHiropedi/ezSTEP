@@ -2,6 +2,7 @@ import base64
 import dash
 import io
 import os
+import uuid
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -12,13 +13,17 @@ from . import model_outputs_page
 from . import output_statistics_page
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
-from flask import send_from_directory
+from flask import send_from_directory, session
 from urllib.parse import urlparse
 
 
+# Basic definitions for the app
 my_app = Dash(__name__)
 server = my_app.server
 my_app.config.suppress_callback_exceptions = True
+
+# Set a secret key for the user session
+server.secret_key = 'your_secret_key'
 
 
 def app_header():
@@ -656,14 +661,19 @@ def output_statistics_card():
     )
 
 
-def model_input_ref(model_key):
+def model_input_ref(model_key, models_list, session_id):
     """
     This function creates hyperlinks to a separate page for each
     model input (for each model created).
     """
 
-    if model_key not in globals.MODELS_LIST.keys():
-        globals.MODELS_LIST[model_key] = None
+    # Get user data
+    user_data = globals.get_user_session_data(session_id)
+
+    if model_key not in models_list.keys():
+        models_list[model_key] = None
+        user_data['MODEL_LIST'] = models_list
+        globals.store_user_session_data(session_id, user_data)
 
     return html.A(
         children=[
@@ -718,13 +728,18 @@ def model_output_ref(model_key):
      Output('store-uploaded-train-file', 'data')],
     Input('upload-training-data', 'contents'),
     [State('upload-training-data', 'filename'),
-     State('store-uploaded-train-file', 'data')]
+     State('store-uploaded-train-file', 'data'),
+     State('session-id', 'data')]
 )
-def update_training_output(content, name, stored_train_file_name):
+def update_training_output(content, name, stored_train_file_name, session_data):
     """
     This callback updates the contents of the upload box for the
     model train data.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     if stored_train_file_name and not content:
         file = stored_train_file_name['filename']
@@ -826,8 +841,12 @@ def update_training_output(content, name, stored_train_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                globals.TRAINING_FILE = name
-                globals.TRAINING_DATA = df
+
+                # Set the training file name and data in REDIS for that user
+                user_data['TRAINING_FILE'] = name
+                user_data['TRAINING_DATA'] = df.to_json()
+                globals.store_user_session_data(session_id, user_data)
+
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -851,12 +870,17 @@ def update_training_output(content, name, stored_train_file_name):
     Input('text-train-data', 'value'),
     State('previous-train-value', 'value'),
     State('store-uploaded-train-file', 'data'),
-    State('training-change-counter', 'data')
+    State('training-change-counter', 'data'),
+    State('session-id', 'data')
 )
-def validate_training_text_input(value, previous_value, stored_train_file, counter):
+def validate_training_text_input(value, previous_value, stored_train_file, counter, session_data):
     """
     This callback validates the input in the training data textbox.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -1071,11 +1095,12 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
-        globals.TRAINING_DATA = pd.DataFrame({
+        user_data['TRAINING_FILE'] = f"training_text_input_{counter}"
+        user_data['TRAINING_DATA'] = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
-        })
-        globals.TRAINING_FILE = f"training_text_input_{counter}"
+        }).to_json()
+        globals.store_user_session_data(session_id, user_data)
 
     return {
         'width': '97.5%',
@@ -1089,13 +1114,18 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
      Output('store-uploaded-test-file', 'data')],
     Input('upload-testing-data', 'contents'),
     [State('upload-testing-data', 'filename'),
-     State('store-uploaded-test-file', 'data')]
+     State('store-uploaded-test-file', 'data'),
+     State('session-id', 'data')]
 )
-def update_testing_output(content, name, stored_test_file_name):
+def update_testing_output(content, name, stored_test_file_name, session_data):
     """
     This callback updates the contents of the upload box for the
     model test data.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     if stored_test_file_name and not content:
         file = stored_test_file_name['filename']
@@ -1197,8 +1227,12 @@ def update_testing_output(content, name, stored_test_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                globals.TESTING_FILE = name
-                globals.TESTING_DATA = df
+
+                # Set the training file name and data in REDIS for that user
+                user_data['TESTING_FILE'] = name
+                user_data['TESTING_DATA'] = df.to_json()
+                globals.store_user_session_data(session_id, user_data)
+
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1222,12 +1256,17 @@ def update_testing_output(content, name, stored_test_file_name):
     Input('text-test-data', 'value'),
     State('previous-test-value', 'value'),
     State('store-uploaded-test-file', 'data'),
-    State('testing-change-counter', 'data')
+    State('testing-change-counter', 'data'),
+    State('session-id', 'data')
 )
-def validate_testing_text_input(value, previous_value, stored_test_file, counter):
+def validate_testing_text_input(value, previous_value, stored_test_file, counter, session_data):
     """
     This callback validates the input in the testing data textbox.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -1442,11 +1481,12 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
-        globals.TESTING_DATA = pd.DataFrame({
+        user_data['TESTING_FILE'] = f"testing_text_input_{counter}"
+        user_data['TESTING_DATA'] = pd.DataFrame({
             'sequence': sequences,
             'protein': proteins
-        })
-        globals.TESTING_FILE = f"testing_text_input_{counter}"
+        }).to_json()
+        globals.store_user_session_data(session_id, user_data)
 
     return {
         'width': '97.5%',
@@ -1460,13 +1500,18 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
      Output('store-uploaded-query-file', 'data')],
     Input('upload-querying-data', 'contents'),
     [State('upload-querying-data', 'filename'),
-     State('store-uploaded-query-file', 'data')]
+     State('store-uploaded-query-file', 'data'),
+     State('session-id', 'data')]
 )
-def update_querying_output(content, name, stored_query_file_name):
+def update_querying_output(content, name, stored_query_file_name, session_data):
     """
     This callback updates the contents of the upload box for the
     model querying data.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     if stored_query_file_name and not content:
         file = stored_query_file_name['filename']
@@ -1562,8 +1607,12 @@ def update_querying_output(content, name, stored_query_file_name):
 
                 df['sequence'] = df['sequence'].str.lower()
                 final_display = html.Div([upload_children, success_message])
-                globals.QUERYING_FILE = name
-                globals.QUERYING_DATA = df
+
+                # Set the training file name and data in REDIS for that user
+                user_data['QUERYING_FILE'] = name
+                user_data['QUERYING_DATA'] = df.to_json()
+                globals.store_user_session_data(session_id, user_data)
+
                 return final_display, {'filename': name}
 
             # If CSV but without right columns
@@ -1587,12 +1636,17 @@ def update_querying_output(content, name, stored_query_file_name):
     Input('text-query-data', 'value'),
     State('previous-query-value', 'value'),
     State('store-uploaded-query-file', 'data'),
-    State('querying-change-counter', 'data')
+    State('querying-change-counter', 'data'),
+    State('session-id', 'data')
 )
-def validate_querying_text_input(value, previous_value, stored_query_file, counter):
+def validate_querying_text_input(value, previous_value, stored_query_file, counter, session_data):
     """
     This callback validates the input in the querying data textbox.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -1640,10 +1694,11 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
-        globals.QUERYING_DATA = pd.DataFrame({
+        user_data['QUERYING_FILE'] = f"querying_text_input_{counter}"
+        user_data['QUERYING_DATA'] = pd.DataFrame({
             'sequence': sequences,
-        })
-        globals.QUERYING_FILE = f"querying_text_input_{counter}"
+        }).to_json()
+        globals.store_user_session_data(session_id, user_data)
 
     return {
         'width': '97.5%',
@@ -1655,16 +1710,19 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
 @callback(
     Output('content', 'children'),
     Input('container', 'value'),
-    [State('store-model-count', 'data')]
+    State('store-model-count', 'data'),
+    State('session-id', 'data')
 )
-def render_tabs_content(
-        selected_tab,
-        stored_count
-):
+def render_tabs_content(selected_tab, stored_count, session_data):
     """
     This callback function keeps track of the user changes to the
     tabs container (and displays the correct information for each tab)
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     # File upload tab
     if selected_tab == 'upload datasets':
@@ -1717,7 +1775,7 @@ def render_tabs_content(
         if stored_count:
             return dbc.Row(
                 id='tabs-content-input',
-                children=[model_input_ref(model_key) for model_key in globals.MODELS_LIST.keys()] +
+                children=[model_input_ref(model_key, models_list, session_id) for model_key in models_list.keys()] +
                          [
                              html.Button(
                                  'Add a new model',
@@ -1732,7 +1790,7 @@ def render_tabs_content(
                 id='tabs-content-input',
                 children=[
                     # This creates the initial layout with one model
-                    model_input_ref("Model 1"),
+                    model_input_ref("Model 1", {'Model 1': None}, session_id),
                     html.Button(
                         'Add a new model',
                         id='button',
@@ -1746,7 +1804,7 @@ def render_tabs_content(
         return dbc.Row(
             id='tabs-content-output',
             children=[output_statistics_card(), html.Div(id='table-container')] +
-                     [model_output_ref(model_key) for model_key in globals.MODELS_LIST.keys()]
+                     [model_output_ref(model_key) for model_key in models_list.keys()]
         )
 
     # Validation check
@@ -1760,21 +1818,27 @@ def render_tabs_content(
      ],
     Input('button', 'n_clicks'),
     [State('tabs-content-input', 'children'),
-     State('store-model-count', 'data')
+     State('store-model-count', 'data'),
+     State('session-id', 'data')
      ]
 )
-def add_new_model_tab(n_clicks, current_children, stored_count):
+def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
     """
     This callback function keeps track of the user changes to the
     model inputs tab (when adding new models).
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     model_key = f'Model {n_clicks}'
 
     # Check if a new model has been added
     if n_clicks > stored_count['n_clicks']:
         stored_count['n_clicks'] = n_clicks
-        children = current_children + [model_input_ref(model_key)]
+        children = current_children + [model_input_ref(model_key, models_list, session_id)]
         return children, stored_count
 
     # If there has been no new model added
@@ -1783,17 +1847,19 @@ def add_new_model_tab(n_clicks, current_children, stored_count):
 
 @callback(
     Output('page-content', 'children'),
-    Input('url', 'href')
+    Input('url', 'href'),
+    State('session-id', 'data')
 )
-def display_page(href):
+def display_page(href, session_data):
     """
     This callback allows for switching between tabs when choosing to view
     individual model inputs/ outputs.
     """
 
-    print(globals.MODELS_LIST)
-    print(globals.TRAINING_FILE)
-    print(globals.TESTING_FILE)
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
@@ -1804,7 +1870,7 @@ def display_page(href):
         try:
             model_num = int(pathname.split('/')[-1][-1])
             model_key = f"Model {model_num}"
-            if model_key in globals.MODELS_LIST.keys():
+            if model_key in models_list.keys():
                 return model_inputs_page.create_layout(model_num)
             else:
                 return html.Div('Invalid model number.')
@@ -1816,8 +1882,8 @@ def display_page(href):
         try:
             model_num = int(pathname.split('/')[-1][-1])
             model_key = f"Model {model_num}"
-            if model_key in globals.MODELS_LIST.keys():
-                return model_outputs_page.create_layout(model_num)
+            if model_key in models_list.keys():
+                return model_outputs_page.create_layout(model_num, session_data)
             else:
                 return html.Div('Invalid model number.')
         except ValueError:
@@ -1854,11 +1920,43 @@ clientside_callback(
 )
 
 
-# Serve static example training file route
 @server.route('/downloadable_data/<path:filename>')
 def download_training_file(filename):
+    """
+    This callback correctly downloads all the example CSV files for the server.
+    """
+
     directory = os.path.join(os.getcwd(), 'downloadable_data')
     return send_from_directory(directory, filename, as_attachment=True)
+
+
+@callback(
+    Output('session-id', 'data'),
+    [Input('url', 'pathname')]
+)
+def create_or_fetch_session_id(_pathname):
+    """
+    This callback sets the session ID for each user
+    """
+
+    # Check if the session ID already exists
+    if 'user_session_id' not in session:
+        # Generate a new session ID if it does not exist
+        session['user_session_id'] = str(uuid.uuid4())
+        # Initialize empty values in Redis for this session ID
+        data = {
+            'MODELS_LIST': {'Model 1': None},
+            'TRAINING_DATA': None,
+            'TRAINING_FILE': None,
+            'TESTING_DATA': None,
+            'TESTING_FILE': None,
+            'QUERYING_DATA': None,
+            'QUERYING_FILE': None
+        }
+        globals.store_user_session_data(session['user_session_id'], data)
+
+    # Return the session ID
+    return {'session_id': session['user_session_id']}
 
 
 # Main layout of the home page
@@ -1872,7 +1970,8 @@ my_app.layout = html.Div([
     dcc.Store(id='store-uploaded-query-file', storage_type='session'),
     dcc.Store(id='training-change-counter', data=0, storage_type='session'),
     dcc.Store(id='testing-change-counter', data=0, storage_type='session'),
-    dcc.Store(id='querying-change-counter', data=0, storage_type='session')
+    dcc.Store(id='querying-change-counter', data=0, storage_type='session'),
+    dcc.Store(id='session-id', storage_type='session')
 ])
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-# variables to store the uploaded data (TODO: change to serverside once deployed)
+# variables to store the user provided data
 TRAINING_DATA = None
 TRAINING_FILE = None
 TESTING_DATA = None

@@ -1,6 +1,6 @@
-import globals
 import dash
 import dash_bootstrap_components as dbc
+import globals
 import json
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
@@ -29,7 +29,7 @@ def create_layout(model_count):
             html.Div(
                 id='input-page-contents',
                 children=[
-                    model_input_guidelines(model_count),
+                    model_input_guidelines(),
                     html.Div(
                         id='input-cards-container',
                         children=[
@@ -600,7 +600,7 @@ def file_validation_popup(model_count):
     )
 
 
-def model_input_guidelines(model_count):
+def model_input_guidelines():
     """
     This function handles the user guidelines for the model inputs page.
     """

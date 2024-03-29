@@ -2,6 +2,7 @@ from . import globals
 import dash
 import dash_bootstrap_components as dbc
 import json
+import pickle
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
 from .random_forest import RandomForest
@@ -29,7 +30,7 @@ def create_layout(model_count):
             html.Div(
                 id='input-page-contents',
                 children=[
-                    model_input_guidelines(model_count),
+                    model_input_guidelines(),
                     html.Div(
                         id='input-cards-container',
                         children=[
@@ -600,7 +601,7 @@ def file_validation_popup(model_count):
     )
 
 
-def model_input_guidelines(model_count):
+def model_input_guidelines():
     """
     This function handles the user guidelines for the model inputs page.
     """
@@ -1339,12 +1340,18 @@ def show_kmer_dropdown(value):
     [Input({'type': 'delete-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'no-button', 'index': MATCH}, 'n_clicks'),
      Input({'type': 'yes-button', 'index': MATCH}, 'n_clicks')],
-    [State({'type': 'delete-model-popup', 'index': MATCH}, 'is_open')],
+    [State({'type': 'delete-model-popup', 'index': MATCH}, 'is_open'),
+     State('session-id', 'data')],
 )
-def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
+def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open, session_data):
     """
     This callback handles the functionality of the delete button
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1371,7 +1378,9 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open):
         return False
 
     elif yes_clicks >= 0:
-        del globals.MODELS_LIST[f'Model {index_value}']
+        del models_list[f'Model {index_value}']
+        user_data['MODELS_LIST'] = models_list
+        globals.store_user_session_data(session_id, user_data)
         return False
 
     return is_open
@@ -1698,7 +1707,8 @@ def check_dataset_change(
      State({'type': 'input-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'file-validation-popup', 'index': MATCH}, 'is_open'),
      State({'type': 'complete-creation-popup', 'index': MATCH}, 'is_open'),
-     State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open')]
+     State({'type': 'complete-submission-popup', 'index': MATCH}, 'is_open'),
+     State('session-id', 'data')]
 )
 def press_submit_button(
         submit_clicks,
@@ -1722,11 +1732,23 @@ def press_submit_button(
         is_invalid_open,
         is_file_open,
         is_created_open,
-        is_complete_open
+        is_complete_open,
+        session_data
 ):
     """
     This callback handles the functionality of the submit button
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    train_data = user_data['TRAINING_DATA']
+    test_data = user_data['TESTING_DATA']
+    query_data = user_data['QUERYING_DATA']
+    training_file = user_data['TRAINING_FILE']
+    test_file = user_data['TESTING_FILE']
+    query_file = user_data['QUERYING_FILE']
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1744,13 +1766,13 @@ def press_submit_button(
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    current_model = globals.MODELS_LIST[f'Model {index_value}']
+    current_model = pickle.loads(models_list[f'Model {index_value}'])
 
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
-            querying_data = globals.QUERYING_DATA
+            querying_data = query_data
             # perform the necessary model operations
             current_model.train_model()
             current_model.test_model()
@@ -1770,25 +1792,23 @@ def press_submit_button(
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm,
                                         hyperopt_ans, hyperopt_iterations) \
-            and not check_dataset_change(current_model, globals.TRAINING_FILE, globals.TESTING_FILE,
-                                         globals.QUERYING_FILE):
+            and not check_dataset_change(current_model, training_file, test_file, query_file):
         # check if querying_data has been uploaded
-        querying_data = globals.QUERYING_DATA
+        querying_data = query_data
         if querying_data is not None and not current_model.queried_model:
             return [], True, False, False, False, False
 
         return [], False, False, False, True, False
 
     # if the data has changed
-    elif current_model and check_dataset_change(current_model, globals.TRAINING_FILE,
-                                                globals.TESTING_FILE, globals.QUERYING_FILE):
+    elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
         # get necessary information
-        training_data = globals.TRAINING_DATA
-        testing_data = globals.TESTING_DATA
-        querying_data = globals.QUERYING_DATA
-        training_file = globals.TRAINING_FILE
-        testing_file = globals.TESTING_FILE
-        querying_file = globals.QUERYING_FILE
+        training_data = train_data
+        testing_data = test_data
+        querying_data = query_data
+        training_file = training_file
+        testing_file = test_file
+        querying_file = query_file
 
         # set model data
         current_model.set_training_data(training_data)
@@ -1809,12 +1829,12 @@ def press_submit_button(
     # if the submit button was clicked
     elif submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks):
 
-        training_data = globals.TRAINING_DATA
-        testing_data = globals.TESTING_DATA
-        querying_data = globals.QUERYING_DATA
-        training_file = globals.TRAINING_FILE
-        testing_file = globals.TESTING_FILE
-        querying_file = globals.QUERYING_FILE
+        training_data = train_data
+        testing_data = test_data
+        querying_data = query_data
+        training_file = training_file
+        testing_file = test_file
+        querying_file = query_file
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
@@ -1884,7 +1904,9 @@ def press_submit_button(
             model.set_use_unsupervised("no")
 
         # Store model in the globally available list
-        globals.MODELS_LIST[f'Model {index_value}'] = model
+        models_list[f'Model {index_value}'] = pickle.dumps(model)
+        user_data['MODELS_LIST'] = models_list
+        globals.store_user_session_data(session_id, user_data)
 
         return [], True, False, False, False, False
 

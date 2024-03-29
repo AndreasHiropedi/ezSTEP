@@ -1,17 +1,18 @@
 import base64
-import io
-import os
-from urllib.parse import urlparse
-
 import dash
-import dash_bootstrap_components as dbc
-import pandas as pd
-from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
-
 import globals
+import io
 import model_inputs_page
 import model_outputs_page
+import os
 import output_statistics_page
+
+import dash_bootstrap_components as dbc
+import pandas as pd
+
+from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
+from urllib.parse import urlparse
+
 
 my_app = Dash(__name__)
 server = my_app.server

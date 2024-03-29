@@ -1,29 +1,37 @@
-import pandas as pd
-
-from . import globals
 import dash
-import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
+import pickle
 import umap
 
-from dash import html, dcc, callback, Input, Output, MATCH, dash_table
+import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.graph_objects as go
+
+from . import globals
+
 from .random_forest import RandomForest
 from .ridge_regressor import RidgeRegressor
 from .multilayer_perceptron import MultiLayerPerceptron
 from .support_vector_machine import SupportVectorMachine
+
+from dash import html, dcc, callback, Input, Output, MATCH, dash_table, State
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 
-def create_layout(model_count):
+def create_layout(model_count, session_data):
     """
     This function creates all pages for the model outputs.
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Check if model has been created successfully
     model_key = f'Model {model_count}'
 
-    if globals.MODELS_LIST[model_key] is None:
+    if models_list[model_key] is None:
         return html.Div(
             id='output-page',
             children=[
@@ -58,15 +66,15 @@ def create_layout(model_count):
             html.Div(
                 id='output-page-contents',
                 children=[
-                    model_summary_card(model_count),
+                    model_summary_card(model_count, session_data),
                     dbc.Row(
                         children=[
                             dbc.Col(
-                                children=[output_statistics_card(model_count)],
+                                children=[output_statistics_card(model_count, session_data)],
                                 md=4
                             ),
                             dbc.Col(
-                                children=[predicted_versus_actual_card(model_count)],
+                                children=[predicted_versus_actual_card(model_count, session_data)],
                                 md=3
                             )
                         ],
@@ -79,11 +87,11 @@ def create_layout(model_count):
                     dbc.Row(
                         children=[
                             dbc.Col(
-                                children=[training_feature_correlation_card(model_count)],
+                                children=[training_feature_correlation_card(model_count, session_data)],
                                 md=4
                             ),
                             dbc.Col(
-                                children=[testing_feature_correlation_card(model_count)],
+                                children=[testing_feature_correlation_card(model_count, session_data)],
                                 md=3
                             )
                         ],
@@ -96,11 +104,11 @@ def create_layout(model_count):
                     dbc.Row(
                         children=[
                             dbc.Col(
-                                children=[querying_feature_correlation_card(model_count)],
+                                children=[querying_feature_correlation_card(model_count, session_data)],
                                 md=4
                             ),
                             dbc.Col(
-                                children=[querying_file_download_card(model_count)],
+                                children=[querying_file_download_card(model_count, session_data)],
                                 md=3
                             )
                         ],
@@ -113,11 +121,11 @@ def create_layout(model_count):
                     dbc.Row(
                         children=[
                             dbc.Col(
-                                children=[explained_variance_plot_card(model_count)],
+                                children=[explained_variance_plot_card(model_count, session_data)],
                                 md=4
                             ),
                             dbc.Col(
-                                children=[unsupervised_learning_plot_card(model_count)],
+                                children=[unsupervised_learning_plot_card(model_count, session_data)],
                                 md=3
                             )
                         ],
@@ -134,14 +142,19 @@ def create_layout(model_count):
     )
 
 
-def model_summary_card(model_count):
+def model_summary_card(model_count, session_data):
     """
     This function generates the card containing the summary information about the respective model
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     # Retrieve all necessary summary information
 
@@ -333,15 +346,20 @@ def model_summary_card(model_count):
     )
 
 
-def output_statistics_card(model_count):
+def output_statistics_card(model_count, session_data):
     """
     This function generates the card containing the spider plot of training versus
     testing output statistics.
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     return dbc.Card(
         id={'type': 'train-test-statistics-card', 'index': model_count},
@@ -406,15 +424,20 @@ def output_statistics_graph(model):
     return figure
 
 
-def predicted_versus_actual_card(model_count):
+def predicted_versus_actual_card(model_count, session_data):
     """
     This function generates the card containing the scatter plot of predicted versus
     actual output.
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     return dbc.Card(
         id={'type': 'predict-versus-actual-card', 'index': model_count},
@@ -470,15 +493,20 @@ def predicted_versus_actual_graph(model):
     return figure
 
 
-def training_feature_correlation_card(model_count):
+def training_feature_correlation_card(model_count, session_data):
     """
     This function generates the card containing the plot for the feature correlation
     to the target variable for the training data
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     return dbc.Card(
         id={'type': 'train-feature-correlation-card', 'index': model_count},
@@ -562,15 +590,20 @@ def training_data_feature_correlation_plot(model):
     return figure
 
 
-def testing_feature_correlation_card(model_count):
+def testing_feature_correlation_card(model_count, session_data):
     """
     This function generates the card containing the plot for the feature correlation
     to the target variable for the test data.
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     return dbc.Card(
         id={'type': 'test-feature-correlation-card', 'index': model_count},
@@ -654,16 +687,21 @@ def testing_data_feature_correlation_plot(model):
     return figure
 
 
-def querying_feature_correlation_card(model_count):
+def querying_feature_correlation_card(model_count, session_data):
     """
     This function generates the card containing the plot for the feature correlation
     to the target variable for the query data (displayed only if the query dataset
     is provided).
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     if model.querying_data is None:
         return html.Div(
@@ -755,16 +793,21 @@ def querying_data_feature_correlation_plot(model):
     return figure
 
 
-def querying_file_download_card(model_count):
+def querying_file_download_card(model_count, session_data):
     """
     This function generates the card containing the downloadable CSV file
     containing the model's predictions for the uploaded querying data
     (displayed only if the query dataset is provided).
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     # Generate file name
     file_name = f"{model.model_number}_query_predictions.csv"
@@ -842,16 +885,21 @@ def querying_file_download_card(model_count):
     )
 
 
-def explained_variance_plot_card(model_count):
+def explained_variance_plot_card(model_count, session_data):
     """
     This function generates the card containing the PCA plot for the explained variance
     for the selected features using feature selection (displayed only if feature selection
     is enabled).
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     if model.use_feature_select == 'no':
         return html.Div(
@@ -937,16 +985,21 @@ def explained_variance_plot(model):
     return figure
 
 
-def unsupervised_learning_plot_card(model_count):
+def unsupervised_learning_plot_card(model_count, session_data):
     """
     This function generates the card containing the unsupervised learning plot based
     on the unsupervised learning method selected (displayed only if unsupervised learning
     is enabled).
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # Retrieve the model
     model_key = f'Model {model_count}'
-    model = globals.MODELS_LIST[model_key]
+    model = pickle.loads(models_list[model_key])
 
     if model.use_unsupervised == 'no':
         return html.Div(
@@ -1323,14 +1376,20 @@ def initial_umap_plot(model):
 @callback(
     Output({'type': "download-link", 'index': MATCH}, "data"),
     Input({'type': "btn-download", 'index': MATCH}, "n_clicks"),
+    State('session-id', 'data'),
     prevent_initial_call=True
 )
-def generate_csv(_n_clicks):
+def generate_csv(_n_clicks, session_data):
     """
     This callback generates the CSV file with the model's predictions
     for the query dataset (if one is provided) and allows the user to
     download this CSV.
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1347,7 +1406,7 @@ def generate_csv(_n_clicks):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = globals.MODELS_LIST[f'Model {index_value}']
+    model = pickle.loads(models_list[f'Model {index_value}'])
 
     # Data
     df = model.model_query_created_file
@@ -1363,12 +1422,18 @@ def generate_csv(_n_clicks):
     Output({'type': 'pca-plot', 'index': MATCH}, 'figure'),
     [Input({'type': 'svd-solver-dropdown', 'index': MATCH}, 'value'),
      Input({'type': 'whiten-radio', 'index': MATCH}, 'value')],
+    State('session-id', 'data'),
     prevent_initial_call=True
 )
-def update_pca_graph(svd_solver, whiten):
+def update_pca_graph(svd_solver, whiten, session_data):
     """
     This callback generates the interactive PCA plot (if unsupervised learning is enabled)
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1382,7 +1447,7 @@ def update_pca_graph(svd_solver, whiten):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = globals.MODELS_LIST[f'Model {index_value}']
+    model = pickle.loads(models_list[f'Model {index_value}'])
 
     # Get the data and initially fitted PCA outputs
     data_train = model.normalized_train
@@ -1444,12 +1509,18 @@ def update_pca_graph(svd_solver, whiten):
     Output({'type': 'tsne-plot', 'index': MATCH}, 'figure'),
     [Input({'type': 'perplexity-slider', 'index': MATCH}, 'value'),
      Input({'type': 'learning-rate-input', 'index': MATCH}, 'value')],
+    State('session-id', 'data'),
     prevent_initial_call=True
 )
-def update_tsne_plot(perplexity, learning_rate):
+def update_tsne_plot(perplexity, learning_rate, session_data):
     """
     This callback generates the interactive t-SNE plot (if unsupervised learning is enabled)
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1463,7 +1534,7 @@ def update_tsne_plot(perplexity, learning_rate):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = globals.MODELS_LIST[f'Model {index_value}']
+    model = pickle.loads(models_list[f'Model {index_value}'])
 
     # Variable to keep track of query data (if provided)
     tsne_results_query = None
@@ -1525,12 +1596,18 @@ def update_tsne_plot(perplexity, learning_rate):
     Output({'type': 'umap-plot', 'index': MATCH}, 'figure'),
     [Input({'type': 'n-neighbors-slider', 'index': MATCH}, 'value'),
      Input({'type': 'min-dist-slider', 'index': MATCH}, 'value')],
+    State('session-id', 'data'),
     prevent_initial_call=True
 )
-def update_umap_plot(n_neighbors, min_dist):
+def update_umap_plot(n_neighbors, min_dist, session_data):
     """
     This callback generates the interactive UMAP plot (if unsupervised learning is enabled)
     """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     ctx = dash.callback_context
 
@@ -1544,7 +1621,7 @@ def update_umap_plot(n_neighbors, min_dist):
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    model = globals.MODELS_LIST[f'Model {index_value}']
+    model = pickle.loads(models_list[f'Model {index_value}'])
 
     # Data
     data_train = model.normalized_train

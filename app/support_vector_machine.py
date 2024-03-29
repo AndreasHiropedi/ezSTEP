@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from functools import partial
-from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 from . import feature_encoders
 from . import feature_normalizers
 from . import feature_selectors
 from . import dimension_reduction_methods
+
+from functools import partial
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.svm import SVR

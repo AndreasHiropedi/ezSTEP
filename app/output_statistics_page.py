@@ -1,7 +1,10 @@
-from . import globals
+import pickle
+
 import plotly.graph_objects as go
 
-from dash import html, dcc, callback, Input, Output
+from . import globals
+
+from dash import html, dcc, callback, Input, Output, State
 
 
 def create_layout():
@@ -37,19 +40,25 @@ def create_layout():
 
 @callback(
     Output('statistics-graph', 'figure'),
-    Input('statistics-graph', 'id')
+    Input('statistics-graph', 'id'),
+    State('session-id', 'data')
 )
-def update_statistics_graph(_id):
+def update_statistics_graph(_id, session_data):
     """
     This callback generates the output statistics graph based on the existing models
     """
 
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
     # only stores the created models (in case the user adds more models but doesn't initialise all of them)
     # to avoid errors when plotting the graph
     existing_models = {}
-    for key, value in globals.MODELS_LIST.items():
+    for key, value in models_list.items():
         if value is not None:
-            existing_models[key] = value
+            existing_models[key] = pickle.loads(value)
 
     figure = go.Figure()
 
