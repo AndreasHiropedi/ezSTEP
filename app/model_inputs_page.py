@@ -1685,28 +1685,6 @@ def check_dataset_change(
     return False
 
 
-def create_dataframe(json_string):
-    """
-    This function reverts the JSON string stored on REDIS to a pandas
-    dataframe for the model.
-    """
-
-    data = json.loads(json_string)
-
-    # Extract sequences and proteins as lists, maintaining order
-    sequences = [v for k, v in sorted(data['sequence'].items(), key=lambda item: int(item[0]))]
-    proteins = [v for k, v in
-                sorted(data['protein'].items(), key=lambda item: int(item[0]))] if 'protein' in data else []
-
-    # Create the DataFrame
-    df = pd.DataFrame({
-        'sequence': sequences,
-        'protein': proteins
-    })
-
-    return df
-
-
 @callback(
     [Output({'type': 'loading-animation', 'index': MATCH}, 'children'),
      Output({'type': 'submit-model-popup', 'index': MATCH}, 'is_open'),
@@ -1807,7 +1785,7 @@ def press_submit_button(
     if create_button_clicks > close_button_clicks:
         if current_model and (not current_model.trained_model or not current_model.tested_model):
             # check if querying_data has been uploaded
-            querying_data = create_dataframe(pd.read_json(io.StringIO(query_data))) if query_data is not None else None
+            querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
             # perform the necessary model operations
             current_model.train_model()
             current_model.test_model()
@@ -1829,7 +1807,7 @@ def press_submit_button(
                                         hyperopt_ans, hyperopt_iterations) \
             and not check_dataset_change(current_model, training_file, test_file, query_file):
         # check if querying_data has been uploaded
-        querying_data = create_dataframe(pd.read_json(io.StringIO(query_data))) if query_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         if querying_data is not None and not current_model.queried_model:
             return [], True, False, False, False, False
 
@@ -1840,9 +1818,9 @@ def press_submit_button(
 
         print('in here to create the model')
 
-        training_data = create_dataframe(pd.read_json(io.StringIO(train_data))) if train_data is not None else None
-        testing_data = create_dataframe(pd.read_json(io.StringIO(test_data))) if test_data is not None else None
-        querying_data = create_dataframe(pd.read_json(io.StringIO(query_data))) if query_data is not None else None
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
@@ -1930,9 +1908,9 @@ def press_submit_button(
         print('should not enter here now')
 
         # get necessary information
-        training_data = create_dataframe(pd.read_json(io.StringIO(train_data))) if train_data is not None else None
-        testing_data = create_dataframe(pd.read_json(io.StringIO(test_data))) if test_data is not None else None
-        querying_data = create_dataframe(pd.read_json(io.StringIO(query_data))) if query_data is not None else None
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
