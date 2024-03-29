@@ -1801,7 +1801,7 @@ def press_submit_button(
     except Exception:
         current_model = None
 
-    print(type(current_model.training_data))
+    print('model training data type: ', type(current_model.training_data))
 
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
@@ -1837,6 +1837,7 @@ def press_submit_button(
 
     # if the data has changed
     elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
+        print('why the fuck am I here')
         # get necessary information
         training_data = create_dataframe(pd.read_json(io.StringIO(train_data))) if train_data is not None else None
         testing_data = create_dataframe(pd.read_json(io.StringIO(test_data))) if test_data is not None else None
@@ -1870,8 +1871,6 @@ def press_submit_button(
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
-
-        print(type(training_data))
 
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
