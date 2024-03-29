@@ -1695,7 +1695,7 @@ def create_new_df(dataframe):
     proteins = dataframe['protein'] if 'protein' in dataframe else None
 
     # Extract only the values from those dictionaries
-    protein_values = list(proteins.values()) if proteins else None
+    protein_values = list(proteins.values()) if proteins is not None else None
     sequence_values = list(sequences.values())
 
     # Build the new dataframe accordingly
