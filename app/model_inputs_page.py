@@ -1690,27 +1690,20 @@ def create_new_df(dataframe):
     de-serialised JSON data from REDIS.
     """
 
-    # Get dictionaries from originally de-serialised data
-    sequences = dataframe['sequence']
-    proteins = dataframe['protein'] if 'protein' in dataframe else None
+    # Initialize an empty DataFrame
+    df_reconstructed = pd.DataFrame()
 
-    # Extract only the values from those dictionaries
-    protein_values = list(proteins.values()) if proteins is not None else None
-    sequence_values = list(sequences.values())
+    # Check if 'sequence' and 'protein' are in the dataframe and add them
+    if 'sequence' in dataframe:
+        df_reconstructed['sequence'] = pd.Series(dataframe['sequence'])
 
-    # Build the new dataframe accordingly
-    if protein_values:
-        df = pd.DataFrame({
-            'sequence': sequence_values,
-            'protein': protein_values
-        })
+    if 'protein' in dataframe:
+        df_reconstructed['protein'] = pd.Series(dataframe['protein'])
 
-    else:
-        df = pd.DataFrame({
-            'sequence': sequence_values,
-        })
+    # Ensure the DataFrame is aligned by index
+    df_reconstructed = df_reconstructed.reset_index(drop=True)
 
-    return df
+    return df_reconstructed
 
 
 @callback(
