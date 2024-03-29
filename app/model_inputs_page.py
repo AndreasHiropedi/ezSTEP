@@ -1766,7 +1766,11 @@ def press_submit_button(
     index_part = another_split[0]
     index_value = index_part[-1]
 
-    current_model = pickle.loads(models_list[f'Model {index_value}'])
+    # Try-except loop in case the model is undefined
+    try:
+        current_model = pickle.loads(models_list[f'Model {index_value}'])
+    except Exception:
+        current_model = None
 
     # If we are waiting to create the model
     if create_button_clicks > close_button_clicks:
