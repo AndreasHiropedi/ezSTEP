@@ -1837,11 +1837,10 @@ def press_submit_button(
 
     # if the data has changed
     elif current_model and check_dataset_change(current_model, training_file, test_file, query_file):
-        print('why the fuck am I here')
         # get necessary information
-        training_data = create_dataframe(pd.read_json(io.StringIO(train_data))) if train_data is not None else None
-        testing_data = create_dataframe(pd.read_json(io.StringIO(test_data))) if test_data is not None else None
-        querying_data = create_dataframe(pd.read_json(io.StringIO(query_data))) if query_data is not None else None
+        training_data = pd.read_json(io.StringIO(train_data)) if train_data is not None else None
+        testing_data = pd.read_json(io.StringIO(test_data)) if test_data is not None else None
+        querying_data = pd.read_json(io.StringIO(query_data)) if query_data is not None else None
         training_file = training_file
         testing_file = test_file
         querying_file = query_file
