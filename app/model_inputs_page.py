@@ -1846,6 +1846,8 @@ def press_submit_button(
         testing_file = test_file
         querying_file = query_file
 
+        print(training_data)
+
         # if the required files were not uploaded or uploaded in the wrong format
         if training_data is None or testing_data is None:
             return [], False, False, True, False, False
