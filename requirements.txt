@@ -1,4 +1,5 @@
 ansi2html==1.9.1
+APScheduler==3.10.4
 blinker==1.7.0
 certifi==2023.11.17
 charset-normalizer==3.3.2
@@ -10,6 +11,7 @@ dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-table==5.0.0
 Flask==3.0.0
+Flask-APScheduler==1.13.1
 future==0.18.3
 gunicorn==21.2.0
 hyperopt==0.2.7
@@ -42,6 +44,7 @@ threadpoolctl==3.2.0
 tqdm==4.66.1
 typing_extensions==4.9.0
 tzdata==2023.3
+tzlocal==5.2
 umap-learn==0.5.5
 urllib3==2.1.0
 Werkzeug==3.0.1
