@@ -4,7 +4,7 @@ import json
 
 # Initialize Redis
 redis_url = os.getenv('REDIS_URL')
-redis_client = redis.from_url(redis_url, decode_responses=True)
+redis_client = redis.from_url(redis_url, decode_responses=True, ssl_cert_reqs=None)
 
 
 def store_user_session_data(session_id, data):
