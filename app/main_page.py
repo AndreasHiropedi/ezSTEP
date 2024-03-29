@@ -1962,6 +1962,7 @@ def create_or_fetch_session_id(_pathname):
             'QUERYING_DATA': None,
             'QUERYING_FILE': None
         }
+        print(session['user_session_id'])
         globals.store_user_session_data(session['user_session_id'], data)
 
     # Return the session ID
