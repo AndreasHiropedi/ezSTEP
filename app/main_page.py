@@ -668,7 +668,7 @@ def output_statistics_card():
     )
 
 
-def model_input_ref(model_key, models_list, session_id):
+def model_input_ref(model_key, session_id):
     """
     This function creates hyperlinks to a separate page for each
     model input (for each model created).
@@ -676,6 +676,7 @@ def model_input_ref(model_key, models_list, session_id):
 
     # Get user data
     user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODEL_LIST']
 
     if model_key not in models_list.keys():
         models_list[model_key] = None
@@ -1782,7 +1783,7 @@ def render_tabs_content(selected_tab, stored_count, session_data):
         if stored_count:
             return dbc.Row(
                 id='tabs-content-input',
-                children=[model_input_ref(model_key, models_list, session_id) for model_key in models_list.keys()] +
+                children=[model_input_ref(model_key, session_id) for model_key in models_list.keys()] +
                          [
                              html.Button(
                                  'Add a new model',
@@ -1797,7 +1798,7 @@ def render_tabs_content(selected_tab, stored_count, session_data):
                 id='tabs-content-input',
                 children=[
                     # This creates the initial layout with one model
-                    model_input_ref("Model 1", {'Model 1': None}, session_id),
+                    model_input_ref("Model 1", session_id),
                     html.Button(
                         'Add a new model',
                         id='button',
@@ -1845,7 +1846,7 @@ def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
     # Check if a new model has been added
     if n_clicks > stored_count['n_clicks']:
         stored_count['n_clicks'] = n_clicks
-        children = current_children + [model_input_ref(model_key, models_list, session_id)]
+        children = current_children + [model_input_ref(model_key, session_id)]
         return children, stored_count
 
     # If there has been no new model added
