@@ -2,6 +2,7 @@ import base64
 import dash
 import io
 import os
+import time
 import uuid
 
 import dash_bootstrap_components as dbc
@@ -14,6 +15,7 @@ from . import output_statistics_page
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 from flask import send_from_directory, session
+from flask_apscheduler import APScheduler
 from urllib.parse import urlparse
 
 
@@ -24,6 +26,11 @@ my_app.config.suppress_callback_exceptions = True
 
 # Set a secret key for the user session
 server.secret_key = 'your_secret_key'
+
+# Initialize the scheduler with the Flask server
+scheduler = APScheduler()
+scheduler.init_app(server)
+scheduler.start()
 
 
 def app_header():
@@ -1848,7 +1855,7 @@ def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
 @callback(
     Output('page-content', 'children'),
     Input('url', 'href'),
-    State('session-id', 'data')
+    Input('session-id', 'data')
 )
 def display_page(href, session_data):
     """
@@ -1858,11 +1865,10 @@ def display_page(href, session_data):
 
     print(session_data)
 
-    if session_data:
-        # Get the session ID for that user, and the data in REDIS
-        session_id = session_data['session_id']
-        user_data = globals.get_user_session_data(session_id)
-        models_list = user_data['MODELS_LIST']
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
 
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
@@ -1961,6 +1967,30 @@ def create_or_fetch_session_id(_pathname):
     # Return the session ID
     return {'session_id': session['user_session_id']}
 
+
+def cleanup_old_session_data():
+    """
+    This function removes any entries in the REDIS database that have
+    been inactive for a significant period of time.
+    """
+
+    current_time = int(time.time())
+    time_limit = 1800
+
+    # Iterate over timestamp keys to find old data
+    for key in globals.redis_client.scan_iter("session:timestamp:*"):
+        # Check if key hasn't been accessed within the time limit
+        last_access_time = int(globals.redis_client.get(key))
+        if current_time - last_access_time > time_limit:
+            # Extract session_id from the key
+            session_id = key.decode().split(":")[-1]
+            # Delete both the data and timestamp
+            globals.redis_client.delete(f"session:data:{session_id}")
+            globals.redis_client.delete(f"session:timestamp:{session_id}")
+
+
+# Schedule the cleanup task
+scheduler.add_job(id='Cleanup Old Session Data', func=cleanup_old_session_data, trigger='interval', minutes=30)
 
 # Main layout of the home page
 my_app.layout = html.Div([

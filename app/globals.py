@@ -1,6 +1,8 @@
 import os
 import redis
 import json
+import time
+
 
 # Initialize Redis
 redis_url = os.getenv('REDIS_URL')
@@ -15,6 +17,9 @@ def store_user_session_data(session_id, data):
     data_json = json.dumps(data)
     redis_client.set(f"session:{session_id}", data_json)
 
+    # Update the last access time
+    redis_client.set(f"session:timestamp:{session_id}", int(time.time()))
+
 
 def get_user_session_data(session_id):
     """
@@ -22,11 +27,8 @@ def get_user_session_data(session_id):
     """
 
     data_json = redis_client.get(f"session:{session_id}")
+
+    # Update the last access time before returning the data
+    redis_client.set(f"session:timestamp:{session_id}", int(time.time()))
+
     return json.loads(data_json)
-
-
-def delete_user_session_data(session_id):
-    """
-    Delete user session data from Redis.
-    """
-    redis_client.delete(f"session:{session_id}")
