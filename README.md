@@ -1,20 +1,20 @@
-# ezSTEP: an online platform for training and testing machine learning models for protein expression
+# *ezSTEP*: an online platform for training and testing machine learning models for protein expression
 
 ![ezSTEP](https://github.com/AndreasHiropedi/ezSTEP/blob/main/logo.png)
 
 ## Introduction
 
-ezSTEP (Sequence-to-expression Predictor) is the first machine-learning platform with a web-based user interface that enables the construction of automated machine-learning pipelines for computational analysis and predictions using regression.
+*ezSTEP* (Sequence-to-expression Predictor) is a machine-learning platform with a web-based user interface that enables the construction of automated machine-learning pipelines for computational analysis and predictions using regression.
 
 ## Accessibility
 
-ezSTEP can be accessed in two different ways:
+*ezSTEP* can be accessed in two different ways:
 
 - our web app is hosted on the following server, which users can access using the following link:
 
-  https://ezstep-f617792399bb.herokuapp.com (Note: this link will become depricated in the future, and our platform will be accessible through the link below)
+  - https://ezstep-f617792399bb.herokuapp.com (Note: this link will become depricated in the future)
 
-  http://calbuco.inf.ed.ac.uk/ezSTEP 
+  - http://calbuco.inf.ed.ac.uk/ezSTEP (Note: if the link didn't work because it became depricated, our platform can be accessed through this link instead)
 
 - alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
 
@@ -74,3 +74,8 @@ python main_page.py
 
 This command will create a localhost link, which, when clicked, will redirect you to your local instance of the app.
 
+## Citations
+
+If you found *ezSTEP* useful, please kindly cite the following paper:
+
+Andreas Hiropedi, Yuxin Shen, Diego A. Oyarzún, *ezSTEP*: a web-based tool for Sequence-To-Expression Prediction, 2024.
