@@ -1995,7 +1995,7 @@ def cleanup_old_session_data():
         last_access_time = int(globals.redis_client.get(key))
         if current_time - last_access_time > time_limit:
             # Extract session_id from the key
-            session_id = key.decode().split(":")[-1]
+            session_id = key.split(":")[-1]
             # Delete both the data and timestamp
             globals.redis_client.delete(f"session:data:{session_id}")
             globals.redis_client.delete(f"session:timestamp:{session_id}")
