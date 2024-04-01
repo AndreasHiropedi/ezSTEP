@@ -28,11 +28,21 @@ Below you can see an outline of the pipeline used in our app. These are all the 
 
 Below we provide a breakdown of the most important folders in this repository, and what they each contain:
 
-  - ```app```: this contains all the code for the app currently hosted on the server; this version differs from ```local_version``` due to changes that were needed in order to ensure the server can handle a multi-user enviornment in a safe and secure manner
+  - ```.github/workflows```: this contains the continuous integration (CI) pipeline for the app, ensuring that no malfunctioning code is deployed to the server.
 
-  - ```datasets_used```: this contains all the datasets used for training and testing the app, as well as the Python scripts used for obtaining those datasets (NOTE: since the splits were done with random sampling, re-running the scripts may result in different datasets)
+  - ```app```: this contains all the code for the app currently hosted on the server; this version differs from ```local_version``` due to changes that were needed in order to ensure the server can handle a multi-user enviornment in a safe and secure manner, which is why Redis was used for storing data.
 
-  - ```local_version```: this contains all the code for the version of the app that can be installed and set up on one's local device
+  - ```datasets_used```: this contains all the datasets used for training and testing the app, as well as the Python scripts used for obtaining those datasets (NOTE: since the splits were done with random sampling, re-running the scripts may result in different datasets). The links for accessing each of the three original datasets used can be found below:
+
+      - https://github.com/JeschekLab/uASPIre/tree/master/RBS_data (for the RBS data from the Hollerer et al. (2020) paper, the file is called uASPIre_RBS_300k_r2.txt)
+        
+      - https://www.nature.com/articles/nbt.4238#MOESM44 (for the coding sequences data from the Cambray et al. (2018) paper, the file is called Ecoli_data.csv)
+        
+      - https://www.nature.com/articles/s41586-022-04506-6 (for the promoter sequences data from the Vaishnav et al. (2022) paper, the file is called yeast_data.csv)
+
+  - ```downloadable_data```: this contains the example datasets for training, testing and querying data, which can be downloaded directly from our platform. These datasets were also obtained from the coding sequences data from the Cambray et al. (2018) paper, again using a random split.
+
+  - ```local_version```: this contains all the code for the version of the app that can be installed and set up on a local device. The main difference is that, unlike the server version, there is no need to ensure a mult-user environment using Redis, and so global variables stored on the local device are used for handling the app's data instead.
 
 ## Installation
 
