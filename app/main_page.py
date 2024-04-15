@@ -806,7 +806,7 @@ def update_training_output(content, name, stored_train_file_name, session_data):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} uses the wrong column names!"],
+            [f"File {name} use<br>the wrong column names!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -815,7 +815,16 @@ def update_training_output(content, name, stored_train_file_name, session_data):
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File {name} uses<br>data in the wrong format!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large<br>or sequences are too long!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -845,6 +854,12 @@ def update_training_output(content, name, stored_train_file_name, session_data):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file on the server ONLY
+                # and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()
@@ -1192,7 +1207,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} uses the wrong column names!"],
+            [f"File {name} use<br>the wrong column names!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1201,7 +1216,16 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File {name} uses<br>data in the wrong format!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large<br>or sequences are too long!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1231,6 +1255,12 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file on the server ONLY
+                # and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()
@@ -1578,7 +1608,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} uses the wrong column names!"],
+            [f"File {name} use<br>the wrong column names!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1587,7 +1617,16 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File {name} uses<br>data in the wrong format!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large<br>or sequences are too long!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1611,6 +1650,12 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file on the server ONLY
+                # and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()

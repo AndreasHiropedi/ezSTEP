@@ -1,6 +1,6 @@
 import dimension_reduction_methods
 import feature_encoders
-import feature_normalizers
+import data_normalizers
 import feature_selectors
 
 import numpy as np
@@ -55,7 +55,7 @@ class SupportVectorMachine:
         # user input parameters
         self.feature_encoding_method = None
         self.kmer_size = None
-        self.feature_normalization_algorithm = None
+        self.data_normalization_algorithm = None
         self.feature_selection_algorithm = None
         self.feature_number = None
         self.hyper_opt_iterations = None
@@ -148,8 +148,8 @@ class SupportVectorMachine:
     def set_kmer_size(self, kmer_size):
         self.kmer_size = kmer_size
 
-    def set_feature_normalization_algorithm(self, algorithm):
-        self.feature_normalization_algorithm = algorithm
+    def set_data_normalization_algorithm(self, algorithm):
+        self.data_normalization_algorithm = algorithm
 
     def set_feature_selection_algorithm(self, algorithm):
         self.feature_selection_algorithm = algorithm
@@ -197,17 +197,17 @@ class SupportVectorMachine:
         the user inputs
         """
 
-        if self.feature_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == 'zscore':
             self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
                 self.z_score_target_normaliser = \
-                feature_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+                data_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
 
-        elif self.feature_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == 'minmax':
             self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
                 self.min_max_target_normaliser = \
-                feature_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+                data_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
             if self.encoded_query is not None:
                 self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
 
@@ -374,10 +374,10 @@ class SupportVectorMachine:
 
         # Get the scaler (to un-normalise the predictions)
         scaler = None
-        if self.feature_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == 'zscore':
             scaler = self.z_score_target_normaliser
 
-        elif self.feature_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == 'minmax':
             scaler = self.min_max_target_normaliser
 
         # Make predictions using the trained model
@@ -411,10 +411,10 @@ class SupportVectorMachine:
         """
 
         scaler = None
-        if self.feature_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == 'zscore':
             scaler = self.z_score_target_normaliser
 
-        elif self.feature_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == 'minmax':
             scaler = self.min_max_target_normaliser
 
         normalized_x_df = pd.DataFrame(self.normalized_query)

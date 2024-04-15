@@ -165,9 +165,9 @@ def model_summary_card(model_count):
 
     # Feature normalisation
     feature_normalisation = ''
-    if model.feature_normalization_algorithm == 'minmax':
+    if model.data_normalization_algorithm == 'minmax':
         feature_normalisation = 'MinMax'
-    elif model.feature_normalization_algorithm == 'zscore':
+    elif model.data_normalization_algorithm == 'zscore':
         feature_normalisation = 'Z-score'
 
     # Feature selection
@@ -1153,8 +1153,7 @@ def unsupervised_learning_plot_card(model_count):
         children=[
             dbc.CardHeader(
                 id='card-header-unsupervised-plot',
-                children=[f"{unsupervised_learning_method} 2D plot"] if unsupervised_learning_method != 'UMAP' else
-                [f"{unsupervised_learning_method} 2D plot of the training data"]
+                children=[f"{unsupervised_learning_method} 2D plot of the training data"]
             ),
             dbc.CardBody(
                 id='card-body-unsupervised-plot',
@@ -1194,8 +1193,7 @@ def initial_pca_plot(model):
 
     # Data
     components_train = model.unsupervised_train
-    components_test = model.unsupervised_test
-    components_query = model.unsupervised_query
+    labels = model.normalized_train['protein']
 
     # Create the figure
     figure = go.Figure()
@@ -1206,28 +1204,17 @@ def initial_pca_plot(model):
             x=components_train[:, 0],
             y=components_train[:, 1],
             mode='markers',
-            name='Training Data'
-        )
-    )
-
-    figure.add_trace(
-        go.Scatter(
-            x=components_test[:, 0],
-            y=components_test[:, 1],
-            mode='markers',
-            name='Test Data'
-        )
-    )
-
-    if components_query is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=components_query[:, 0],
-                y=components_query[:, 1],
-                mode='markers',
-                name='Query Data'
+            marker=dict(
+                color=labels,
+                colorscale='thermal',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
             )
         )
+    )
 
     # Update the figure layout
     figure.update_layout(
@@ -1245,8 +1232,7 @@ def initial_tsne_plot(model):
 
     # Data
     tsne_results_train = model.unsupervised_train
-    tsne_results_test = model.unsupervised_test
-    tsne_results_query = model.unsupervised_query
+    labels = model.normalized_train['protein']
 
     # Create the figure
     figure = go.Figure()
@@ -1257,28 +1243,17 @@ def initial_tsne_plot(model):
             x=tsne_results_train[:, 0],
             y=tsne_results_train[:, 1],
             mode='markers',
-            name='Training Data'
-        )
-    )
-
-    figure.add_trace(
-        go.Scatter(
-            x=tsne_results_test[:, 0],
-            y=tsne_results_test[:, 1],
-            mode='markers',
-            name='Test Data'
-        )
-    )
-
-    if tsne_results_query is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=tsne_results_query[:, 0],
-                y=tsne_results_query[:, 1],
-                mode='markers',
-                name='Query Data'
+            marker=dict(
+                color=labels,
+                colorscale='Aggrnyl',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
             )
         )
+    )
 
     # Update the figure layout
     figure.update_layout(
@@ -1307,7 +1282,15 @@ def initial_umap_plot(model):
             x=umap_results_train[:, 0],
             y=umap_results_train[:, 1],
             mode='markers',
-            marker=dict(color=labels, colorscale='Viridis', showscale=True, opacity=0.8)
+            marker=dict(
+                color=labels,
+                colorscale='Viridis',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
+            )
         )
     )
 
@@ -1386,18 +1369,11 @@ def update_pca_graph(svd_solver, whiten):
 
     # Get the data and initially fitted PCA outputs
     data_train = model.normalized_train
-    data_test = model.normalized_test
-    data_query = model.normalized_query
-
-    # Variable to keep track of query data (if provided)
-    components_query = None
+    labels = model.normalized_train['protein']
 
     # Refit PCA
     pca = PCA(n_components=2, svd_solver=svd_solver, whiten=whiten)
     components_train = pca.fit_transform(data_train)
-    components_test = pca.transform(data_test)
-    if data_query is not None:
-        components_query = pca.transform(data_query)
 
     # Create the figure
     figure = go.Figure()
@@ -1408,28 +1384,17 @@ def update_pca_graph(svd_solver, whiten):
             x=components_train[:, 0],
             y=components_train[:, 1],
             mode='markers',
-            name='Training Data'
-        )
-    )
-
-    figure.add_trace(
-        go.Scatter(
-            x=components_test[:, 0],
-            y=components_test[:, 1],
-            mode='markers',
-            name='Test Data'
-        )
-    )
-
-    if components_query is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=components_query[:, 0],
-                y=components_query[:, 1],
-                mode='markers',
-                name='Query Data'
+            marker=dict(
+                color=labels,
+                colorscale='thermal',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
             )
         )
+    )
 
     # Update the figure layout
     figure.update_layout(
@@ -1465,20 +1430,13 @@ def update_tsne_plot(perplexity, learning_rate):
 
     model = globals.MODELS_LIST[f'Model {index_value}']
 
-    # Variable to keep track of query data (if provided)
-    tsne_results_query = None
-
     # Data
     data_train = model.normalized_train
-    data_test = model.normalized_test
-    data_query = model.normalized_query
+    labels = model.normalized_train['protein']
 
     # Refit the t-SNE
     tsne = TSNE(n_components=2, perplexity=perplexity, learning_rate=learning_rate, init='pca')
     tsne_results_train = tsne.fit_transform(data_train)
-    tsne_results_test = tsne.fit_transform(data_test)
-    if data_query is not None:
-        tsne_results_query = tsne.fit_transform(data_query)
 
     # Create the figure
     figure = go.Figure()
@@ -1489,28 +1447,17 @@ def update_tsne_plot(perplexity, learning_rate):
             x=tsne_results_train[:, 0],
             y=tsne_results_train[:, 1],
             mode='markers',
-            name='Training Data'
-        )
-    )
-
-    figure.add_trace(
-        go.Scatter(
-            x=tsne_results_test[:, 0],
-            y=tsne_results_test[:, 1],
-            mode='markers',
-            name='Test Data'
-        )
-    )
-
-    if tsne_results_query is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=tsne_results_query[:, 0],
-                y=tsne_results_query[:, 1],
-                mode='markers',
-                name='Query Data'
+            marker=dict(
+                color=labels,
+                colorscale='Aggrnyl',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
             )
         )
+    )
 
     # Update the figure layout
     figure.update_layout(
@@ -1563,7 +1510,15 @@ def update_umap_plot(n_neighbors, min_dist):
             x=umap_results_train[:, 0],
             y=umap_results_train[:, 1],
             mode='markers',
-            marker=dict(color=labels, colorscale='Viridis', showscale=True, opacity=0.8)
+            marker=dict(
+                color=labels,
+                colorscale='Viridis',
+                showscale=True,
+                opacity=0.8,
+                colorbar=dict(
+                    title='normalised<br>protein<br>expression<br>level'
+                )
+            )
         )
     )
 

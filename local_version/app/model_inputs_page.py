@@ -784,7 +784,7 @@ def model_input_parameters_card(model_count):
                     model_selection_dropdown(model_count),
                     feature_encoder_dropdown(model_count),
                     kmer_size_dropdown(model_count),
-                    feature_normalization_dropdown(model_count),
+                    data_normalization_dropdown(model_count),
                     feature_selection_question(model_count),
                     use_unsupervised_learning_question(model_count),
                     hyperparameter_optimisation_question(model_count)
@@ -812,14 +812,6 @@ def model_input_feature_selection_card(model_count):
                     feature_selection_algorithm_dropdown(model_count),
                     feature_number_input(model_count)
                 ]
-            ),
-            html.P(
-                "NOTE: the maximum number of features allowed as input is 100",
-                style={
-                    'margin-top': '-40px',
-                    'font-size': '10pt',
-                    'text-align': 'center'
-                }
             )
         ],
         style={'display': 'none'}
@@ -979,19 +971,42 @@ def kmer_size_dropdown(model_count):
     )
 
 
-def feature_normalization_dropdown(model_count):
+def data_normalization_dropdown(model_count):
     """
     This function creates the dropdown that allows the user to select
-    the type of feature normalization algorithm to be used.
+    the type of data normalization algorithm to be used.
     """
 
     return html.Div(
         id='normalization-descriptor',
         children=[
             html.H6(
-                "Select feature normalization method:",
+                "Select data normalization method:",
                 id='select-normalization'
             ),
+
+            # Target component for the tooltip
+            dbc.Button(
+                "?",
+                id="tooltip-target-norm",
+                style={
+                    'height': '25px',
+                    'font-size': '12pt',
+                    'color': 'white',
+                    'background': 'blue',
+                    'border': '0px'
+                }
+            ),
+
+            # Attach tooltip to the target component
+            dbc.Tooltip(
+                "Note that we only normalise the y-variable (protein expression) unless k-mer encoding is selected, "
+                "in which case the extracted features (x-variables) are also normalised.",
+                target="tooltip-target-norm",
+                placement='bottom',
+                id='tooltip-norm'
+            ),
+
             dcc.Dropdown(
                 id={'type': 'feature-normalization-dropdown', 'index': model_count},
                 options=[
@@ -1092,11 +1107,45 @@ def feature_number_input(model_count):
                 "Enter number of selected features:",
                 id='select-feature-number'
             ),
+
+            # Target component for the tooltip
+            dbc.Button(
+                "?",
+                id="tooltip-target-select",
+                style={
+                    'height': '25px',
+                    'font-size': '12pt',
+                    'color': 'white',
+                    'background': 'blue',
+                    'border': '0px'
+                }
+            ),
+
+            # Attach tooltip to the target component
+            dbc.Tooltip(
+                children=[
+                    html.P(
+                        "Note that the maximum allowed number of features is as follows: ",
+                        style={'text-align':'center'}
+                    ),
+                    html.Ul([
+                        html.Li("4 × sequence length (if one hot encoding is selected)"),
+                        html.Li([
+                            "4",
+                            html.Sup("k"),  # This creates the superscript for the "k"
+                            " (if k-mer encoding is selected, where k is also the value selected by the user)"
+                        ]),
+                    ])
+                ],
+                target="tooltip-target-select",
+                placement='bottom',
+                id='tooltip-feature-select'
+            ),
+
             dcc.Input(
                 id={'type': 'feature-number-input', 'index': model_count},
                 type='number',
                 min=1,
-                max=100,
                 step=1,
                 persistence=True,
                 style={
@@ -1121,7 +1170,7 @@ def use_unsupervised_learning_question(model_count):
         id='unsupervised-learning-q',
         children=[
             html.H6(
-                "Would like to use unsupervised learning?",
+                "Would like to enable data visualisation?",
                 id='use-unsupervised'
             ),
             dcc.RadioItems(
@@ -1154,7 +1203,7 @@ def dimension_reduction_algorithm_dropdown(model_count):
         id='dimension-algorithm-descriptor',
         children=[
             html.H6(
-                "Select dimension reduction method:",
+                "Select data visualisation method:",
                 id='select-dimension-algorithm'
             ),
             dcc.Dropdown(
@@ -1503,7 +1552,7 @@ def validate_user_input(
         model_type,
         feature_encoder,
         kmer_size,
-        feature_normalization,
+        data_normalization,
         feature_selection_ans,
         feature_selection,
         feature_number,
@@ -1517,7 +1566,7 @@ def validate_user_input(
     """
 
     # Checks to see all necessary inputs are present
-    if not model_type or not feature_encoder or not feature_normalization:
+    if not model_type or not feature_encoder or not data_normalization:
         return False
 
     elif feature_encoder == 'kmer' and not kmer_size:
@@ -1547,7 +1596,7 @@ def check_input_updates(
         model_type,
         feature_encoder,
         kmer_size,
-        feature_normalization,
+        data_normalization,
         feature_selection_ans,
         feature_selection,
         feature_number,
@@ -1586,7 +1635,7 @@ def check_input_updates(
     if current_model.kmer_size != kmer_size:
         return True
 
-    if current_model.feature_normalization_algorithm != feature_normalization:
+    if current_model.data_normalization_algorithm != data_normalization:
         return True
 
     # check model additional parameters
@@ -1709,7 +1758,7 @@ def press_submit_button(
         model_type,
         feature_encoder,
         kmer_size,
-        feature_normalization,
+        data_normalization,
         feature_selection_ans,
         feature_selection,
         feature_number,
@@ -1767,7 +1816,7 @@ def press_submit_button(
     # if the model has already been created successfully, inform the user
     elif current_model and current_model.trained_model and current_model.tested_model \
             and submit_clicks > (close_input_clicks + close_file_clicks + close_created_clicks + close_button_clicks) \
-            and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, feature_normalization,
+            and not check_input_updates(current_model, model_type, feature_encoder, kmer_size, data_normalization,
                                         feature_selection_ans, feature_selection, feature_number,
                                         unsupervised_learning_ans, dimension_reduction_algorithm,
                                         hyperopt_ans, hyperopt_iterations) \
@@ -1822,7 +1871,7 @@ def press_submit_button(
             return [], False, False, True, False, False
 
         # perform input validation
-        if not validate_user_input(model_type, feature_encoder, kmer_size, feature_normalization,
+        if not validate_user_input(model_type, feature_encoder, kmer_size, data_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
                                    dimension_reduction_algorithm, hyperopt_ans, hyperopt_iterations):
             return [], False, True, False, False, False
@@ -1856,7 +1905,7 @@ def press_submit_button(
 
         # set model parameters
         model.set_feature_encoding_method(feature_encoder)
-        model.set_feature_normalization_algorithm(feature_normalization)
+        model.set_data_normalization_algorithm(data_normalization)
 
         # if kmer is used for feature encoding
         if kmer_size:

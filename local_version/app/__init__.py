@@ -3,7 +3,7 @@ import model_inputs_page
 import model_outputs_page
 import output_statistics_page
 import feature_encoders
-import feature_normalizers
+import data_normalizers
 import feature_selectors
 import dimension_reduction_methods
 from random_forest import RandomForest
