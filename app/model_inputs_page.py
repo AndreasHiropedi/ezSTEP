@@ -1007,8 +1007,17 @@ def data_normalization_dropdown(model_count):
 
             # Attach tooltip to the target component
             dbc.Tooltip(
-                "Note that we only normalise the y-variable (protein expression) unless k-mer encoding is selected, "
-                "in which case the extracted features (x-variables) are also normalised.",
+                children=[
+                    html.P(
+                        "Note that we only normalise the y-variable (protein expression) unless k-mer encoding is "
+                        "selected, "
+                        "in which case the extracted features (x-variables) are also normalised.",
+                        style={
+                            'margin-top': '5px',
+                            'margin-bottom': '5px'
+                        }
+                    )
+                ],
                 target="tooltip-target-norm",
                 placement='bottom',
                 id='tooltip-norm'

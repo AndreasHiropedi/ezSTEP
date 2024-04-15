@@ -57,13 +57,13 @@
 
 #tooltip-norm {
     margin-top: 10px;
-    max-width: 300px;
+    max-width: 400px;
     width: auto;
     background-color: #C6EFEC;
     color: black;
     border: 2px solid black;
     font-size: 12pt;
-    text-align: left;
+    text-align: center;
 }
 
 #tooltip-feature-select {
