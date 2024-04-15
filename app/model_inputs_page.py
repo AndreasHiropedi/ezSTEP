@@ -819,14 +819,6 @@ def model_input_feature_selection_card(model_count):
                     feature_selection_algorithm_dropdown(model_count),
                     feature_number_input(model_count)
                 ]
-            ),
-            html.P(
-                "NOTE: the maximum number of features allowed as input is 100",
-                style={
-                    'margin-top': '-40px',
-                    'font-size': '10pt',
-                    'text-align': 'center'
-                }
             )
         ],
         style={'display': 'none'}
@@ -999,6 +991,29 @@ def data_normalization_dropdown(model_count):
                 "Select data normalization method:",
                 id='select-normalization'
             ),
+
+            # Target component for the tooltip
+            dbc.Button(
+                "?",
+                id="tooltip-target-norm",
+                style={
+                    'height': '25px',
+                    'font-size': '12pt',
+                    'color': 'white',
+                    'background': 'blue',
+                    'border': '0px'
+                }
+            ),
+
+            # Attach tooltip to the target component
+            dbc.Tooltip(
+                "Note that we only normalise the y-variable (protein expression) unless k-mer encoding is selected, "
+                "in which case the extracted features (x-variables) are also normalised.",
+                target="tooltip-target-norm",
+                placement='bottom',
+                id='tooltip-norm'
+            ),
+
             dcc.Dropdown(
                 id={'type': 'feature-normalization-dropdown', 'index': model_count},
                 options=[
@@ -1099,6 +1114,41 @@ def feature_number_input(model_count):
                 "Enter number of selected features:",
                 id='select-feature-number'
             ),
+
+            # Target component for the tooltip
+            dbc.Button(
+                "?",
+                id="tooltip-target-select",
+                style={
+                    'height': '25px',
+                    'font-size': '12pt',
+                    'color': 'white',
+                    'background': 'blue',
+                    'border': '0px'
+                }
+            ),
+
+            # Attach tooltip to the target component
+            dbc.Tooltip(
+                children=[
+                    html.P(
+                        "Note that the maximum allowed number of features is as follows: ",
+                        style={'text-align': 'center'}
+                    ),
+                    html.Ul([
+                        html.Li("4 × sequence length (if one hot encoding is selected)"),
+                        html.Li([
+                            "4",
+                            html.Sup("k"),  # This creates the superscript for the "k"
+                            " (if k-mer encoding is selected, where k is also the value selected by the user)"
+                        ]),
+                    ])
+                ],
+                target="tooltip-target-select",
+                placement='bottom',
+                id='tooltip-feature-select'
+            ),
+
             dcc.Input(
                 id={'type': 'feature-number-input', 'index': model_count},
                 type='number',
