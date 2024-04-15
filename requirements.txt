@@ -15,7 +15,7 @@ Flask-APScheduler==1.13.1
 future==0.18.3
 gunicorn==21.2.0
 hyperopt==0.2.7
-idna==3.6
+idna==3.7
 importlib-metadata==7.0.1
 itsdangerous==2.1.2
 Jinja2==3.1.3
