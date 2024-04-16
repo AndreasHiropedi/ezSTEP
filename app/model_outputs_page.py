@@ -1125,6 +1125,36 @@ def unsupervised_learning_plot_card(model_count, session_data):
                                 'margin-left': '20px'
                             }
                         ),
+
+                        # Target component for the tooltip
+                        dbc.Button(
+                            "?",
+                            id="tooltip-target-tsne",
+                            style={
+                                'height': '25px',
+                                'font-size': '12pt',
+                                'color': 'white',
+                                'background': 'blue',
+                                'border': '0px'
+                            }
+                        ),
+
+                        # Attach tooltip to the target component
+                        dbc.Tooltip(
+                            children=[
+                                html.P(
+                                    "Note that the allowed range of values for the learning rate is 10 to 1000.",
+                                    style={
+                                        'margin-top': '5px',
+                                        'margin-bottom': '5px'
+                                    }
+                                )
+                            ],
+                            target="tooltip-target-tsne",
+                            placement='bottom',
+                            id='tooltip-tsne'
+                        ),
+
                         dcc.Input(
                             id={'type': 'learning-rate-input', 'index': model_count},
                             type='number',
@@ -1213,19 +1243,7 @@ def unsupervised_learning_plot_card(model_count, session_data):
                 id='card-body-unsupervised-plot',
                 children=[
                     dcc.Loading(
-                        children=[graph_container] if unsupervised_learning_method != 't-SNE' else
-                                 [
-                                     graph_container,
-                                     html.P(
-                                         "NOTE: the allowed range of values is 10 to 1000",
-                                         style={
-                                             'margin-top': '10px',
-                                             'font-size': '10pt',
-                                             'text-align': 'center',
-                                             'margin-bottom': '-20px'
-                                         }
-                                     )
-                                 ]
+                        children=[graph_container]
                     )
                 ]
             )
