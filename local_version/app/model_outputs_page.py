@@ -463,8 +463,7 @@ def predicted_versus_actual_graph(model):
     # Customize layout
     figure.update_layout(
         xaxis_title='Actual Values',
-        yaxis_title='Predicted Values',
-        showlegend=True
+        yaxis_title='Predicted Values'
     )
 
     return figure
