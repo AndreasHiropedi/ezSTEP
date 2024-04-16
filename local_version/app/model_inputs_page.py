@@ -856,14 +856,6 @@ def model_input_hyperparameter_optimisation_card(model_count):
             dbc.CardBody(
                 id='card-body-input',
                 children=[hyperparameter_optimisation_number_input(model_count)]
-            ),
-            html.P(
-                "NOTE: the maximum number of iterations allowed as input is 50",
-                style={
-                    'margin-top': '-40px',
-                    'font-size': '10pt',
-                    'text-align': 'center'
-                }
             )
         ],
         style={'display': 'none'}
@@ -1135,7 +1127,7 @@ def feature_number_input(model_count):
                 children=[
                     html.P(
                         "Note that the maximum allowed number of features is as follows: ",
-                        style={'text-align':'center'}
+                        style={'text-align': 'center'}
                     ),
                     html.Ul([
                         html.Li("4 × sequence length (if one hot encoding is selected)"),
@@ -1282,6 +1274,36 @@ def hyperparameter_optimisation_number_input(model_count):
                 "Enter number of iterations:",
                 id='select-iteration-number'
             ),
+
+            # Target component for the tooltip
+            dbc.Button(
+                "?",
+                id="tooltip-target-hyperopt",
+                style={
+                    'height': '25px',
+                    'font-size': '12pt',
+                    'color': 'white',
+                    'background': 'blue',
+                    'border': '0px'
+                }
+            ),
+
+            # Attach tooltip to the target component
+            dbc.Tooltip(
+                children=[
+                    html.P(
+                        "Note that the maximum number of iterations allowed as input is 50",
+                        style={
+                            'margin-top': '5px',
+                            'margin-bottom': '5px'
+                        }
+                    )
+                ],
+                target="tooltip-target-hyperopt",
+                placement='bottom',
+                id='tooltip-hyperopt'
+            ),
+
             dcc.Input(
                 id={'type': 'iteration-number-input', 'index': model_count},
                 type='number',
@@ -1558,6 +1580,7 @@ clientside_callback(
 
 
 def validate_user_input(
+        sequence_length,
         model_type,
         feature_encoder,
         kmer_size,
@@ -1591,10 +1614,12 @@ def validate_user_input(
         return False
 
     # Checks to see all given number inputs are valid
-    elif feature_number and (feature_number < 1 or feature_number > 100):
+    elif feature_number and \
+            (feature_number < 1 or feature_number > 4 * sequence_length if feature_encoder == 'binary'
+                else feature_number < 1 or feature_number > 4 ** int(kmer_size)):
         return False
 
-    elif hyperopt_iterations and (hyperopt_iterations < 1 or hyperopt_iterations > 100):
+    elif hyperopt_iterations and (hyperopt_iterations < 1 or hyperopt_iterations > 50):
         return False
 
     return True
@@ -1879,8 +1904,11 @@ def press_submit_button(
         if training_data is None or testing_data is None:
             return [], False, False, True, False, False
 
+        # get sequence length for input validation
+        sequence_length = training_data['sequence'].str.len()[0]
+
         # perform input validation
-        if not validate_user_input(model_type, feature_encoder, kmer_size, data_normalization,
+        if not validate_user_input(sequence_length, model_type, feature_encoder, kmer_size, data_normalization,
                                    feature_selection_ans, feature_selection, feature_number, unsupervised_learning_ans,
                                    dimension_reduction_algorithm, hyperopt_ans, hyperopt_iterations):
             return [], False, True, False, False, False

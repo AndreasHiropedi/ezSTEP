@@ -858,7 +858,7 @@ def update_training_output(content, name, stored_train_file_name, session_data):
 
                 # For memory's sake, limit size file on the server ONLY
                 # and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
@@ -961,10 +961,9 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
@@ -973,11 +972,21 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             sequence_value = sequence_value.lower()
@@ -1019,10 +1028,9 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             protein_value = float_protein_value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
@@ -1031,11 +1039,21 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             sequence_value = sequence_value.lower()
@@ -1077,23 +1095,32 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             protein_value = float_protein_value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             sequence_value = sequence_value.lower()
@@ -1259,7 +1286,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
 
                 # For memory's sake, limit size file on the server ONLY
                 # and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
@@ -1362,10 +1389,9 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
@@ -1374,7 +1400,17 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
                 return {
                    'width': '97.5%',
                    'height': '100px',
@@ -1420,10 +1456,9 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             protein_value = float_protein_value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
@@ -1432,7 +1467,17 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
                 return {
                    'width': '97.5%',
                    'height': '100px',
@@ -1478,10 +1523,9 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             protein_value = float_protein_value
 
-            # check if sequence value is valid
-            # check that all sequences are the same length
-            # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
+            # Check if sequence value is valid
 
+            # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
@@ -1490,7 +1534,17 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
                 return {
                    'width': '97.5%',
                    'height': '100px',
@@ -1508,14 +1562,6 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                'height': '100px',
                'border': '2px solid #dc3545'
             }, counter, value
-
-    # Check if length of input is less than 5 (since we need at least 5 inputs for 5-fold)
-    if len(sequences) < 5 and len(proteins) < 5:
-        return {
-           'width': '97.5%',
-           'height': '100px',
-           'border': '2px solid #dc3545'
-        }, counter, value
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
@@ -1654,7 +1700,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
 
                 # For memory's sake, limit size file on the server ONLY
                 # and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len() > 250:
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
@@ -1724,9 +1770,9 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
         sequence_value = row.strip()
 
         # Check if sequence value is valid
-        # check that all sequences are the same length
-        # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-        allowed_chars = {'a', 'c', 't', 'g'}
+
+        # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
+        allowed_chars = ['a', 'c', 't', 'g']
         if any(char not in allowed_chars for char in sequence_value.lower()):
             return {
                'width': '97.5%',
@@ -1734,7 +1780,17 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
                'border': '2px solid #dc3545'
             }, counter, value
 
+        # check that all sequences are the same length
         if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+            return {
+               'width': '97.5%',
+               'height': '100px',
+               'border': '2px solid #dc3545'
+            }, counter, value
+
+        # check length of sequence does not exceed limit of 250 nt
+        # and length of input does not exceed limit of 20,000
+        if len(sequences[0]) > 250 and len(sequences) > 20000:
             return {
                'width': '97.5%',
                'height': '100px',

@@ -77,6 +77,17 @@
     text-align: left;
 }
 
+#tooltip-hyperopt {
+    margin-top: 20px;
+    max-width: 300px;
+    width: auto;
+    background-color: #C6EFEC;
+    color: black;
+    border: 2px solid black;
+    font-size: 12pt;
+    text-align: center;
+}
+
 #github-link {
     text-decoration: none;
     font-size: 12pt;
