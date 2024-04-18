@@ -115,13 +115,47 @@
     top: 15px;
     float: right;
     margin-right: 20px;
-    margin-left: 0px;
+    margin-left: 20px;
+}
+
+#about-us {
+    text-decoration: none;
+    font-size: 14pt;
+    font-family: sans-serif;
+    color: white;
+    padding: 2px;
+    padding-top: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: 100;
+    position: relative;
+    top: 15px;
+    float: left;
+    margin-right: 20px;
+    margin-left: 780px;
 }
 
 #app-contents {
     top: 60px;
     width: 100%;
     position: absolute;
+}
+
+#user-info {
+    position: relative;
+}
+
+#user-info h1 {
+    font-size: 18pt;
+    font-family: 'Times';
+    margin-left: 40px;
+}
+
+#user-info p {
+    font-size: 12pt;
+    font-family: 'Times';
+    margin-left: 40px;
+    margin-right: 40px;
 }
 
 #user-guide {
@@ -132,6 +166,24 @@
     font-size: 18pt;
     font-family: 'Times';
     margin-left: 20px;
+}
+
+#about-us-header {
+    font-size: 30pt;
+    font-family: 'Times';
+    text-align: center;
+}
+
+#guidelines-header {
+    font-size: 30pt;
+    font-family: 'Times';
+    text-align: center;
+}
+
+#disclaimer-header {
+    font-size: 30pt;
+    font-family: 'Times';
+    text-align: center;
 }
 
 #user-guide p {
@@ -985,6 +1037,7 @@
     align-items: center;
     justify-content: center;
     padding-bottom: 15px;
+    margin-top: 30px;
 }
 
 #app-footer > a > img {
