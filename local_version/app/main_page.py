@@ -796,6 +796,15 @@ def update_training_output(content, name, stored_train_file_name):
             }
         )
 
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large or sequences are too long!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
         # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
@@ -818,6 +827,11 @@ def update_training_output(content, name, stored_train_file_name):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()
@@ -929,6 +943,15 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -987,6 +1010,15 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1043,6 +1075,15 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
                     'width': '97.5%',
                     'height': '100px',
                     'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             sequence_value = sequence_value.lower()
@@ -1167,6 +1208,15 @@ def update_testing_output(content, name, stored_test_file_name):
             }
         )
 
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large or sequences are too long!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
         # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
@@ -1189,6 +1239,11 @@ def update_testing_output(content, name, stored_test_file_name):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()
@@ -1300,6 +1355,15 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1358,6 +1422,15 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
                    'border': '2px solid #dc3545'
                 }, counter, value
 
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
             sequences.append(sequence_value)
@@ -1410,6 +1483,15 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+                return {
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
+                }, counter, value
+
+            # check length of sequence does not exceed limit of 250 nt
+            # and length of input does not exceed limit of 20,000
+            if len(sequences[0]) > 250 and len(sequences) > 20000:
                 return {
                    'width': '97.5%',
                    'height': '100px',
@@ -1530,6 +1612,15 @@ def update_querying_output(content, name, stored_query_file_name):
             }
         )
 
+        limit_exceeded_message = html.Div(
+            [f"File {name} is too large or sequences are too long!"],
+            style={
+                "font-weight": "bold",
+                "color": "red",
+                "font-size": "12pt"
+            }
+        )
+
         # Check if file is a CSV file
         content_type, content_string = content.split(',')
         decoded = base64.b64decode(content_string)
@@ -1546,6 +1637,11 @@ def update_querying_output(content, name, stored_query_file_name):
                 invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
                 if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
                     final_display = html.Div([upload_children, invalid_data_message])
+                    return final_display, None
+
+                # For memory's sake, limit size file and the length of each sequence
+                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                    final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
                 df['sequence'] = df['sequence'].str.lower()
@@ -1617,6 +1713,15 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
 
         # check that all sequences are the same length
         if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
+            return {
+               'width': '97.5%',
+               'height': '100px',
+               'border': '2px solid #dc3545'
+            }, counter, value
+
+        # check length of sequence does not exceed limit of 250 nt
+        # and length of input does not exceed limit of 20,000
+        if len(sequences[0]) > 250 and len(sequences) > 20000:
             return {
                'width': '97.5%',
                'height': '100px',
