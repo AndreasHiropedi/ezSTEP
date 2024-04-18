@@ -159,7 +159,7 @@ def user_info():
                     html.A(
                         'example_train_data.csv',
                         download='example_train_data.csv',
-                        href='/downloadable_data/example_train_data.csv',
+                        href='./assets/example_train_data.csv',
                         style={
                             'margin-left': '280px'
                         }
@@ -167,7 +167,7 @@ def user_info():
                     html.A(
                         'example_test_data.csv',
                         download='example_test_data.csv',
-                        href='/downloadable_data/example_test_data.csv',
+                        href='./assets/example_test_data.csv',
                         style={
                             'margin-left': '220px'
                         }
@@ -881,23 +881,23 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             protein_value = float_protein_value
 
-            # check if sequence value is valid
+            # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
             allowed_chars = ['a', 'c', 't', 'g']
             if any(char not in allowed_chars for char in sequence_value.lower()):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
                 return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
+                   'width': '97.5%',
+                   'height': '100px',
+                   'border': '2px solid #dc3545'
                 }, counter, value
 
             # check length of sequence does not exceed limit of 250 nt
@@ -1526,7 +1526,7 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
         # Check if sequence value is valid
 
         # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-        allowed_chars = {'a', 'c', 't', 'g'}
+        allowed_chars = ['a', 'c', 't', 'g']
         if any(char not in allowed_chars for char in sequence_value.lower()):
             return {
                'width': '97.5%',

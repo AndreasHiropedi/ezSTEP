@@ -23,6 +23,12 @@ window.dash_clientside.clientside = {
             }
         } else if (pathname.startsWith('/output-statistics/')) {
             title = "Testing output statistics"
+        } else if (pathname.startsWith('/about-us/')) {
+            title = "About us"
+        } else if (pathname.startsWith('/user-guidelines/')) {
+            title = "User guidelines"
+        } else if (pathname.startsWith('/disclaimer/')) {
+            title = "Disclaimer"
         }
 
         document.title = title;

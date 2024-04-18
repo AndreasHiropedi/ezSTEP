@@ -12,6 +12,7 @@ from . import globals
 from . import model_inputs_page
 from . import model_outputs_page
 from . import output_statistics_page
+from . import about_us_page
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 from flask import send_from_directory, session
@@ -82,6 +83,16 @@ def app_header():
                 href='/'
             ),
 
+            # About us page
+            html.A(
+                id='about-us',
+                children=[
+                    "About Us"
+                ],
+                href='/about-us/',
+                target='_blank'
+            ),
+
             # GitHub repo link
             html.A(
                 id='github-link',
@@ -143,241 +154,53 @@ def app_footer():
     )
 
 
-def user_guide():
+def user_info():
     """
-    This function builds the user guidelines section of the web app,
-    which provides detailed information about how the user can interact
-    with the platform.
+    This function generates the short bit of user information text
+    displayed above the three tabs.
     """
-
-    # Determine the absolute path of the current file (e.g., main_page.py)
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-
-    # Construct the absolute path to the image file
-    upload_image_path = os.path.join(current_directory, 'assets', 'upload.png')
-    # Open the image, read it, and encode it into Base64
-    encoded_upload_image = base64.b64encode(open(upload_image_path, 'rb').read()).decode()
-
-    # Construct the absolute path to the image file
-    input_image_path = os.path.join(current_directory, 'assets', 'inputs.png')
-    # Open the image, read it, and encode it into Base64
-    encoded_input_image = base64.b64encode(open(input_image_path, 'rb').read()).decode()
-
-    # Construct the absolute path to the image file
-    output_image_path = os.path.join(current_directory, 'assets', 'outputs.png')
-    # Open the image, read it, and encode it into Base64
-    encoded_output_image = base64.b64encode(open(output_image_path, 'rb').read()).decode()
 
     return html.Div(
-        id='user-guide',
+        id='user-info',
         children=[
-            html.H1("User Guidelines"),
+            html.H1("User Information"),
             html.P(
-                "Below are some guidelines and information about how the platform works. It includes some "
-                "general information about the structure and layout of the app, as well as some more "
-                "specific information about the individual tools available. "
+                "All information regarding the functionality of the app can be found on the 'About us' page, "
+                "accessible through the button above. However, if you just want to get started right away, "
+                "you can download and use the example datasets we provided below, or alternatively upload your own."
             ),
             html.Div(
-                id='info-wrapper',
+                id='example-files-container',
                 children=[
-                    # General information
-                    html.Div(
-                        id='general-info',
-                        children=[
-                            html.H4("1. General information"),
-                            html.Hr(),
-                            html.P(
-                                children=[
-                                    "The app consists of three sections: ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   1. File upload",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   2. Model input parameters",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   3. Model outputs",
-                                    html.Br(),
-                                    html.Br(),
-                                    "In order for the user to see the model output, their inputted "
-                                    "parameters for the selected model, as well as their uploaded "
-                                    "dataset, must be first validated and then processed. Once these "
-                                    "steps have occurred, the user will be able to visualise the model "
-                                    "output (see more in the 'Model outputs' section). For "
-                                    "more detailed information on each specific subsection, see the "
-                                    "information below. "
-                                ]
-                            )
-                        ],
+                    html.A(
+                        'example_train_data.csv',
+                        download='example_train_data.csv',
+                        href='/downloadable_data/example_train_data.csv',
                         style={
-                            'background': '#f8d7da',
-                            'color': '#721c24',
-                            'borderColor': '#f5c6cb'
+                            'margin-left': '280px'
                         }
                     ),
-
-                    # File upload
-                    html.Div(
-                        id='file-upload',
-                        children=[
-                            html.H4("2. File upload"),
-                            html.Hr(),
-                            html.Img(
-                                src=f'data:image/png;base64,{encoded_upload_image}'
-                            ),
-                            html.P(
-                                "As can be seen in the image above, this section contains three upload boxes. "
-                                "The required fields are for uploading "
-                                "the training and testing data (in order to train the selected model), and the "
-                                "optional field is for uploading a dataset for querying the model on unlabelled data. "
-                                "For each of the three fields, the user has a choice of how they wish to "
-                                "upload the data: they can either upload a file, or paste their data in a "
-                                "textbox. If they choose to upload a file, they must ensure the file "
-                                "contains at least one column with all the sequence data, and one column "
-                                "with all the labels information, with these two columns being matched. If "
-                                "they choose to use the textbox, they must ensure the data is formatted in "
-                                "the following order: sequence + separator (such as , or | or ;) + label + "
-                                "new line character. If the user fails to ensure these conditions, then "
-                                "the app will not be able to process their inputted data and will inform the user. "
-                                "However, it is worth noting "
-                                "that these conditions only apply for training and testing, since for the querying "
-                                "data the user will only need to provide the sequences (in the format of one sequence "
-                                "per line)."
-                            ),
-                            html.P(
-                                "NOTE: for the training process, we always perform 5-fold cross validation on the "
-                                "uploaded training dataset. Therefore, it is worth noting that, if the length of the "
-                                "text input is less than 5 sequences long, even if the sequences are valid, the input "
-                                "will be rendered invalid. We provide a set of example files below, one for each of "
-                                "the three steps (training, testing, querying), which can be downloaded and used for "
-                                "running the app's machine learning pipeline."
-                            ),
-                            html.Div(
-                                children=[
-                                    html.A(
-                                        'example_train_data.csv',
-                                        download='example_train_data.csv',
-                                        href='/downloadable_data/example_train_data.csv',
-                                        style={
-                                            'margin-left': '220px'
-                                        }
-                                    ),
-                                    html.A(
-                                        'example_test_data.csv',
-                                        download='example_test_data.csv',
-                                        href='/downloadable_data/example_test_data.csv',
-                                        style={
-                                            'margin-left': '220px'
-                                        }
-                                    ),
-                                    html.A(
-                                        'example_query_data.csv',
-                                        download='example_query_data.csv',
-                                        href='/downloadable_data/example_query_data.csv',
-                                        style={
-                                            'margin-left': '220px'
-                                        }
-                                    ),
-                                ],
-                                style={
-                                    'margin-bottom': '15px'
-                                }
-                            )
-                        ],
+                    html.A(
+                        'example_test_data.csv',
+                        download='example_test_data.csv',
+                        href='/downloadable_data/example_test_data.csv',
                         style={
-                            'background': '#e2e3e5',
-                            'color': '#383d41',
-                            'borderColor': '#d6d8db'
+                            'margin-left': '220px'
                         }
                     ),
-
-                    # Model input parameters
-                    html.Div(
-                        id='model-input',
-                        children=[
-                            html.H4("3. Model input parameters"),
-                            html.Hr(),
-                            html.Img(
-                                src=f'data:image/png;base64,{encoded_input_image}'
-                            ),
-                            html.P(
-                                "In this section, the user gets to select a model and input all the "
-                                "necessary information in order to train and test that model. This "
-                                "information will be used together with the datasets uploaded (see the previous "
-                                "section for more details) in order to train the models and visualise the "
-                                "output (see the 'Model Outputs' section for more). The user "
-                                "will also be able to add more than one model, but will need to input all "
-                                "the necessary information for each model added. There will also be an  "
-                                "option that will allow the user to choose whether or not they wish to  "
-                                "optimise the model's hyperparameters or not."
-                            ),
-                            html.P(
-                                "The user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added (see image). "
-                                "In order to input all the necessary "
-                                "information, the user will need to click on these hyperlinks individually, "
-                                "which will prompt them to a new page where they can input all the data for a "
-                                "specific model (see image). More information about the specifics of "
-                                "model inputs can be found "
-                                "in the user guidelines on the individual model input pages."
-                            )
-                        ],
+                    html.A(
+                        'example_query_data.csv',
+                        download='example_query_data.csv',
+                        href='/downloadable_data/example_query_data.csv',
                         style={
-                            'background': '#cce5ff',
-                            'color': '#004085',
-                            'borderColor': '#b8daff'
+                            'margin-left': '220px'
                         }
                     ),
-
-                    # Model output visualisations
-                    html.Div(
-                        id='model-output',
-                        children=[
-                            html.H4("4. Model outputs"),
-                            html.Hr(),
-                            html.Img(
-                                src=f'data:image/png;base64,{encoded_output_image}'
-                            ),
-                            html.P(
-                                children=[
-                                    "Once the data has been uploaded and the user has set all the input parameters, "
-                                    "the visualisations for the specific model, along with a spider plot showing "
-                                    "several output statistics, are generated. These statistics are calculated for "
-                                    "each model, and these are all displayed in the spider plot for each model "
-                                    "(see image). "
-                                    "The four main summary statistics used are: "
-                                    "Root Mean Squared Error (RMSE), "
-                                    "R-squared, "
-                                    "Mean Absolute Error (MAE), "
-                                    "and Percentage (%) within 2-fold error."
-                                ]
-                            ),
-                            html.P(
-                                "Similarly to model inputs, the user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added (see image). "
-                                "On each of these pages, there will be several "
-                                "graphs displayed (such as a scatter plot of predicted versus actual values, or bar "
-                                "charts showing the feature correlation to the target variable (protein)), along with "
-                                "a summary of the user's selected inputs and the model's performance in training and "
-                                "testing. Depending on the additional inputs the user provides (such as query data, or "
-                                "enabling feature selection), additional graphs will be generated and displayed on "
-                                "these individual pages."
-                                "All plots available in this app are interactive, "
-                                "and using the legend on the side, the user can select "
-                                "which models they wish to have displayed in the graph, and they can simply "
-                                "enable/ disable them by clicking on the respective item in the legend. Additionally, "
-                                "all graphs provide features such as zooming in/ out, saving the graph as a PNG to "
-                                "the user's local device, and selecting to focus only on certain regions of the graph."
-                            )
-                        ],
-                        style={
-                            'background': '#fff3cd',
-                            'color': '#856404',
-                            'borderColor': '#ffeeba'
-                        }
-                    ),
-                ]
+                ],
+                style={
+                    'margin-top': '25px',
+                    'margin-bottom': '15px'
+                }
             )
         ]
     )
@@ -1233,7 +1056,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} use the wrong column names!"],
+            [f"File {name} uses the wrong column names!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -1652,7 +1475,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} use the wrong column names!"],
+            [f"File {name} uses the wrong column names!"],
             style={
                 "font-weight": "bold",
                 "color": "red",
@@ -2031,12 +1854,16 @@ def display_page(href, session_data):
         # If the output statistics page is created
         return output_statistics_page.create_layout()
 
+    elif pathname.startswith('/about-us/'):
+        # If the about us page is created
+        return about_us_page.create_layout()
+
     return [
         app_header(),
         html.Div(
             id='app-contents',
             children=[
-                user_guide(),
+                user_info(),
                 html.Div(
                     id='tabs-container',
                     children=[
@@ -2059,7 +1886,7 @@ clientside_callback(
 
 
 @server.route('/downloadable_data/<path:filename>')
-def download_training_file(filename):
+def download_file(filename):
     """
     This callback correctly downloads all the example CSV files for the server.
     """
