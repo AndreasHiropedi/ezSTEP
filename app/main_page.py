@@ -1895,7 +1895,7 @@ def render_tabs_content(selected_tab, stored_count, session_data):
         elif len(models_list) >= 5:
             return dbc.Row(
                 id='tabs-content-input',
-                children=[model_input_ref(model_key) for model_key in models_list.keys()]
+                children=[model_input_ref(model_key, session_id) for model_key in models_list.keys()]
             )
 
         # Initial state
