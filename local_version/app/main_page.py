@@ -1808,7 +1808,7 @@ def render_tabs_content(
     # Model inputs tab
     elif selected_tab == 'model input parameters':
         # If we switch tabs, this restores the previous state (so that all models created are preserved)
-        if stored_count:
+        if stored_count and len(globals.MODELS_LIST) < 5:
             return dbc.Row(
                 id='tabs-content-input',
                 children=[model_input_ref(model_key) for model_key in globals.MODELS_LIST.keys()] +
@@ -1820,6 +1820,14 @@ def render_tabs_content(
                              )
                          ]
             )
+
+        # If we created more than five models, remove the option to add a new model (remove the add button)
+        elif len(globals.MODELS_LIST) >= 5:
+            return dbc.Row(
+                id='tabs-content-input',
+                children=[model_input_ref(model_key) for model_key in globals.MODELS_LIST.keys()]
+            )
+
         # Initial state
         else:
             return dbc.Row(
@@ -1846,6 +1854,26 @@ def render_tabs_content(
     # Validation check
     else:
         return 'No content available.'
+
+
+@callback(
+    Output('button', 'style'),
+    [Input('store-model-count', 'data')]
+)
+def update_button_visibility(_stored_count):
+    """
+    This callback handles the 'Add a new model' button visibility, to
+    ensure that a user can't create more than 5 models.
+    """
+
+    # Check if the model count is 5 or more
+    model_count = len(globals.MODELS_LIST)
+    if model_count >= 5:
+        # Hide the button
+        return {'display': 'none'}
+    else:
+        # Show the button
+        return {'display': 'inline-block'}
 
 
 @callback(

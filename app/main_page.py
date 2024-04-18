@@ -1878,7 +1878,7 @@ def render_tabs_content(selected_tab, stored_count, session_data):
     # Model inputs tab
     elif selected_tab == 'model input parameters':
         # If we switch tabs, this restores the previous state (so that all models created are preserved)
-        if stored_count:
+        if stored_count and len(models_list) < 5:
             return dbc.Row(
                 id='tabs-content-input',
                 children=[model_input_ref(model_key, session_id) for model_key in models_list.keys()] +
@@ -1890,6 +1890,14 @@ def render_tabs_content(selected_tab, stored_count, session_data):
                              )
                          ]
             )
+
+        # If we created more than five models, remove the option to add a new model (remove the add button)
+        elif len(models_list) >= 5:
+            return dbc.Row(
+                id='tabs-content-input',
+                children=[model_input_ref(model_key) for model_key in models_list.keys()]
+            )
+
         # Initial state
         else:
             return dbc.Row(
@@ -1916,6 +1924,32 @@ def render_tabs_content(selected_tab, stored_count, session_data):
     # Validation check
     else:
         return 'No content available.'
+
+
+@callback(
+    Output('button', 'style'),
+    [Input('store-model-count', 'data')],
+    State('session-id', 'data')
+)
+def update_button_visibility(_stored_count, session_data):
+    """
+    This callback handles the 'Add a new model' button visibility, to
+    ensure that a user can't create more than 5 models.
+    """
+
+    # Get the session ID for that user, and the data in REDIS
+    session_id = session_data['session_id']
+    user_data = globals.get_user_session_data(session_id)
+    models_list = user_data['MODELS_LIST']
+
+    # Check if the model count is 5 or more
+    model_count = len(models_list)
+    if model_count >= 5:
+        # Hide the button
+        return {'display': 'none'}
+    else:
+        # Show the button
+        return {'display': 'inline-block'}
 
 
 @callback(
