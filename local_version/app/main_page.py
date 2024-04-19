@@ -1,7 +1,9 @@
 import about_us_page
 import base64
 import dash
+import disclaimer_page
 import globals
+import guidelines_page
 import io
 import model_inputs_page
 import model_outputs_page
@@ -1771,6 +1773,14 @@ def display_page(href):
     elif pathname.startswith('/about-us/'):
         # If the about us page is created
         return about_us_page.create_layout()
+
+    elif pathname.startswith('/user-guidelines/'):
+        # If the user guidelines page is created
+        return guidelines_page.create_layout()
+
+    elif pathname.startswith('/disclaimer/'):
+        # If the disclaimer page is created
+        return disclaimer_page.create_layout()
 
     return [
         app_header(),

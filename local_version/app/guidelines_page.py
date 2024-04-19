@@ -86,7 +86,6 @@ def user_guide():
     return html.Div(
         id='user-guide',
         children=[
-            html.H1("User Guidelines"),
             html.P(
                 "Below are some guidelines and information about how the platform works. It includes some "
                 "general information about the structure and layout of the app, as well as some more "

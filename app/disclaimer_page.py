@@ -66,11 +66,17 @@ def disclaimer_text():
     """
 
     return html.Div(
-        id='disclaimer text',
+        id='disclaimer-text',
         children=[
-            # TODO: ADD BODY HERE
             html.P(
-                ""
+                "",
+                style={
+                    'margin-top': '40px',
+                    'margin-left': '40px',
+                    'margin-right': '40px',
+                    'font-size': '12pt',
+                    'margin-bottom': '20px'
+                }
             )
         ]
     )

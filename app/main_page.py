@@ -8,11 +8,13 @@ import uuid
 import dash_bootstrap_components as dbc
 import pandas as pd
 
+from . import about_us_page
+from . import disclaimer_page
 from . import globals
+from . import guidelines_page
 from . import model_inputs_page
 from . import model_outputs_page
 from . import output_statistics_page
-from . import about_us_page
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 from flask import send_from_directory, session
@@ -1857,6 +1859,14 @@ def display_page(href, session_data):
     elif pathname.startswith('/about-us/'):
         # If the about us page is created
         return about_us_page.create_layout()
+
+    elif pathname.startswith('/user-guidelines/'):
+        # If the user guidelines page is created
+        return guidelines_page.create_layout()
+
+    elif pathname.startswith('/disclaimer/'):
+        # If the disclaimer page is created
+        return disclaimer_page.create_layout()
 
     return [
         app_header(),
