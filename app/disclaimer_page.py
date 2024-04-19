@@ -68,8 +68,36 @@ def disclaimer_text():
     return html.Div(
         id='disclaimer-text',
         children=[
+            html.H2(
+                'Privacy Disclaimer',
+                style={
+                    'margin-left': '40px',
+                    'font-size': '20pt'
+                }
+            ),
             html.P(
-                "",
+                "Please be advised that this web-app does not store or retain any personal data or information "
+                "entered during your session. All data is deleted and cannot be recovered once you close "
+                "this browser tab. We respect your privacy and ensure that your session remains confidential.",
+                style={
+                    'margin-top': '40px',
+                    'margin-left': '40px',
+                    'margin-right': '40px',
+                    'font-size': '12pt',
+                    'margin-bottom': '20px'
+                }
+            ),
+            html.H2(
+                'Dataset Disclaimer',
+                style={
+                    'margin-left': '40px',
+                    'font-size': '20pt'
+                }
+            ),
+            html.P(
+                "The example datasets provided within this platform are obtained from publicly available sources. "
+                "These datasets are intended for demonstration and educational purposes only, and were obtained from "
+                "the Cambray et al. (2018) paper.",
                 style={
                     'margin-top': '40px',
                     'margin-left': '40px',
