@@ -86,6 +86,7 @@ class MultiLayerPerceptron:
         self.training_R_squared_std = None
         self.training_MAE_std = None
         self.training_percentage_2fold_error_std = None
+        self.training_2fold_error_std = None
 
         # testing output statistics
         self.testing_RMSE = None
@@ -373,6 +374,7 @@ class MultiLayerPerceptron:
 
         # Calculate 2-fold error
         self.training_2fold_error = np.mean(two_fold_error_per_fold)
+        self.training_2fold_error_std = np.std(two_fold_error_per_fold)
 
         # Train the SVR model on the entire training set
         self.model.fit(x_train, y_train)

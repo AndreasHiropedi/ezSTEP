@@ -376,31 +376,38 @@ def output_statistics_graph(model):
 
     figure = go.Figure()
 
-    categories = ['RMSE', 'R-squared', 'MAE', 'Two-fold error', 'RMSE']
+    categories = ['RMSE', 'R-squared', 'MAE', 'Two-fold error']
 
-    # Add training statistics trace
-    figure.add_trace(go.Scatterpolar(
-        r=[model.training_RMSE, model.training_R_squared, model.training_MAE,
-           model.training_2fold_error, model.training_RMSE],
-        theta=categories,
-        name='Training statistics'
+    # Get the values for the training data
+    training_values = [model.training_RMSE, model.training_R_squared, model.training_MAE, model.training_2fold_error]
+
+    # Get the standard deviations for the training data
+    std_values = [model.training_RMSE_std, model.training_R_squared_std, model.training_MAE_std,
+                  model.training_2fold_error_std]
+
+    # Get the values for the test data
+    testing_values = [model.testing_RMSE, model.testing_R_squared, model.testing_MAE, model.testing_2fold_error]
+
+    # Add training bars with error bars
+    figure.add_trace(go.Bar(
+        name='Training value',
+        x=categories,
+        y=training_values,
+        error_y=dict(type='data', array=std_values, visible=True)
     ))
 
-    # Add testing statistics trace
-    figure.add_trace(go.Scatterpolar(
-        r=[model.testing_RMSE, model.testing_R_squared, model.testing_MAE,
-            model.testing_2fold_error, model.testing_RMSE],
-        theta=categories,
-        name='Testing statistics'
+    # Add testing bars
+    figure.add_trace(go.Bar(
+        name='Testing value',
+        x=categories,
+        y=testing_values
     ))
 
+    # Update layout
     figure.update_layout(
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[-1, 1]
-            )),
-        showlegend=True
+        barmode='group',
+        xaxis_title='Output Statistics',
+        yaxis_title='Values'
     )
 
     return figure
@@ -463,7 +470,8 @@ def predicted_versus_actual_graph(model):
     # Customize layout
     figure.update_layout(
         xaxis_title='Actual Values',
-        yaxis_title='Predicted Values'
+        yaxis_title='Predicted Values',
+        showlegend=False
     )
 
     return figure
