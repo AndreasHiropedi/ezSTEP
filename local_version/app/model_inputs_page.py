@@ -1614,7 +1614,7 @@ def validate_user_input(
         return False
 
     # Checks to see all given number inputs are valid
-    elif feature_number and \
+    elif feature_selection_ans == "yes" and feature_number and \
             (feature_number < 1 or feature_number > 4 * sequence_length if feature_encoder == 'binary'
                 else feature_number < 1 or feature_number > 4 ** int(kmer_size)):
         return False
