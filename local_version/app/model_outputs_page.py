@@ -1231,7 +1231,7 @@ def initial_pca_plot(model):
             mode='markers',
             marker=dict(
                 color=labels,
-                colorscale='thermal',
+                colorscale='Viridis',
                 showscale=True,
                 opacity=0.8,
                 colorbar=dict(
@@ -1270,7 +1270,7 @@ def initial_tsne_plot(model):
             mode='markers',
             marker=dict(
                 color=labels,
-                colorscale='Aggrnyl',
+                colorscale='Viridis',
                 showscale=True,
                 opacity=0.8,
                 colorbar=dict(
@@ -1411,7 +1411,7 @@ def update_pca_graph(svd_solver, whiten):
             mode='markers',
             marker=dict(
                 color=labels,
-                colorscale='thermal',
+                colorscale='Viridis',
                 showscale=True,
                 opacity=0.8,
                 colorbar=dict(
@@ -1474,7 +1474,7 @@ def update_tsne_plot(perplexity, learning_rate):
             mode='markers',
             marker=dict(
                 color=labels,
-                colorscale='Aggrnyl',
+                colorscale='Viridis',
                 showscale=True,
                 opacity=0.8,
                 colorbar=dict(

@@ -668,7 +668,7 @@ def model_input_unsupervised_learning_card(model_count):
         children=[
             dbc.CardHeader(
                 id='card-header-input',
-                children=['Unsupervised learning']
+                children=['Data visualisation']
             ),
             dbc.CardBody(
                 id='card-body-input',
