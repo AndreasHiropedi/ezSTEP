@@ -1,11 +1,10 @@
-import os
 import redis
 import json
 import time
 
 
 # Initialize Redis
-redis_url = os.getenv('REDIS_URL')
+redis_url = "redis://:redis_ed_database_pass_01@localhost:6379"
 redis_client = redis.from_url(redis_url, decode_responses=True, ssl_cert_reqs=None)
 
 
