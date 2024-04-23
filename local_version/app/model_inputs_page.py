@@ -806,7 +806,7 @@ def data_normalization_dropdown(model_count):
         id='normalization-descriptor',
         children=[
             html.H6(
-                "Select data normalization method:",
+                "Select data normalisation method:",
                 id='select-normalization'
             ),
 
