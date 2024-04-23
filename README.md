@@ -12,9 +12,7 @@
 
 - our web app is hosted on the following server, which users can access using the following link:
 
-  - https://ezstep-f617792399bb.herokuapp.com (Note: this link will become deprecated in the future)
-
-  - http://calbuco.inf.ed.ac.uk/ezSTEP (Note: if the link didn't work because it became deprecated, our platform can be accessed through this link instead)
+http://calbuco.inf.ed.ac.uk/ezSTEP
 
 - alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
 
