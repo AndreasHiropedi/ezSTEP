@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from . import feature_encoders
-from . import data_normalizers
-from . import feature_selectors
-from . import dimension_reduction_methods
+import feature_encoders
+import data_normalizers
+import feature_selectors
+import dimension_reduction_methods
 
 from functools import partial
 from hyperopt import hp, fmin, tpe, Trials, STATUS_OK

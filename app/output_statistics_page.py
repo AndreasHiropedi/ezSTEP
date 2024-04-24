@@ -3,7 +3,7 @@ import pickle
 
 import plotly.graph_objects as go
 
-from . import globals
+import globals
 
 from dash import html, dcc, callback, Input, Output, State
 
