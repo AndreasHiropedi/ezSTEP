@@ -1,9 +1,8 @@
 import base64
+import globals
 import pickle
 
 import plotly.graph_objects as go
-
-import globals
 
 from dash import html, dcc, callback, Input, Output, State
 

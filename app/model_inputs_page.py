@@ -1,5 +1,6 @@
 import base64
 import dash
+import globals
 import io
 import json
 import pickle
@@ -8,9 +9,6 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 
 from dash import html, dcc, callback, Input, Output, MATCH, State, clientside_callback
-
-import globals
-
 from random_forest import RandomForest
 from ridge_regressor import RidgeRegressor
 from multilayer_perceptron import MultiLayerPerceptron

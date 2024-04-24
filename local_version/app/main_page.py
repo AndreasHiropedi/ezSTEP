@@ -1822,4 +1822,4 @@ my_app.layout = html.Div([
 ])
 
 if __name__ == '__main__':
-    my_app.run_server(port=int(os.environ.get("PORT", 8050)))
+    my_app.run_server(port=int(os.environ.get("PORT", 8080)))

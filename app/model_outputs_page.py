@@ -1,5 +1,6 @@
 import base64
 import dash
+import globals
 import pickle
 import umap
 
@@ -7,16 +8,13 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 
-import globals
-
+from dash import html, dcc, callback, Input, Output, MATCH, dash_table, State
 from random_forest import RandomForest
 from ridge_regressor import RidgeRegressor
 from multilayer_perceptron import MultiLayerPerceptron
-from support_vector_machine import SupportVectorMachine
-
-from dash import html, dcc, callback, Input, Output, MATCH, dash_table, State
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count, session_data):

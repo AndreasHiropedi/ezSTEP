@@ -1,20 +1,19 @@
+import about_us_page
 import base64
 import dash
+import disclaimer_page
+import globals
+import guidelines_page
 import io
+import model_inputs_page
+import model_outputs_page
 import os
+import output_statistics_page
 import time
 import uuid
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-
-import about_us_page
-import disclaimer_page
-import globals
-import guidelines_page
-import model_inputs_page
-import model_outputs_page
-import output_statistics_page
 
 from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
 from flask import send_from_directory, session
@@ -1989,4 +1988,4 @@ my_app.layout = html.Div([
 ])
 
 if __name__ == '__main__':
-    my_app.run_server(port=int(os.environ.get("PORT", 8050)))
+    my_app.run_server(port=int(os.environ.get("PORT", 8080)))
