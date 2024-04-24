@@ -27,7 +27,7 @@ server = my_app.server
 my_app.config.suppress_callback_exceptions = True
 
 # Set a secret key for the user session
-server.secret_key = 'your_secret_key'
+server.secret_key = 'my_secret_key'
 
 # Initialize the scheduler with the Flask server
 scheduler = APScheduler()
