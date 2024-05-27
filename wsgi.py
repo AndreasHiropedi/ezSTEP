@@ -1,6 +1,6 @@
 import os
 
-#os.environ[''] = '/tmp'
+os.environ['NUMBA_DIR'] = '/tmp'
 
 import sys
 sys.path.insert(0, '/var/www/wsgi/ezSTEP/app')
