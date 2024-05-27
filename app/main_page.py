@@ -81,7 +81,7 @@ def app_header():
                         src=f'data:image/png;base64,{encoded_logo_image}'
                     ),
                 ],
-                href='/'
+                href='/ezSTEP/'
             ),
 
             # About us page
@@ -514,7 +514,7 @@ def model_input_ref(model_key, session_id):
                 id='model-inputs-ref'
             )
         ],
-        href=f'/model-input/{model_key}',
+        href=f'/ezSTEP/model-input/{model_key}',
         target='_blank'
     )
 
@@ -532,7 +532,7 @@ def output_metric_ref():
                 id='metric-plot-ref'
             )
         ],
-        href=f'/output-statistics/output-graph',
+        href=f'/ezSTEP/output-statistics/output-graph',
         target='_blank'
     )
 
@@ -550,7 +550,7 @@ def model_output_ref(model_key):
                 id='model-outputs-ref'
             )
         ],
-        href=f'/model-output/{model_key}',
+        href=f'/ezSTEP/model-output/{model_key}',
         target='_blank'
     )
 
@@ -1827,7 +1827,7 @@ def display_page(href, session_data):
     parsed_url = urlparse(href)
     pathname = parsed_url.path
 
-    if pathname.startswith('/model-input/'):
+    if pathname.startswith('/ezSTEP/model-input/'):
         # If a model inputs tab is selected, return the card for that input
         try:
             model_num = int(pathname.split('/')[-1][-1])
@@ -1839,7 +1839,7 @@ def display_page(href, session_data):
         except ValueError:
             return html.Div('Invalid URL.')
 
-    elif pathname.startswith('/model-output/'):
+    elif pathname.startswith('/ezSTEP/model-output/'):
         # If a model output tab is selected, return the card for that output
         try:
             model_num = int(pathname.split('/')[-1][-1])
@@ -1851,7 +1851,7 @@ def display_page(href, session_data):
         except ValueError:
             return html.Div('Invalid URL.')
 
-    elif pathname.startswith('/output-statistics/'):
+    elif pathname.startswith('/ezSTEP/output-statistics/'):
         # If the output statistics page is created
         return output_statistics_page.create_layout()
 
@@ -1859,11 +1859,11 @@ def display_page(href, session_data):
         # If the about us page is created
         return about_us_page.create_layout()
 
-    elif pathname.startswith('/user-guidelines/'):
+    elif pathname.startswith('/ezSTEP/user-guidelines/'):
         # If the user guidelines page is created
         return guidelines_page.create_layout()
 
-    elif pathname.startswith('/disclaimer/'):
+    elif pathname.startswith('/ezSTEP/disclaimer/'):
         # If the disclaimer page is created
         return disclaimer_page.create_layout()
 

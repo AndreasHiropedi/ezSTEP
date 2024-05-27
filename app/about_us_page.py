@@ -88,7 +88,7 @@ def useful_links():
                         }
                     )
                 ],
-                href='/user-guidelines/',
+                href='/ezSTEP/user-guidelines/',
                 target='_blank'
             ),
             user_guidelines_explanation(),
@@ -103,7 +103,7 @@ def useful_links():
                         }
                     )
                 ],
-                href='/disclaimer/',
+                href='/ezSTEP/disclaimer/',
                 target='_blank'
             ),
             disclaimer_explanation()
