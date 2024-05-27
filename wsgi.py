@@ -1,6 +1,6 @@
 import os
 
-os.environ['NUMBA_CACHE'] = '/tmp'
+os.environ['NUMBA_CACHE_DIR'] = '/tmp'
 
 import sys
 sys.path.insert(0, '/var/www/wsgi/ezSTEP/app')
