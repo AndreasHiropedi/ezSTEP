@@ -1855,7 +1855,7 @@ def display_page(href, session_data):
         # If the output statistics page is created
         return output_statistics_page.create_layout()
 
-    elif pathname.startswith('/about-us/'):
+    elif pathname.startswith('/ezSTEP/about-us/'):
         # If the about us page is created
         return about_us_page.create_layout()
 
