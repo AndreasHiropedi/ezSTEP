@@ -5,7 +5,7 @@ import time
 
 # Initialize Redis
 redis_url = "redis://:redis_ed_database_pass_01@localhost:6379"
-redis_client = redis.from_url(redis_url, decode_responses=True, ssl_cert_reqs=None)
+redis_client = redis.from_url(redis_url, decode_responses=True)
 
 
 def store_user_session_data(session_id, data):

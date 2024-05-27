@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 
 # Basic definitions for the app
-my_app = Dash(__name__)
+my_app = Dash(__name__, requests_pathname_prefix='/ezSTEP/')
 server = my_app.server
 my_app.config.suppress_callback_exceptions = True
 
@@ -90,7 +90,7 @@ def app_header():
                 children=[
                     "About Us"
                 ],
-                href='/about-us/',
+                href='/ezSTEP/about-us/',
                 target='_blank'
             ),
 
