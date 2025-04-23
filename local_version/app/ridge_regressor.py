@@ -41,6 +41,7 @@ class RidgeRegressor:
         self.model = Ridge(
             alpha=self.alpha
         )
+        self.model_name = "Ridge Regressor"
 
         # model data
         self.training_data = None
@@ -270,8 +271,8 @@ class RidgeRegressor:
         y_train = self.normalized_train['protein']
 
         # Apply hyperparameter optimisation (if enabled)
-        # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
+            self.model_name += " (Hyperopt)"
             # set up the parameter space for hyper-opt
             alpha_list = 10 ** (np.linspace(-1, 2, 50))
 

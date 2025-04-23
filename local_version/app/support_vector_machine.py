@@ -46,6 +46,7 @@ class SupportVectorMachine:
             C=self.C,
             epsilon=self.epsilon
         )
+        self.model_name = "Support Vector Machine"
 
         # model data
         self.training_data = None
@@ -276,6 +277,7 @@ class SupportVectorMachine:
 
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
+            self.model_name += " (Hyperopt)"
             # set up the parameter space for hyper-opt
             c_choice = list(range(1, 51))
             epsilon_choice = np.arange(0.1, 2, 0.1)

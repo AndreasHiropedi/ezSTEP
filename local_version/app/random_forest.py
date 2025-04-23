@@ -51,6 +51,7 @@ class RandomForest:
             min_samples_leaf=self.min_samples_leaf,
             min_samples_split=self.min_samples_split
         )
+        self.model_name = "Random Forest"
 
         # model data
         self.training_data = None
@@ -281,6 +282,7 @@ class RandomForest:
 
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
+            self.model_name += " (Hyperopt)"
             # set up the parameter space for hyper-opt
             space = {
                 'max_depth': hp.choice('max_depth',

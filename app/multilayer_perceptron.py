@@ -61,6 +61,7 @@ class MultiLayerPerceptron:
             verbose=False,
             warm_start=False
         )
+        self.model_name = "Multilayer Perceptron"
 
         # model data
         self.training_data = None
@@ -291,6 +292,7 @@ class MultiLayerPerceptron:
 
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
+            self.model_name += " (Hyperopt)"
             # set up the parameter space for hyper-opt
             hidden_layer_sizes = [100, 150, 200, 250, 300, 350, 400]
             hidden_layer_numbers = list(range(1, 6))

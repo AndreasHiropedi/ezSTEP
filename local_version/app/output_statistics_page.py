@@ -61,10 +61,13 @@ def update_statistics_graph(_id):
         data = [model.testing_RMSE, model.testing_R_squared, model.testing_MAE,
                 model.testing_2fold_error, model.testing_RMSE]
 
+        model_type = model.model_name
+        model_label = model_name + " - " + model_type
+
         figure.add_trace(go.Scatterpolar(
             r=data,
             theta=categories,
-            name=model_name
+            name=model_label
         ))
 
     figure.update_layout(
