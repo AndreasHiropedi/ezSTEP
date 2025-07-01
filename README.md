@@ -84,4 +84,5 @@ This command will create a localhost link, which, when clicked, will redirect yo
 
 If you found *ezSTEP* useful, please kindly cite the following paper:
 
-Andreas Hiropedi, Yuxin Shen, Diego A. Oyarzún, *ezSTEP*: a web-based tool for Sequence-To-Expression Prediction, 2024.
+Andreas Hiropedi, Yuxin Shen, Diego A. Oyarzún, *ezSTEP: a no-code tool for sequence-to-expression prediction
+in synthetic biology*, 2025 (in proceedings).
