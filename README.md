@@ -10,7 +10,7 @@
 
 *ezSTEP* can be accessed in two different ways:
 
-- our web app is hosted on the following server, which users can access using the following link: http://calbuco.inf.ed.ac.uk/ezSTEP
+- our web app is hosted on the nihito platform, which users can access using the following link (will need to register on the platform to see and launch the app): https://platform.nihito.site
 
 - alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
 
@@ -22,13 +22,19 @@ Below you can see an outline of the pipeline used in our app. These are all the 
 
 ## Repository structure
 
-Below we provide a breakdown of the most important folders in this repository, and what they each contain:
+Below we provide a breakdown of the most important files and folders in this repository, and what they each contain:
 
   - ```.github/workflows```: this contains the continuous integration (CI) pipeline for the app, ensuring that no malfunctioning code is deployed to the server.
 
-  - ```app```: this contains all the code for the app currently hosted on the server; this version differs from ```local_version``` due to changes that were needed in order to ensure the server can handle a multi-user enviornment in a safe and secure manner, which is why Redis was used for storing data.
+  - ```main.py```: this contains the code for the main entry point for the app, as well as for the layout of the home page, which is the first page the user sees when launching the app
 
-  - ```datasets_used```: this contains all the datasets used for training and testing the app, as well as the Python scripts used for obtaining those datasets (NOTE: since the splits were done with random sampling, re-running the scripts may result in different datasets). The links for accessing each of the three original datasets used can be found below:
+  - ```config.py```: this is a configuration file used to set up the environment for launching the app, both locally and on the nihito platform
+
+  - ```.env```: this contains the actual environment configurations
+
+  - ```assets```: this contains all the frontend-relevant files, such as the customized CSS styling and the additional JS scripts to make the platform more dynamic and interactive
+
+  - ```data_processing```: this contains all the datasets used for training and testing the app, as well as the Python scripts used for obtaining those datasets (NOTE: since the splits were done with random sampling, re-running the scripts may result in different datasets). The links for accessing each of the three original datasets used can be found below:
 
       - https://github.com/JeschekLab/uASPIre/tree/master/RBS_data (for the RBS data from the Hollerer et al. (2020) paper, the file is called uASPIre_RBS_300k_r2.txt)
         
@@ -36,9 +42,22 @@ Below we provide a breakdown of the most important folders in this repository, a
         
       - https://www.nature.com/articles/s41586-022-04506-6 (for the promoter sequences data from the Vaishnav et al. (2022) paper, the file is called yeast_data.csv)
 
-  - ```downloadable_data```: this contains the example datasets for training, testing and querying data, which can be downloaded directly from our platform. These datasets were also obtained from the coding sequences data from the Cambray et al. (2018) paper, again using a random split.
+  - ```database```: this contains all the code to set up, populate, and clean the SQLite database used for storing the user provided data (NOTE: the data is stored temporarily and the database is cleaned periodically in order to
+  remove data from expired sessions)
 
-  - ```local_version```: this contains all the code for the version of the app that can be installed and set up on a local device. The main difference is that, unlike the server version, there is no need to ensure a mult-user environment using Redis, and so global variables stored on the local device are used for handling the app's data instead.
+  - ```models```: this contains all the code for the different models that we make available on the platform, and includes the code on training, testing, evaluating and performing hyperparameter optimisation. The four models available on the platform are:
+
+    - **Random Forest**
+
+    - **Ridge Regressor**
+
+    - **Multi-layer Perceptron**
+
+    - **Support Vector Machine**
+
+  - ```pages```: since ezSTEP is a multi-page web-app, this folder contains all the code for all the other pages available on the platform, such as the 'About Us' page, the user guidelines, and the pages allowing users to create models and view their results
+
+  - ```utils```: this contains all the code providing the model customization functionality offered on the platform, including feature encoding, feature normalization, feature selection and performing unsupervised learning on the data
 
 ## Installation
 
@@ -66,16 +85,10 @@ cd ezSTEP
 pip install -r requirements.txt
 ```
 
-6) Once all dependencies are installed, you will need to change directories to the local_version folder, and then the app folder using the following command:
+6) Once all dependencies are installed, the app can be run with the following command:
 
 ```sh
-cd local_version/app
-```
-
-7) Once in the app directory, the app can be run with the following command:
-
-```sh
-python main_page.py
+python main.py
 ```
 
 This command will create a localhost link, which, when clicked, will redirect you to your local instance of the app.
