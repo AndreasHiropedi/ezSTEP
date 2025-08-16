@@ -8,13 +8,11 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import MATCH, Input, Output, State, callback, clientside_callback, dcc, html
 
-from database import db as globals
-from models import (
-    MultiLayerPerceptron,
-    RandomForest,
-    RidgeRegressor,
-    SupportVectorMachine,
-)
+from database import db
+from models.multilayer_perceptron import MultiLayerPerceptron
+from models.random_forest import RandomForest
+from models.ridge_regressor import RidgeRegressor
+from models.support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count):
@@ -1161,7 +1159,7 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open, session_d
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     ctx = dash.callback_context
@@ -1191,7 +1189,7 @@ def press_delete_button(delete_clicks, no_clicks, yes_clicks, is_open, session_d
     elif yes_clicks >= 0:
         del models_list[f"Model {index_value}"]
         user_data["MODELS_LIST"] = models_list
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
         return False
 
     return is_open
@@ -1593,7 +1591,7 @@ def press_submit_button(
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     train_data = user_data["TRAINING_DATA"]
     test_data = user_data["TESTING_DATA"]
     query_data = user_data["QUERYING_DATA"]
@@ -1655,7 +1653,7 @@ def press_submit_button(
                 pickle.dumps(current_model)
             ).decode("utf-8")
             user_data["MODELS_LIST"] = models_list
-            globals.store_user_session_data(session_id, user_data)
+            db.store_user_session_data(session_id, user_data)
 
             return [], False, False, False, False, True
 
@@ -1740,7 +1738,7 @@ def press_submit_button(
             pickle.dumps(current_model)
         ).decode("utf-8")
         user_data["MODELS_LIST"] = models_list
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
         return [], True, False, False, False, False
 
@@ -1851,7 +1849,7 @@ def press_submit_button(
             pickle.dumps(model)
         ).decode("utf-8")
         user_data["MODELS_LIST"] = models_list
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
         return [], True, False, False, False, False
 

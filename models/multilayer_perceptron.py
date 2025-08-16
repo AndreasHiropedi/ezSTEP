@@ -8,8 +8,8 @@ from sklearn.model_selection import KFold, cross_val_score
 from sklearn.neural_network import MLPRegressor
 
 from utils import (
-    data_normalizers,
     feature_encoders,
+    feature_normalizers,
     feature_selectors,
     unsupervised_learning,
 )
@@ -235,7 +235,7 @@ class MultiLayerPerceptron:
                 self.normalized_test,
                 self.z_score_feature_normaliser,
                 self.z_score_target_normaliser,
-            ) = data_normalizers.z_score_normalization(
+            ) = feature_normalizers.z_score_normalization(
                 self.encoded_train, self.encoded_test
             )
             if self.encoded_query is not None:
@@ -249,7 +249,7 @@ class MultiLayerPerceptron:
                 self.normalized_test,
                 self.min_max_feature_normaliser,
                 self.min_max_target_normaliser,
-            ) = data_normalizers.min_max_normalization(
+            ) = feature_normalizers.min_max_normalization(
                 self.encoded_train, self.encoded_test
             )
             if self.encoded_query is not None:

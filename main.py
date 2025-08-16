@@ -12,7 +12,7 @@ from dash import Dash, Input, Output, State, callback, clientside_callback, dcc,
 from flask import send_from_directory, session
 from flask_apscheduler import APScheduler
 
-from database import db as globals
+from database import db
 from pages import (
     about_us_page,
     disclaimer_page,
@@ -23,7 +23,7 @@ from pages import (
 )
 
 # Basic definitions for the app
-my_app = Dash(__name__, requests_pathname_prefix="/ezSTEP/")
+my_app = Dash(__name__)
 server = my_app.server
 my_app.config.suppress_callback_exceptions = True
 
@@ -444,13 +444,13 @@ def model_input_ref(model_key, session_id):
     """
 
     # Get user data
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     if model_key not in models_list.keys():
         models_list[model_key] = None
         user_data["MODELS_LIST"] = models_list
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
     return html.A(
         children=[html.H4(f"{model_key} input parameters", id="model-inputs-ref")],
@@ -505,7 +505,7 @@ def update_training_output(content, name, stored_train_file_name, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     if stored_train_file_name and not content:
         file = stored_train_file_name["filename"]
@@ -605,7 +605,7 @@ def update_training_output(content, name, stored_train_file_name, session_data):
                 # Set the training file name and data in REDIS for that user
                 user_data["TRAINING_FILE"] = name
                 user_data["TRAINING_DATA"] = df.to_json()
-                globals.store_user_session_data(session_id, user_data)
+                db.store_user_session_data(session_id, user_data)
 
                 return final_display, {"filename": name}
 
@@ -649,7 +649,7 @@ def validate_training_text_input(
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -964,7 +964,7 @@ def validate_training_text_input(
         user_data["TRAINING_DATA"] = pd.DataFrame(
             {"sequence": sequences, "protein": proteins}
         ).to_json()
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
     return (
         {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
@@ -993,7 +993,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     if stored_test_file_name and not content:
         file = stored_test_file_name["filename"]
@@ -1093,7 +1093,7 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
                 # Set the training file name and data in REDIS for that user
                 user_data["TESTING_FILE"] = name
                 user_data["TESTING_DATA"] = df.to_json()
-                globals.store_user_session_data(session_id, user_data)
+                db.store_user_session_data(session_id, user_data)
 
                 return final_display, {"filename": name}
 
@@ -1137,7 +1137,7 @@ def validate_testing_text_input(
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -1444,7 +1444,7 @@ def validate_testing_text_input(
         user_data["TESTING_DATA"] = pd.DataFrame(
             {"sequence": sequences, "protein": proteins}
         ).to_json()
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
     return (
         {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
@@ -1473,7 +1473,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     if stored_query_file_name and not content:
         file = stored_query_file_name["filename"]
@@ -1567,7 +1567,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
                 # Set the training file name and data in REDIS for that user
                 user_data["QUERYING_FILE"] = name
                 user_data["QUERYING_DATA"] = df.to_json()
-                globals.store_user_session_data(session_id, user_data)
+                db.store_user_session_data(session_id, user_data)
 
                 return final_display, {"filename": name}
 
@@ -1611,7 +1611,7 @@ def validate_querying_text_input(
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
@@ -1672,7 +1672,7 @@ def validate_querying_text_input(
                 "sequence": sequences,
             }
         ).to_json()
-        globals.store_user_session_data(session_id, user_data)
+        db.store_user_session_data(session_id, user_data)
 
     return (
         {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
@@ -1695,7 +1695,7 @@ def render_tabs_content(selected_tab, stored_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # File upload tab
@@ -1797,7 +1797,7 @@ def update_button_visibility(_stored_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Check if the model count is 5 or more
@@ -1853,14 +1853,14 @@ def display_page(href, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
     pathname = parsed_url.path
 
-    if pathname.startswith("/ezSTEP/model-input/"):
+    if pathname.startswith("/model-input/"):
         # If a model inputs tab is selected, return the card for that input
         try:
             model_num = int(pathname.split("/")[-1][-1])
@@ -1872,7 +1872,7 @@ def display_page(href, session_data):
         except ValueError:
             return html.Div("Invalid URL.")
 
-    elif pathname.startswith("/ezSTEP/model-output/"):
+    elif pathname.startswith("/model-output/"):
         # If a model output tab is selected, return the card for that output
         try:
             model_num = int(pathname.split("/")[-1][-1])
@@ -1884,19 +1884,19 @@ def display_page(href, session_data):
         except ValueError:
             return html.Div("Invalid URL.")
 
-    elif pathname.startswith("/ezSTEP/output-statistics/"):
+    elif pathname.startswith("/output-statistics/"):
         # If the output statistics page is created
         return output_statistics_page.create_layout()
 
-    elif pathname.startswith("/ezSTEP/about-us/"):
+    elif pathname.startswith("/about-us/"):
         # If the about us page is created
         return about_us_page.create_layout()
 
-    elif pathname.startswith("/ezSTEP/user-guidelines/"):
+    elif pathname.startswith("/user-guidelines/"):
         # If the user guidelines page is created
         return guidelines_page.create_layout()
 
-    elif pathname.startswith("/ezSTEP/disclaimer/"):
+    elif pathname.startswith("/disclaimer/"):
         # If the disclaimer page is created
         return disclaimer_page.create_layout()
 
@@ -1953,10 +1953,10 @@ def create_or_fetch_session_id(_pathname):
             "QUERYING_DATA": None,
             "QUERYING_FILE": None,
         }
-        globals.store_user_session_data(session["user_session_id"], data)
+        db.store_user_session_data(session["user_session_id"], data)
 
     try:
-        globals.get_user_session_data(session["user_session_id"])
+        db.get_user_session_data(session["user_session_id"])
     except Exception:
         # Initialize empty values in Redis for this session ID
         data = {
@@ -1968,7 +1968,7 @@ def create_or_fetch_session_id(_pathname):
             "QUERYING_DATA": None,
             "QUERYING_FILE": None,
         }
-        globals.store_user_session_data(session["user_session_id"], data)
+        db.store_user_session_data(session["user_session_id"], data)
 
     # Return the session ID
     return {"session_id": session["user_session_id"]}
@@ -1984,15 +1984,15 @@ def cleanup_old_session_data():
     time_limit = 1800
 
     # Iterate over timestamp keys to find old data
-    for key in globals.redis_client.scan_iter("session:timestamp:*"):
+    for key in db.redis_client.scan_iter("session:timestamp:*"):
         # Check if key hasn't been accessed within the time limit
-        last_access_time = int(globals.redis_client.get(key))
+        last_access_time = int(db.redis_client.get(key))
         if current_time - last_access_time > time_limit:
             # Extract session_id from the key
             session_id = key.split(":")[-1]
             # Delete both the data and timestamp
-            globals.redis_client.delete(f"session:data:{session_id}")
-            globals.redis_client.delete(f"session:timestamp:{session_id}")
+            db.redis_client.delete(f"session:data:{session_id}")
+            db.redis_client.delete(f"session:timestamp:{session_id}")
 
 
 # Schedule the cleanup task

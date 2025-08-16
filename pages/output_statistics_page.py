@@ -4,7 +4,7 @@ import pickle
 import plotly.graph_objects as go
 from dash import Input, Output, State, callback, dcc, html
 
-from database import db as globals
+from database import db
 
 
 def create_layout():
@@ -39,7 +39,7 @@ def update_statistics_graph(_id, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # only stores the created models (in case the user adds more models but doesn't initialise all of them)

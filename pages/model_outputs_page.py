@@ -10,13 +10,11 @@ from dash import MATCH, Input, Output, State, callback, dash_table, dcc, html
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-from database import db as globals
-from models import (
-    MultiLayerPerceptron,
-    RandomForest,
-    RidgeRegressor,
-    SupportVectorMachine,
-)
+from database import db
+from models.multilayer_perceptron import MultiLayerPerceptron
+from models.random_forest import RandomForest
+from models.ridge_regressor import RidgeRegressor
+from models.support_vector_machine import SupportVectorMachine
 
 
 def create_layout(model_count, session_data):
@@ -26,7 +24,7 @@ def create_layout(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Check if model has been created successfully
@@ -172,7 +170,7 @@ def model_summary_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -399,7 +397,7 @@ def output_statistics_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -489,7 +487,7 @@ def predicted_versus_actual_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -553,7 +551,7 @@ def training_feature_correlation_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -652,7 +650,7 @@ def testing_feature_correlation_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -752,7 +750,7 @@ def querying_feature_correlation_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -857,7 +855,7 @@ def querying_file_download_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -938,7 +936,7 @@ def explained_variance_plot_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -1035,7 +1033,7 @@ def unsupervised_learning_plot_card(model_count, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     # Retrieve the model
@@ -1367,7 +1365,7 @@ def generate_csv(_n_clicks, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     ctx = dash.callback_context
@@ -1413,7 +1411,7 @@ def update_pca_graph(svd_solver, whiten, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     ctx = dash.callback_context
@@ -1482,7 +1480,7 @@ def update_tsne_plot(perplexity, learning_rate, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     ctx = dash.callback_context
@@ -1550,7 +1548,7 @@ def update_umap_plot(n_neighbors, min_dist, session_data):
 
     # Get the session ID for that user, and the data in REDIS
     session_id = session_data["session_id"]
-    user_data = globals.get_user_session_data(session_id)
+    user_data = db.get_user_session_data(session_id)
     models_list = user_data["MODELS_LIST"]
 
     ctx = dash.callback_context
