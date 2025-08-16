@@ -1,10 +1,10 @@
 import base64
-import globals
 import pickle
 
 import plotly.graph_objects as go
+from dash import Input, Output, State, callback, dcc, html
 
-from dash import html, dcc, callback, Input, Output, State
+from database import db as globals
 
 
 def create_layout():
@@ -13,35 +13,24 @@ def create_layout():
     """
 
     return html.Div(
-        id='output-statistics-page',
+        id="output-statistics-page",
         children=[
             html.Div(
-                id='statistics-page-header',
-                children=[
-                    html.H1(
-                        children=["Testing output statistics graph"]
-                    )
-                ]
+                id="statistics-page-header",
+                children=[html.H1(children=["Testing output statistics graph"])],
             ),
             html.Div(
-                id='statistics-page-contents',
-                children=[
-                    dcc.Graph(
-                        id='statistics-graph',
-                        style={
-                            'height': '600px'
-                        }
-                    )
-                ]
-            )
-        ]
+                id="statistics-page-contents",
+                children=[dcc.Graph(id="statistics-graph", style={"height": "600px"})],
+            ),
+        ],
     )
 
 
 @callback(
-    Output('statistics-graph', 'figure'),
-    Input('statistics-graph', 'id'),
-    State('session-id', 'data')
+    Output("statistics-graph", "figure"),
+    Input("statistics-graph", "id"),
+    State("session-id", "data"),
 )
 def update_statistics_graph(_id, session_data):
     """
@@ -49,9 +38,9 @@ def update_statistics_graph(_id, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    models_list = user_data["MODELS_LIST"]
 
     # only stores the created models (in case the user adds more models but doesn't initialise all of them)
     # to avoid errors when plotting the graph
@@ -63,29 +52,25 @@ def update_statistics_graph(_id, session_data):
 
     figure = go.Figure()
 
-    categories = ['RMSE', 'R-squared', 'MAE', 'Two-fold error', 'RMSE']
+    categories = ["RMSE", "R-squared", "MAE", "Two-fold error", "RMSE"]
 
     # Add all data for each model to the figure
     for model_name, model in existing_models.items():
-        data = [model.testing_RMSE, model.testing_R_squared, model.testing_MAE,
-                model.testing_2fold_error, model.testing_RMSE]
+        data = [
+            model.testing_RMSE,
+            model.testing_R_squared,
+            model.testing_MAE,
+            model.testing_2fold_error,
+            model.testing_RMSE,
+        ]
 
         model_type = model.model_name
         model_label = model_name + " - " + model_type
 
-        figure.add_trace(go.Scatterpolar(
-            r=data,
-            theta=categories,
-            name=model_label
-        ))
+        figure.add_trace(go.Scatterpolar(r=data, theta=categories, name=model_label))
 
     figure.update_layout(
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[-1, 1]
-            )),
-        showlegend=True
+        polar=dict(radialaxis=dict(visible=True, range=[-1, 1])), showlegend=True
     )
 
     return figure

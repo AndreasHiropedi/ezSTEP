@@ -1,33 +1,34 @@
-import about_us_page
 import base64
-import dash
-import disclaimer_page
-import globals
-import guidelines_page
 import io
-import model_inputs_page
-import model_outputs_page
 import os
-import output_statistics_page
 import time
 import uuid
-
-import dash_bootstrap_components as dbc
-import pandas as pd
-
-from dash import html, dcc, callback, Input, Output, State, clientside_callback, Dash
-from flask import send_from_directory, session
-from flask_apscheduler import APScheduler
 from urllib.parse import urlparse
 
+import dash
+import dash_bootstrap_components as dbc
+import pandas as pd
+from dash import Dash, Input, Output, State, callback, clientside_callback, dcc, html
+from flask import send_from_directory, session
+from flask_apscheduler import APScheduler
+
+from database import db as globals
+from pages import (
+    about_us_page,
+    disclaimer_page,
+    guidelines_page,
+    model_inputs_page,
+    model_outputs_page,
+    output_statistics_page,
+)
 
 # Basic definitions for the app
-my_app = Dash(__name__, requests_pathname_prefix='/ezSTEP/')
+my_app = Dash(__name__, requests_pathname_prefix="/ezSTEP/")
 server = my_app.server
 my_app.config.suppress_callback_exceptions = True
 
 # Set a secret key for the user session
-server.secret_key = 'my_secret_key'
+server.secret_key = "my_secret_key"
 
 # Initialize the scheduler with the Flask server
 scheduler = APScheduler()
@@ -44,75 +45,66 @@ def app_header():
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the absolute path to the image file
-    plotly_image_path = os.path.join(current_directory, 'assets', 'plotly-dash-bio-logo.png')
+    plotly_image_path = os.path.join(
+        current_directory, "assets", "plotly-dash-bio-logo.png"
+    )
     # Open the image, read it, and encode it into Base64
-    encoded_plotly_image = base64.b64encode(open(plotly_image_path, 'rb').read()).decode()
+    encoded_plotly_image = base64.b64encode(
+        open(plotly_image_path, "rb").read()
+    ).decode()
 
     # Construct the absolute path to the image file
-    logo_image_path = os.path.join(current_directory, 'assets', 'app-logo.png')
+    logo_image_path = os.path.join(current_directory, "assets", "app-logo.png")
     # Open the image, read it, and encode it into Base64
-    encoded_logo_image = base64.b64encode(open(logo_image_path, 'rb').read()).decode()
+    encoded_logo_image = base64.b64encode(open(logo_image_path, "rb").read()).decode()
 
     # Construct the absolute path to the image file
-    github_image_path = os.path.join(current_directory, 'assets', 'GitHub-Mark-Light-64px.png')
+    github_image_path = os.path.join(
+        current_directory, "assets", "GitHub-Mark-Light-64px.png"
+    )
     # Open the image, read it, and encode it into Base64
-    encoded_github_image = base64.b64encode(open(github_image_path, 'rb').read()).decode()
+    encoded_github_image = base64.b64encode(
+        open(github_image_path, "rb").read()
+    ).decode()
 
     return html.Header(
-        id='app-header',
+        id="app-header",
         children=[
             # Dash logo display
             html.A(
-                id='dash-logo',
+                id="dash-logo",
                 children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_plotly_image}'
-                    )
+                    html.Img(src=f"data:image/png;base64,{encoded_plotly_image}")
                 ],
-                href='https://plotly.com',
-                target='_blank'
+                href="https://plotly.com",
+                target="_blank",
             ),
-
             # App logo
             html.A(
-                id='app-logo',
+                id="app-logo",
                 children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_logo_image}'
-                    ),
+                    html.Img(src=f"data:image/png;base64,{encoded_logo_image}"),
                 ],
-                href='/ezSTEP/'
+                href="/ezSTEP/",
             ),
-
             # About us page
             html.A(
-                id='about-us',
-                children=[
-                    "About Us"
-                ],
-                href='/ezSTEP/about-us/',
-                target='_blank'
+                id="about-us",
+                children=["About Us"],
+                href="/ezSTEP/about-us/",
+                target="_blank",
             ),
-
             # GitHub repo link
             html.A(
-                id='github-link',
-                children=[
-                    "View on GitHub"
-                ],
-                href='https://github.com/AndreasHiropedi/ezSTEP',
-                target='_blank'
+                id="github-link",
+                children=["View on GitHub"],
+                href="https://github.com/AndreasHiropedi/ezSTEP",
+                target="_blank",
             ),
-
             # GitHub logo
-            html.Img(
-                src=f'data:image/png;base64,{encoded_github_image}'
-            )
+            html.Img(src=f"data:image/png;base64,{encoded_github_image}"),
         ],
-        style={
-            'background': 'black',
-            'color': 'white'
-        }
+        style={"background": "black", "color": "white"},
     )
 
 
@@ -125,33 +117,25 @@ def app_footer():
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the absolute path to the image file
-    uni_image_path = os.path.join(current_directory, 'assets', 'eduni-logo.png')
+    uni_image_path = os.path.join(current_directory, "assets", "eduni-logo.png")
     # Open the image, read it, and encode it into Base64
-    encoded_uni_image = base64.b64encode(open(uni_image_path, 'rb').read()).decode()
+    encoded_uni_image = base64.b64encode(open(uni_image_path, "rb").read()).decode()
 
     return html.Footer(
-        id='app-footer',
+        id="app-footer",
         children=[
             # University logo
             html.A(
-                children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_uni_image}'
-                    )
-                ],
-                href='https://homepages.inf.ed.ac.uk/doyarzun/',
-                target='_blank'
+                children=[html.Img(src=f"data:image/png;base64,{encoded_uni_image}")],
+                href="https://homepages.inf.ed.ac.uk/doyarzun/",
+                target="_blank",
             ),
-
             # Copyright
             html.H3(
                 "Biomolecular Control Group 2024",
-            )
+            ),
         ],
-        style={
-            'background': 'white',
-            'color': 'black'
-        }
+        style={"background": "white", "color": "black"},
     )
 
 
@@ -162,7 +146,7 @@ def user_info():
     """
 
     return html.Div(
-        id='user-info',
+        id="user-info",
         children=[
             html.H1("User Information"),
             html.P(
@@ -171,39 +155,30 @@ def user_info():
                 "you can download and use the example datasets we provided below, or alternatively upload your own."
             ),
             html.Div(
-                id='example-files-container',
+                id="example-files-container",
                 children=[
                     html.A(
-                        'example_train_data.csv',
-                        download='example_train_data.csv',
-                        href='/downloadable_data/example_train_data.csv',
-                        style={
-                            'margin-left': '280px'
-                        }
+                        "example_train_data.csv",
+                        download="example_train_data.csv",
+                        href="/downloadable_data/example_train_data.csv",
+                        style={"margin-left": "280px"},
                     ),
                     html.A(
-                        'example_test_data.csv',
-                        download='example_test_data.csv',
-                        href='/downloadable_data/example_test_data.csv',
-                        style={
-                            'margin-left': '220px'
-                        }
+                        "example_test_data.csv",
+                        download="example_test_data.csv",
+                        href="/downloadable_data/example_test_data.csv",
+                        style={"margin-left": "220px"},
                     ),
                     html.A(
-                        'example_query_data.csv',
-                        download='example_query_data.csv',
-                        href='/downloadable_data/example_query_data.csv',
-                        style={
-                            'margin-left': '220px'
-                        }
+                        "example_query_data.csv",
+                        download="example_query_data.csv",
+                        href="/downloadable_data/example_query_data.csv",
+                        style={"margin-left": "220px"},
                     ),
                 ],
-                style={
-                    'margin-top': '25px',
-                    'margin-bottom': '15px'
-                }
-            )
-        ]
+                style={"margin-top": "25px", "margin-bottom": "15px"},
+            ),
+        ],
     )
 
 
@@ -214,37 +189,28 @@ def tabs_container():
     """
 
     return dcc.Tabs(
-        id='container',
+        id="container",
         value="upload datasets",
         children=[
             dcc.Tab(
-                id='tab-upload',
+                id="tab-upload",
                 label="Upload datasets",
                 value="upload datasets",
-                selected_style={
-                    'background': 'grey',
-                    'color': 'white'
-                }
+                selected_style={"background": "grey", "color": "white"},
             ),
             dcc.Tab(
-                id='tab-input',
+                id="tab-input",
                 label="Model input parameters",
                 value="model input parameters",
-                selected_style={
-                    'background': 'grey',
-                    'color': 'white'
-                }
+                selected_style={"background": "grey", "color": "white"},
             ),
             dcc.Tab(
-                id='tab-output',
+                id="tab-output",
                 label="Model outputs",
                 value="model outputs",
-                selected_style={
-                    'background': 'grey',
-                    'color': 'white'
-                }
-            )
-        ]
+                selected_style={"background": "grey", "color": "white"},
+            ),
+        ],
     )
 
 
@@ -254,73 +220,67 @@ def training_data_upload_card():
     """
 
     return dbc.Card(
-        id='card',
+        id="card",
         children=[
             dbc.CardHeader(
-                id='card-header',
+                id="card-header",
                 children=["Training data (required)"],
             ),
             dbc.CardBody(
-                id='card-body',
+                id="card-body",
                 children=[
                     html.P(
                         "Upload your training data",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     html.Div(
-                        id='upload-container',
+                        id="upload-container",
                         children=[
                             dcc.Upload(
-                                id='upload-training-data',
+                                id="upload-training-data",
                                 children=[
                                     html.Div(
-                                        id='box-text',
+                                        id="box-text",
                                         children=[
-                                            'Drag and Drop or ',
-                                            html.A('Select Files', style={'font-weight': 'bold'})
+                                            "Drag and Drop or ",
+                                            html.A(
+                                                "Select Files",
+                                                style={"font-weight": "bold"},
+                                            ),
                                         ],
                                     )
                                 ],
                                 multiple=False,
                                 style={
-                                    'width': '97.5%',
-                                    'height': '80px',
-                                    'textAlign': 'center',
-                                    'border': '2px dashed black'
-                                }
+                                    "width": "97.5%",
+                                    "height": "80px",
+                                    "textAlign": "center",
+                                    "border": "2px dashed black",
+                                },
                             )
-                        ]
+                        ],
                     ),
                     html.P(
                         "or paste it in the box below",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dbc.Textarea(
-                        id='text-train-data',
-                        style={
-                            'width': '97.5%',
-                            'height': '100px'
-                        },
+                        id="text-train-data",
+                        style={"width": "97.5%", "height": "100px"},
                         persistence=True,
-                        persistence_type='session'
+                        persistence_type="session",
                     ),
                     dcc.Input(
-                        id='previous-train-value',
-                        type='hidden',
-                        value='',
+                        id="previous-train-value",
+                        type="hidden",
+                        value="",
                         persistence=True,
-                        persistence_type='session'
-                    )
-                ]
-            )
+                        persistence_type="session",
+                    ),
+                ],
+            ),
         ],
-        className="mx-auto"
+        className="mx-auto",
     )
 
 
@@ -330,68 +290,61 @@ def testing_data_upload_card():
     """
 
     return dbc.Card(
-        id='card',
+        id="card",
         children=[
             dbc.CardHeader(
-                id='card-header',
+                id="card-header",
                 children=["Testing data (required)"],
             ),
             dbc.CardBody(
-                id='card-body',
+                id="card-body",
                 children=[
                     html.P(
                         "Upload your testing data",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dcc.Upload(
-                        id='upload-testing-data',
+                        id="upload-testing-data",
                         children=[
                             html.Div(
-                                id='box-text',
+                                id="box-text",
                                 children=[
-                                    'Drag and Drop or ',
-                                    html.A('Select Files', style={'font-weight': 'bold'})
+                                    "Drag and Drop or ",
+                                    html.A(
+                                        "Select Files", style={"font-weight": "bold"}
+                                    ),
                                 ],
                             )
                         ],
                         multiple=False,
                         style={
-                            'width': '97.5%',
-                            'height': '80px',
-                            'textAlign': 'center',
-                            'border': '2px dashed black'
-                        }
+                            "width": "97.5%",
+                            "height": "80px",
+                            "textAlign": "center",
+                            "border": "2px dashed black",
+                        },
                     ),
                     html.P(
                         "or paste it in the box below",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dbc.Textarea(
-                        id='text-test-data',
-                        style={
-                            'width': '97.5%',
-                            'height': '100px'
-                        },
+                        id="text-test-data",
+                        style={"width": "97.5%", "height": "100px"},
                         persistence=True,
-                        persistence_type='session'
+                        persistence_type="session",
                     ),
                     dcc.Input(
-                        id='previous-test-value',
-                        type='hidden',
-                        value='',
+                        id="previous-test-value",
+                        type="hidden",
+                        value="",
                         persistence=True,
-                        persistence_type='session'
-                    )
-                ]
-            )
+                        persistence_type="session",
+                    ),
+                ],
+            ),
         ],
-        className="mx-auto"
+        className="mx-auto",
     )
 
 
@@ -401,68 +354,61 @@ def query_data_upload_card():
     """
 
     return dbc.Card(
-        id='card',
+        id="card",
         children=[
             dbc.CardHeader(
-                id='card-header',
+                id="card-header",
                 children=["Querying data (optional)"],
             ),
             dbc.CardBody(
-                id='card-body',
+                id="card-body",
                 children=[
                     html.P(
                         "Upload your model querying data",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dcc.Upload(
-                        id='upload-querying-data',
+                        id="upload-querying-data",
                         children=[
                             html.Div(
-                                id='box-text',
+                                id="box-text",
                                 children=[
-                                    'Drag and Drop or ',
-                                    html.A('Select Files', style={'font-weight': 'bold'})
+                                    "Drag and Drop or ",
+                                    html.A(
+                                        "Select Files", style={"font-weight": "bold"}
+                                    ),
                                 ],
                             )
                         ],
                         multiple=False,
                         style={
-                            'width': '97.5%',
-                            'height': '80px',
-                            'textAlign': 'center',
-                            'border': '2px dashed black'
-                        }
+                            "width": "97.5%",
+                            "height": "80px",
+                            "textAlign": "center",
+                            "border": "2px dashed black",
+                        },
                     ),
                     html.P(
                         "or paste it in the box below",
-                        style={
-                            'text-align': 'center',
-                            'font-size': '14pt'
-                        }
+                        style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dcc.Textarea(
-                        id='text-query-data',
-                        style={
-                            'width': '97.5%',
-                            'height': '100px'
-                        },
+                        id="text-query-data",
+                        style={"width": "97.5%", "height": "100px"},
                         persistence=True,
-                        persistence_type='session'
+                        persistence_type="session",
                     ),
                     dcc.Input(
-                        id='previous-query-value',
-                        type='hidden',
-                        value='',
+                        id="previous-query-value",
+                        type="hidden",
+                        value="",
                         persistence=True,
-                        persistence_type='session'
-                    )
-                ]
-            )
+                        persistence_type="session",
+                    ),
+                ],
+            ),
         ],
-        className="mx-auto"
+        className="mx-auto",
     )
 
 
@@ -472,23 +418,22 @@ def output_statistics_card():
     """
 
     return dbc.Card(
-        id='output-statistics-card',
+        id="output-statistics-card",
         children=[
             dbc.CardHeader(
-                id='card-header-output',
-                children=['Testing output statistics']
+                id="card-header-output", children=["Testing output statistics"]
             ),
             dbc.CardBody(
-                id='card-body-output',
+                id="card-body-output",
                 children=[
                     html.P(
                         "Click the hyperlink below to view the plot of all testing output statistics "
                         "for all existing models."
                     ),
-                    output_metric_ref()
-                ]
-            )
-        ]
+                    output_metric_ref(),
+                ],
+            ),
+        ],
     )
 
 
@@ -500,22 +445,17 @@ def model_input_ref(model_key, session_id):
 
     # Get user data
     user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    models_list = user_data["MODELS_LIST"]
 
     if model_key not in models_list.keys():
         models_list[model_key] = None
-        user_data['MODELS_LIST'] = models_list
+        user_data["MODELS_LIST"] = models_list
         globals.store_user_session_data(session_id, user_data)
 
     return html.A(
-        children=[
-            html.H4(
-                f"{model_key} input parameters",
-                id='model-inputs-ref'
-            )
-        ],
-        href=f'/ezSTEP/model-input/{model_key}',
-        target='_blank'
+        children=[html.H4(f"{model_key} input parameters", id="model-inputs-ref")],
+        href=f"/ezSTEP/model-input/{model_key}",
+        target="_blank",
     )
 
 
@@ -526,14 +466,9 @@ def output_metric_ref():
     """
 
     return html.A(
-        children=[
-            html.H4(
-                "View output statistics plot",
-                id='metric-plot-ref'
-            )
-        ],
-        href=f'/ezSTEP/output-statistics/output-graph',
-        target='_blank'
+        children=[html.H4("View output statistics plot", id="metric-plot-ref")],
+        href=f"/ezSTEP/output-statistics/output-graph",
+        target="_blank",
     )
 
 
@@ -544,24 +479,23 @@ def model_output_ref(model_key):
     """
 
     return html.A(
-        children=[
-            html.H4(
-                f"{model_key} output",
-                id='model-outputs-ref'
-            )
-        ],
-        href=f'/ezSTEP/model-output/{model_key}',
-        target='_blank'
+        children=[html.H4(f"{model_key} output", id="model-outputs-ref")],
+        href=f"/ezSTEP/model-output/{model_key}",
+        target="_blank",
     )
 
 
 @callback(
-    [Output('upload-training-data', 'children'),
-     Output('store-uploaded-train-file', 'data')],
-    Input('upload-training-data', 'contents'),
-    [State('upload-training-data', 'filename'),
-     State('store-uploaded-train-file', 'data'),
-     State('session-id', 'data')]
+    [
+        Output("upload-training-data", "children"),
+        Output("store-uploaded-train-file", "data"),
+    ],
+    Input("upload-training-data", "contents"),
+    [
+        State("upload-training-data", "filename"),
+        State("store-uploaded-train-file", "data"),
+        State("session-id", "data"),
+    ],
 )
 def update_training_output(content, name, stored_train_file_name, session_data):
     """
@@ -570,11 +504,11 @@ def update_training_output(content, name, stored_train_file_name, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     if stored_train_file_name and not content:
-        file = stored_train_file_name['filename']
+        file = stored_train_file_name["filename"]
 
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
@@ -583,17 +517,13 @@ def update_training_output(content, name, stored_train_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {file} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         final_display = html.Div([upload_children, success_message])
@@ -607,93 +537,77 @@ def update_training_output(content, name, stored_train_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
             [f"File {name} is not compatible!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
             [f"File {name} use the wrong column names!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
             [f"File {name} uses data in the wrong format!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
             [f"File {name} is too large or sequences are too long!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         # Check if file is a CSV file
-        content_type, content_string = content.split(',')
+        content_type, content_string = content.split(",")
         decoded = base64.b64decode(content_string)
-        if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        if ".csv" in name:
+            df = pd.read_csv(io.StringIO(decoded.decode("utf-8")))
 
             # Check if file contains two columns labeled 'sequence' and 'protein'
             df.columns = df.columns.astype(str).str.lower()
-            if 'sequence' in df.columns and 'protein' in df.columns:
+            if "sequence" in df.columns and "protein" in df.columns:
 
                 # Check data in the protein column is of the correct type
-                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
-                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
+                parsed_protein = pd.to_numeric(df["protein"], errors="coerce")
+                if df["protein"].dtype != "float64" or not parsed_protein.notna().all():
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
                 # Check data in the sequence column is of the correct type
                 # we check that the data is a string, all sequences are the same length
                 # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
-                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                invalid_sequences = df["sequence"].str.lower().str.contains("[^actg]")
+                if (
+                    df["sequence"].dtype != object
+                    or df["sequence"].str.len().nunique() != 1
+                    or invalid_sequences.any()
+                ):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
                 # For memory's sake, limit size file and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                if len(df) > 20000 or df["sequence"].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
-                df['sequence'] = df['sequence'].str.lower()
+                df["sequence"] = df["sequence"].str.lower()
                 final_display = html.Div([upload_children, success_message])
 
                 # Set the training file name and data in REDIS for that user
-                user_data['TRAINING_FILE'] = name
-                user_data['TRAINING_DATA'] = df.to_json()
+                user_data["TRAINING_FILE"] = name
+                user_data["TRAINING_DATA"] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
-                return final_display, {'filename': name}
+                return final_display, {"filename": name}
 
             # If CSV but without right columns
             final_display = html.Div([upload_children, wrong_columns_message])
@@ -704,43 +618,49 @@ def update_training_output(content, name, stored_train_file_name, session_data):
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
-    return html.Div(
-        id='box-text',
-        children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+    return (
+        html.Div(
+            id="box-text",
+            children=[
+                "Drag and Drop or ",
+                html.A("Select Files", style={"font-weight": "bold"}),
+            ],
+        ),
+        None,
+    )
 
 
 @callback(
-    Output('text-train-data', 'style'),
-    Output('training-change-counter', 'data'),
-    Output('previous-train-value', 'value'),
-    Input('text-train-data', 'value'),
-    State('previous-train-value', 'value'),
-    State('store-uploaded-train-file', 'data'),
-    State('training-change-counter', 'data'),
-    State('session-id', 'data')
+    Output("text-train-data", "style"),
+    Output("training-change-counter", "data"),
+    Output("previous-train-value", "value"),
+    Input("text-train-data", "value"),
+    State("previous-train-value", "value"),
+    State("store-uploaded-train-file", "data"),
+    State("training-change-counter", "data"),
+    State("session-id", "data"),
 )
-def validate_training_text_input(value, previous_value, stored_train_file, counter, session_data):
+def validate_training_text_input(
+    value, previous_value, stored_train_file, counter, session_data
+):
     """
     This callback validates the input in the training data textbox.
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
-        return {
-            'width': '97.5%',
-            'height': '100px'
-        }, counter, previous_value
+        return {"width": "97.5%", "height": "100px"}, counter, previous_value
 
     # Check if input in the text area has changed
     if value != previous_value:
         counter += 1
 
     # Split the text into rows
-    rows = value.split('\n')
+    rows = value.split("\n")
 
     sequences = []
     proteins = []
@@ -757,19 +677,27 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -778,39 +706,55 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             try:
                 protein_value = float(protein_value)
             except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -822,19 +766,27 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -843,41 +795,57 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             try:
                 float_protein_value = float(protein_value)
             except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             protein_value = float_protein_value
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -889,19 +857,27 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -910,41 +886,57 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             try:
                 float_protein_value = float(protein_value)
             except ValueError:
-                return {
-                    'width': '97.5%',
-                    'height': '100px',
-                    'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             protein_value = float_protein_value
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -952,43 +944,46 @@ def validate_training_text_input(value, previous_value, stored_train_file, count
             proteins.append(protein_value)
 
         else:
-            return {
-                'width': '97.5%',
-                'height': '100px',
-                'border': '2px solid #dc3545'
-            }, counter, value
+            return (
+                {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+                counter,
+                value,
+            )
 
     # Check if length of input is less than 5 (since we need at least 5 for 5-fold)
     if len(sequences) < 5 and len(proteins) < 5:
-        return {
-            'width': '97.5%',
-            'height': '100px',
-            'border': '2px solid #dc3545'
-        }, counter, value
+        return (
+            {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+            counter,
+            value,
+        )
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_train_file:
-        user_data['TRAINING_FILE'] = f"training_text_input_{counter}"
-        user_data['TRAINING_DATA'] = pd.DataFrame({
-            'sequence': sequences,
-            'protein': proteins
-        }).to_json()
+        user_data["TRAINING_FILE"] = f"training_text_input_{counter}"
+        user_data["TRAINING_DATA"] = pd.DataFrame(
+            {"sequence": sequences, "protein": proteins}
+        ).to_json()
         globals.store_user_session_data(session_id, user_data)
 
-    return {
-        'width': '97.5%',
-        'height': '100px',
-        'border': '2px solid #28a745'
-    }, counter, value
+    return (
+        {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
+        counter,
+        value,
+    )
 
 
 @callback(
-    [Output('upload-testing-data', 'children'),
-     Output('store-uploaded-test-file', 'data')],
-    Input('upload-testing-data', 'contents'),
-    [State('upload-testing-data', 'filename'),
-     State('store-uploaded-test-file', 'data'),
-     State('session-id', 'data')]
+    [
+        Output("upload-testing-data", "children"),
+        Output("store-uploaded-test-file", "data"),
+    ],
+    Input("upload-testing-data", "contents"),
+    [
+        State("upload-testing-data", "filename"),
+        State("store-uploaded-test-file", "data"),
+        State("session-id", "data"),
+    ],
 )
 def update_testing_output(content, name, stored_test_file_name, session_data):
     """
@@ -997,11 +992,11 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     if stored_test_file_name and not content:
-        file = stored_test_file_name['filename']
+        file = stored_test_file_name["filename"]
 
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
@@ -1010,17 +1005,13 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {file} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         final_display = html.Div([upload_children, success_message])
@@ -1034,93 +1025,77 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
             [f"File {name} is not compatible!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
             [f"File {name} uses the wrong column names!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
             [f"File {name} uses data in the wrong format!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
             [f"File {name} is too large or sequences are too long!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         # Check if file is a CSV file
-        content_type, content_string = content.split(',')
+        content_type, content_string = content.split(",")
         decoded = base64.b64decode(content_string)
-        if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        if ".csv" in name:
+            df = pd.read_csv(io.StringIO(decoded.decode("utf-8")))
 
             # Check if file contains two columns labeled 'sequence' and 'protein'
             df.columns = df.columns.astype(str).str.lower()
-            if 'sequence' in df.columns and 'protein' in df.columns:
+            if "sequence" in df.columns and "protein" in df.columns:
 
                 # Check data in the protein column is of the correct type
-                parsed_protein = pd.to_numeric(df['protein'], errors='coerce')
-                if df["protein"].dtype != 'float64' or not parsed_protein.notna().all():
+                parsed_protein = pd.to_numeric(df["protein"], errors="coerce")
+                if df["protein"].dtype != "float64" or not parsed_protein.notna().all():
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
                 # Check data in the sequence column is of the correct type
                 # we check that the data is a string, all sequences are the same length
                 # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
-                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                invalid_sequences = df["sequence"].str.lower().str.contains("[^actg]")
+                if (
+                    df["sequence"].dtype != object
+                    or df["sequence"].str.len().nunique() != 1
+                    or invalid_sequences.any()
+                ):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
                 # For memory's sake, limit size file and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                if len(df) > 20000 or df["sequence"].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
-                df['sequence'] = df['sequence'].str.lower()
+                df["sequence"] = df["sequence"].str.lower()
                 final_display = html.Div([upload_children, success_message])
 
                 # Set the training file name and data in REDIS for that user
-                user_data['TESTING_FILE'] = name
-                user_data['TESTING_DATA'] = df.to_json()
+                user_data["TESTING_FILE"] = name
+                user_data["TESTING_DATA"] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
-                return final_display, {'filename': name}
+                return final_display, {"filename": name}
 
             # If CSV but without right columns
             final_display = html.Div([upload_children, wrong_columns_message])
@@ -1131,43 +1106,49 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
-    return html.Div(
-        id='box-text',
-        children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+    return (
+        html.Div(
+            id="box-text",
+            children=[
+                "Drag and Drop or ",
+                html.A("Select Files", style={"font-weight": "bold"}),
+            ],
+        ),
+        None,
+    )
 
 
 @callback(
-    Output('text-test-data', 'style'),
-    Output('testing-change-counter', 'data'),
-    Output('previous-test-value', 'value'),
-    Input('text-test-data', 'value'),
-    State('previous-test-value', 'value'),
-    State('store-uploaded-test-file', 'data'),
-    State('testing-change-counter', 'data'),
-    State('session-id', 'data')
+    Output("text-test-data", "style"),
+    Output("testing-change-counter", "data"),
+    Output("previous-test-value", "value"),
+    Input("text-test-data", "value"),
+    State("previous-test-value", "value"),
+    State("store-uploaded-test-file", "data"),
+    State("testing-change-counter", "data"),
+    State("session-id", "data"),
 )
-def validate_testing_text_input(value, previous_value, stored_test_file, counter, session_data):
+def validate_testing_text_input(
+    value, previous_value, stored_test_file, counter, session_data
+):
     """
     This callback validates the input in the testing data textbox.
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
-        return {
-           'width': '97.5%',
-           'height': '100px'
-        }, counter, previous_value
+        return {"width": "97.5%", "height": "100px"}, counter, previous_value
 
     # Check if input in the text area has changed
     if value != previous_value:
         counter += 1
 
     # Split the text into rows
-    rows = value.split('\n')
+    rows = value.split("\n")
 
     sequences = []
     proteins = []
@@ -1184,19 +1165,27 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -1205,39 +1194,55 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             try:
                 protein_value = float(protein_value)
             except ValueError:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -1249,19 +1254,27 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -1270,41 +1283,57 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             try:
                 float_protein_value = float(protein_value)
             except ValueError:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             protein_value = float_protein_value
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -1316,19 +1345,27 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
 
             # if there aren't exactly 2 elements, the data is invalid
             if len(data) != 2:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # if one of them is empty, the data is invalid
-            if data[0].strip() == '' or data[1].strip() == '':
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+            if data[0].strip() == "" or data[1].strip() == "":
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = data[0].strip()
             protein_value = data[1].strip()
@@ -1337,41 +1374,57 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             try:
                 float_protein_value = float(protein_value)
             except ValueError:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             protein_value = float_protein_value
 
             # Check if sequence value is valid
 
             # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-            allowed_chars = ['a', 'c', 't', 'g']
+            allowed_chars = ["a", "c", "t", "g"]
             if any(char not in allowed_chars for char in sequence_value.lower()):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check that all sequences are the same length
             if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             # check length of sequence does not exceed limit of 250 nt
             # and length of input does not exceed limit of 20,000
             if len(sequences[0]) > 250 and len(sequences) > 20000:
-                return {
-                   'width': '97.5%',
-                   'height': '100px',
-                   'border': '2px solid #dc3545'
-                }, counter, value
+                return (
+                    {
+                        "width": "97.5%",
+                        "height": "100px",
+                        "border": "2px solid #dc3545",
+                    },
+                    counter,
+                    value,
+                )
 
             sequence_value = sequence_value.lower()
             # otherwise, data is valid
@@ -1379,35 +1432,38 @@ def validate_testing_text_input(value, previous_value, stored_test_file, counter
             proteins.append(protein_value)
 
         else:
-            return {
-               'width': '97.5%',
-               'height': '100px',
-               'border': '2px solid #dc3545'
-            }, counter, value
+            return (
+                {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+                counter,
+                value,
+            )
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_test_file:
-        user_data['TESTING_FILE'] = f"testing_text_input_{counter}"
-        user_data['TESTING_DATA'] = pd.DataFrame({
-            'sequence': sequences,
-            'protein': proteins
-        }).to_json()
+        user_data["TESTING_FILE"] = f"testing_text_input_{counter}"
+        user_data["TESTING_DATA"] = pd.DataFrame(
+            {"sequence": sequences, "protein": proteins}
+        ).to_json()
         globals.store_user_session_data(session_id, user_data)
 
-    return {
-        'width': '97.5%',
-        'height': '100px',
-        'border': '2px solid #28a745'
-    }, counter, value
+    return (
+        {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
+        counter,
+        value,
+    )
 
 
 @callback(
-    [Output('upload-querying-data', 'children'),
-     Output('store-uploaded-query-file', 'data')],
-    Input('upload-querying-data', 'contents'),
-    [State('upload-querying-data', 'filename'),
-     State('store-uploaded-query-file', 'data'),
-     State('session-id', 'data')]
+    [
+        Output("upload-querying-data", "children"),
+        Output("store-uploaded-query-file", "data"),
+    ],
+    Input("upload-querying-data", "contents"),
+    [
+        State("upload-querying-data", "filename"),
+        State("store-uploaded-query-file", "data"),
+        State("session-id", "data"),
+    ],
 )
 def update_querying_output(content, name, stored_query_file_name, session_data):
     """
@@ -1416,11 +1472,11 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     if stored_query_file_name and not content:
-        file = stored_query_file_name['filename']
+        file = stored_query_file_name["filename"]
 
         # Update the dcc.Upload children to show the uploaded file's name
         upload_children = html.Div(
@@ -1429,17 +1485,13 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {file} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         final_display = html.Div([upload_children, success_message])
@@ -1453,87 +1505,71 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
                 "margin-top": "30px",
                 "text-align": "center",
                 "font-weight": "bold",
-                "font-size": "12pt"
-            }
+                "font-size": "12pt",
+            },
         )
 
         success_message = html.Div(
             [f"File {name} uploaded successfully!"],
-            style={
-                "font-weight": "bold",
-                "color": "green",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
             [f"File {name} is not compatible!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
             [f"File {name} uses the wrong column names!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
             [f"File {name} uses data in the wrong format!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
             [f"File {name} is too large or sequences are too long!"],
-            style={
-                "font-weight": "bold",
-                "color": "red",
-                "font-size": "12pt"
-            }
+            style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         # Check if file is a CSV file
-        content_type, content_string = content.split(',')
+        content_type, content_string = content.split(",")
         decoded = base64.b64decode(content_string)
-        if '.csv' in name:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        if ".csv" in name:
+            df = pd.read_csv(io.StringIO(decoded.decode("utf-8")))
 
             # Check if file contains a column labeled 'sequence'
             df.columns = df.columns.astype(str).str.lower()
-            if 'sequence' in df.columns:
+            if "sequence" in df.columns:
 
                 # Check data in the sequence column is of the correct type
                 # we check that the data is a string, all sequences are the same length
                 # and all sequences contain only a mix of the characters A, C, G, and T and nothing else
-                invalid_sequences = df['sequence'].str.lower().str.contains('[^actg]')
-                if df['sequence'].dtype != object or df['sequence'].str.len().nunique() != 1 or invalid_sequences.any():
+                invalid_sequences = df["sequence"].str.lower().str.contains("[^actg]")
+                if (
+                    df["sequence"].dtype != object
+                    or df["sequence"].str.len().nunique() != 1
+                    or invalid_sequences.any()
+                ):
                     final_display = html.Div([upload_children, invalid_data_message])
                     return final_display, None
 
                 # For memory's sake, limit size file and the length of each sequence
-                if len(df) > 20000 or df['sequence'].str.len()[0] > 250:
+                if len(df) > 20000 or df["sequence"].str.len()[0] > 250:
                     final_display = html.Div([upload_children, limit_exceeded_message])
                     return final_display, None
 
-                df['sequence'] = df['sequence'].str.lower()
+                df["sequence"] = df["sequence"].str.lower()
                 final_display = html.Div([upload_children, success_message])
 
                 # Set the training file name and data in REDIS for that user
-                user_data['QUERYING_FILE'] = name
-                user_data['QUERYING_DATA'] = df.to_json()
+                user_data["QUERYING_FILE"] = name
+                user_data["QUERYING_DATA"] = df.to_json()
                 globals.store_user_session_data(session_id, user_data)
 
-                return final_display, {'filename': name}
+                return final_display, {"filename": name}
 
             # If CSV but without right columns
             final_display = html.Div([upload_children, wrong_columns_message])
@@ -1544,43 +1580,49 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         return final_display, None
 
     # If no content, revert to original children for dcc.Upload
-    return html.Div(
-        id='box-text',
-        children=['Drag and Drop or ', html.A('Select Files', style={'font-weight': 'bold'})]), None
+    return (
+        html.Div(
+            id="box-text",
+            children=[
+                "Drag and Drop or ",
+                html.A("Select Files", style={"font-weight": "bold"}),
+            ],
+        ),
+        None,
+    )
 
 
 @callback(
-    Output('text-query-data', 'style'),
-    Output('querying-change-counter', 'data'),
-    Output('previous-query-value', 'value'),
-    Input('text-query-data', 'value'),
-    State('previous-query-value', 'value'),
-    State('store-uploaded-query-file', 'data'),
-    State('querying-change-counter', 'data'),
-    State('session-id', 'data')
+    Output("text-query-data", "style"),
+    Output("querying-change-counter", "data"),
+    Output("previous-query-value", "value"),
+    Input("text-query-data", "value"),
+    State("previous-query-value", "value"),
+    State("store-uploaded-query-file", "data"),
+    State("querying-change-counter", "data"),
+    State("session-id", "data"),
 )
-def validate_querying_text_input(value, previous_value, stored_query_file, counter, session_data):
+def validate_querying_text_input(
+    value, previous_value, stored_query_file, counter, session_data
+):
     """
     This callback validates the input in the querying data textbox.
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
 
     # Handle case where the text area is empty
     if not value:
-        return {
-           'width': '97.5%',
-           'height': '100px'
-        }, counter, previous_value
+        return {"width": "97.5%", "height": "100px"}, counter, previous_value
 
     # Check if input in the text area has changed
     if value != previous_value:
         counter += 1
 
     # Split the text into rows
-    rows = value.split('\n')
+    rows = value.split("\n")
 
     sequences = []
     for row in rows:
@@ -1593,30 +1635,30 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
         # Check if sequence value is valid
 
         # check all sequences contain only a mix of the characters A, C, G, and T and nothing else
-        allowed_chars = ['a', 'c', 't', 'g']
+        allowed_chars = ["a", "c", "t", "g"]
         if any(char not in allowed_chars for char in sequence_value.lower()):
-            return {
-               'width': '97.5%',
-               'height': '100px',
-               'border': '2px solid #dc3545'
-            }, counter, value
+            return (
+                {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+                counter,
+                value,
+            )
 
         # check that all sequences are the same length
         if len(sequences) >= 1 and len(sequences[0]) != len(sequence_value):
-            return {
-               'width': '97.5%',
-               'height': '100px',
-               'border': '2px solid #dc3545'
-            }, counter, value
+            return (
+                {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+                counter,
+                value,
+            )
 
         # check length of sequence does not exceed limit of 250 nt
         # and length of input does not exceed limit of 20,000
         if len(sequences[0]) > 250 and len(sequences) > 20000:
-            return {
-               'width': '97.5%',
-               'height': '100px',
-               'border': '2px solid #dc3545'
-            }, counter, value
+            return (
+                {"width": "97.5%", "height": "100px", "border": "2px solid #dc3545"},
+                counter,
+                value,
+            )
 
         sequence_value = sequence_value.lower()
         # Otherwise, data is valid
@@ -1624,24 +1666,26 @@ def validate_querying_text_input(value, previous_value, stored_query_file, count
 
     # If the data was not set using the file upload, use the data in the textarea instead
     if not stored_query_file:
-        user_data['QUERYING_FILE'] = f"querying_text_input_{counter}"
-        user_data['QUERYING_DATA'] = pd.DataFrame({
-            'sequence': sequences,
-        }).to_json()
+        user_data["QUERYING_FILE"] = f"querying_text_input_{counter}"
+        user_data["QUERYING_DATA"] = pd.DataFrame(
+            {
+                "sequence": sequences,
+            }
+        ).to_json()
         globals.store_user_session_data(session_id, user_data)
 
-    return {
-        'width': '97.5%',
-        'height': '100px',
-        'border': '2px solid #28a745'
-    }, counter, value
+    return (
+        {"width": "97.5%", "height": "100px", "border": "2px solid #28a745"},
+        counter,
+        value,
+    )
 
 
 @callback(
-    Output('content', 'children'),
-    Input('container', 'value'),
-    State('store-model-count', 'data'),
-    State('session-id', 'data')
+    Output("content", "children"),
+    Input("container", "value"),
+    State("store-model-count", "data"),
+    State("session-id", "data"),
 )
 def render_tabs_content(selected_tab, stored_count, session_data):
     """
@@ -1650,110 +1694,100 @@ def render_tabs_content(selected_tab, stored_count, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    models_list = user_data["MODELS_LIST"]
 
     # File upload tab
-    if selected_tab == 'upload datasets':
+    if selected_tab == "upload datasets":
 
         return dbc.Container(
-            id='tabs-content-upload',
+            id="tabs-content-upload",
             children=[
-                html.Div(id='uploaded-files'),
+                html.Div(id="uploaded-files"),
                 dbc.Row(
-                    id='card-row',
+                    id="card-row",
                     children=[
                         dbc.Col(
                             children=[training_data_upload_card()],
                             md=3,
-                            style={
-                                'margin-left': '50px',
-                                'margin-right': '50px'
-                            }
+                            style={"margin-left": "50px", "margin-right": "50px"},
                         ),
                         dbc.Col(
                             children=[testing_data_upload_card()],
                             md=5,
-                            style={
-                                'margin-left': '50px',
-                                'margin-right': '50px'
-                            }
+                            style={"margin-left": "50px", "margin-right": "50px"},
                         ),
                         dbc.Col(
                             children=[query_data_upload_card()],
                             md=3,
-                            style={
-                                'margin-left': '80px',
-                                'margin-right': '80px'
-                            }
-                        )
+                            style={"margin-left": "80px", "margin-right": "80px"},
+                        ),
                     ],
-                    justify="center"
-                )
+                    justify="center",
+                ),
             ],
-            style={
-                'background': 'white',
-                'color': 'black'
-            },
-            fluid=True
+            style={"background": "white", "color": "black"},
+            fluid=True,
         )
 
     # Model inputs tab
-    elif selected_tab == 'model input parameters':
+    elif selected_tab == "model input parameters":
         # If we switch tabs, this restores the previous state (so that all models created are preserved)
         if stored_count and len(models_list) < 5:
             return dbc.Row(
-                id='tabs-content-input',
-                children=[model_input_ref(model_key, session_id) for model_key in models_list.keys()] +
-                         [
-                             html.Button(
-                                 'Add a new model',
-                                 id='button',
-                                 n_clicks=stored_count['n_clicks']
-                             )
-                         ]
+                id="tabs-content-input",
+                children=[
+                    model_input_ref(model_key, session_id)
+                    for model_key in models_list.keys()
+                ]
+                + [
+                    html.Button(
+                        "Add a new model",
+                        id="button",
+                        n_clicks=stored_count["n_clicks"],
+                    )
+                ],
             )
 
         # If we created more than five models, remove the option to add a new model (remove the add button)
         elif len(models_list) >= 5:
             return dbc.Row(
-                id='tabs-content-input',
-                children=[model_input_ref(model_key, session_id) for model_key in models_list.keys()]
+                id="tabs-content-input",
+                children=[
+                    model_input_ref(model_key, session_id)
+                    for model_key in models_list.keys()
+                ],
             )
 
         # Initial state
         else:
             return dbc.Row(
-                id='tabs-content-input',
+                id="tabs-content-input",
                 children=[
                     # This creates the initial layout with one model
                     model_input_ref("Model 1", session_id),
-                    html.Button(
-                        'Add a new model',
-                        id='button',
-                        n_clicks=1
-                    )
-                ]
+                    html.Button("Add a new model", id="button", n_clicks=1),
+                ],
             )
 
     # Model outputs
     elif selected_tab == "model outputs":
         return dbc.Row(
-            id='tabs-content-output',
-            children=[output_statistics_card(), html.Div(id='table-container')] +
-                     [model_output_ref(model_key) for model_key in models_list.keys()]
+            id="tabs-content-output",
+            children=[output_statistics_card(), html.Div(id="table-container")]
+            + [model_output_ref(model_key) for model_key in models_list.keys()],
         )
 
     # Validation check
     else:
-        return 'No content available.'
+        return "No content available."
 
 
 @callback(
-    Output('button', 'style'),
-    [Input('store-model-count', 'data')],
-    State('session-id', 'data')
+    Output("button", "style"),
+    [Input("store-model-count", "data")],
+    State("session-id", "data"),
 )
 def update_button_visibility(_stored_count, session_data):
     """
@@ -1762,29 +1796,28 @@ def update_button_visibility(_stored_count, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    models_list = user_data["MODELS_LIST"]
 
     # Check if the model count is 5 or more
     model_count = len(models_list)
     if model_count >= 5:
         # Hide the button
-        return {'display': 'none'}
+        return {"display": "none"}
     else:
         # Show the button
-        return {'display': 'inline-block'}
+        return {"display": "inline-block"}
 
 
 @callback(
-    [Output('tabs-content-input', 'children'),
-     Output('store-model-count', 'data')
-     ],
-    Input('button', 'n_clicks'),
-    [State('tabs-content-input', 'children'),
-     State('store-model-count', 'data'),
-     State('session-id', 'data')
-     ]
+    [Output("tabs-content-input", "children"), Output("store-model-count", "data")],
+    Input("button", "n_clicks"),
+    [
+        State("tabs-content-input", "children"),
+        State("store-model-count", "data"),
+        State("session-id", "data"),
+    ],
 )
 def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
     """
@@ -1793,13 +1826,13 @@ def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
 
-    model_key = f'Model {n_clicks}'
+    model_key = f"Model {n_clicks}"
 
     # Check if a new model has been added
-    if n_clicks > stored_count['n_clicks']:
-        stored_count['n_clicks'] = n_clicks
+    if n_clicks > stored_count["n_clicks"]:
+        stored_count["n_clicks"] = n_clicks
         children = current_children + [model_input_ref(model_key, session_id)]
         return children, stored_count
 
@@ -1808,9 +1841,9 @@ def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
 
 
 @callback(
-    Output('page-content', 'children'),
-    Input('url', 'href'),
-    Input('session-id', 'data')
+    Output("page-content", "children"),
+    Input("url", "href"),
+    Input("session-id", "data"),
 )
 def display_page(href, session_data):
     """
@@ -1819,133 +1852,126 @@ def display_page(href, session_data):
     """
 
     # Get the session ID for that user, and the data in REDIS
-    session_id = session_data['session_id']
+    session_id = session_data["session_id"]
     user_data = globals.get_user_session_data(session_id)
-    models_list = user_data['MODELS_LIST']
+    models_list = user_data["MODELS_LIST"]
 
     # Extract pathname from the full URL (href)
     parsed_url = urlparse(href)
     pathname = parsed_url.path
 
-    if pathname.startswith('/ezSTEP/model-input/'):
+    if pathname.startswith("/ezSTEP/model-input/"):
         # If a model inputs tab is selected, return the card for that input
         try:
-            model_num = int(pathname.split('/')[-1][-1])
+            model_num = int(pathname.split("/")[-1][-1])
             model_key = f"Model {model_num}"
             if model_key in models_list.keys():
                 return model_inputs_page.create_layout(model_num)
             else:
-                return html.Div('Invalid model number.')
+                return html.Div("Invalid model number.")
         except ValueError:
-            return html.Div('Invalid URL.')
+            return html.Div("Invalid URL.")
 
-    elif pathname.startswith('/ezSTEP/model-output/'):
+    elif pathname.startswith("/ezSTEP/model-output/"):
         # If a model output tab is selected, return the card for that output
         try:
-            model_num = int(pathname.split('/')[-1][-1])
+            model_num = int(pathname.split("/")[-1][-1])
             model_key = f"Model {model_num}"
             if model_key in models_list.keys():
                 return model_outputs_page.create_layout(model_num, session_data)
             else:
-                return html.Div('Invalid model number.')
+                return html.Div("Invalid model number.")
         except ValueError:
-            return html.Div('Invalid URL.')
+            return html.Div("Invalid URL.")
 
-    elif pathname.startswith('/ezSTEP/output-statistics/'):
+    elif pathname.startswith("/ezSTEP/output-statistics/"):
         # If the output statistics page is created
         return output_statistics_page.create_layout()
 
-    elif pathname.startswith('/ezSTEP/about-us/'):
+    elif pathname.startswith("/ezSTEP/about-us/"):
         # If the about us page is created
         return about_us_page.create_layout()
 
-    elif pathname.startswith('/ezSTEP/user-guidelines/'):
+    elif pathname.startswith("/ezSTEP/user-guidelines/"):
         # If the user guidelines page is created
         return guidelines_page.create_layout()
 
-    elif pathname.startswith('/ezSTEP/disclaimer/'):
+    elif pathname.startswith("/ezSTEP/disclaimer/"):
         # If the disclaimer page is created
         return disclaimer_page.create_layout()
 
     return [
         app_header(),
         html.Div(
-            id='app-contents',
+            id="app-contents",
             children=[
                 user_info(),
                 html.Div(
-                    id='tabs-container',
-                    children=[
-                        tabs_container(),
-                        html.Div(id='content'),
-                        app_footer()
-                    ]
-                )
-            ]
-        )
+                    id="tabs-container",
+                    children=[tabs_container(), html.Div(id="content"), app_footer()],
+                ),
+            ],
+        ),
     ]
 
 
 # Update individual tab titles depending on the page
 clientside_callback(
     "dash_clientside.clientside.updateTitle",
-    Output('page-title', 'children'),
-    Input('url', 'href')
+    Output("page-title", "children"),
+    Input("url", "href"),
 )
 
 
-@server.route('/downloadable_data/<path:filename>')
+@server.route("/downloadable_data/<path:filename>")
 def download_file(filename):
     """
     This callback correctly downloads all the example CSV files for the server.
     """
 
-    directory = os.path.join(os.getcwd(), 'downloadable_data')
+    directory = os.path.join(os.getcwd(), "downloadable_data")
     return send_from_directory(directory, filename, as_attachment=True)
 
 
-@callback(
-    Output('session-id', 'data'),
-    [Input('url', 'pathname')]
-)
+@callback(Output("session-id", "data"), [Input("url", "pathname")])
 def create_or_fetch_session_id(_pathname):
     """
     This callback sets the session ID for each user
     """
 
     # Check if the session ID already exists
-    if 'user_session_id' not in session:
+    if "user_session_id" not in session:
         # Generate a new session ID if it does not exist
-        session['user_session_id'] = str(uuid.uuid4())
+        session["user_session_id"] = str(uuid.uuid4())
         # Initialize empty values in Redis for this session ID
         data = {
-            'MODELS_LIST': {'Model 1': None},
-            'TRAINING_DATA': None,
-            'TRAINING_FILE': None,
-            'TESTING_DATA': None,
-            'TESTING_FILE': None,
-            'QUERYING_DATA': None,
-            'QUERYING_FILE': None
+            "MODELS_LIST": {"Model 1": None},
+            "TRAINING_DATA": None,
+            "TRAINING_FILE": None,
+            "TESTING_DATA": None,
+            "TESTING_FILE": None,
+            "QUERYING_DATA": None,
+            "QUERYING_FILE": None,
         }
-        globals.store_user_session_data(session['user_session_id'], data)
+        globals.store_user_session_data(session["user_session_id"], data)
 
     try:
-        globals.get_user_session_data(session['user_session_id'])
+        globals.get_user_session_data(session["user_session_id"])
     except Exception:
         # Initialize empty values in Redis for this session ID
         data = {
-            'MODELS_LIST': {'Model 1': None},
-            'TRAINING_DATA': None,
-            'TRAINING_FILE': None,
-            'TESTING_DATA': None,
-            'TESTING_FILE': None,
-            'QUERYING_DATA': None,
-            'QUERYING_FILE': None
+            "MODELS_LIST": {"Model 1": None},
+            "TRAINING_DATA": None,
+            "TRAINING_FILE": None,
+            "TESTING_DATA": None,
+            "TESTING_FILE": None,
+            "QUERYING_DATA": None,
+            "QUERYING_FILE": None,
         }
-        globals.store_user_session_data(session['user_session_id'], data)
+        globals.store_user_session_data(session["user_session_id"], data)
 
     # Return the session ID
-    return {'session_id': session['user_session_id']}
+    return {"session_id": session["user_session_id"]}
 
 
 def cleanup_old_session_data():
@@ -1970,22 +1996,29 @@ def cleanup_old_session_data():
 
 
 # Schedule the cleanup task
-scheduler.add_job(id='Cleanup Old Session Data', func=cleanup_old_session_data, trigger='interval', minutes=30)
+scheduler.add_job(
+    id="Cleanup Old Session Data",
+    func=cleanup_old_session_data,
+    trigger="interval",
+    minutes=30,
+)
 
 # Main layout of the home page
-my_app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-title', style={'display': 'none'}),
-    html.Div(id='page-content'),
-    dcc.Store(id='store-model-count', data={'n_clicks': 1}, storage_type='session'),
-    dcc.Store(id='store-uploaded-train-file', storage_type='session'),
-    dcc.Store(id='store-uploaded-test-file', storage_type='session'),
-    dcc.Store(id='store-uploaded-query-file', storage_type='session'),
-    dcc.Store(id='training-change-counter', data=0, storage_type='session'),
-    dcc.Store(id='testing-change-counter', data=0, storage_type='session'),
-    dcc.Store(id='querying-change-counter', data=0, storage_type='session'),
-    dcc.Store(id='session-id', storage_type='session')
-])
+my_app.layout = html.Div(
+    [
+        dcc.Location(id="url", refresh=False),
+        html.Div(id="page-title", style={"display": "none"}),
+        html.Div(id="page-content"),
+        dcc.Store(id="store-model-count", data={"n_clicks": 1}, storage_type="session"),
+        dcc.Store(id="store-uploaded-train-file", storage_type="session"),
+        dcc.Store(id="store-uploaded-test-file", storage_type="session"),
+        dcc.Store(id="store-uploaded-query-file", storage_type="session"),
+        dcc.Store(id="training-change-counter", data=0, storage_type="session"),
+        dcc.Store(id="testing-change-counter", data=0, storage_type="session"),
+        dcc.Store(id="querying-change-counter", data=0, storage_type="session"),
+        dcc.Store(id="session-id", storage_type="session"),
+    ]
+)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     my_app.run_server(port=int(os.environ.get("PORT", 8050)))

@@ -1,16 +1,18 @@
-import dimension_reduction_methods
-import feature_encoders
-import data_normalizers
-import feature_selectors
+from functools import partial
 
 import numpy as np
 import pandas as pd
-
-from functools import partial
-from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.neural_network import MLPRegressor
+
+from utils import (
+    data_normalizers,
+    feature_encoders,
+    feature_selectors,
+    unsupervised_learning,
+)
 
 
 def hyper_opt_func(params, x, y):
@@ -18,11 +20,13 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    mlp = MLPRegressor(activation=params['activation'], hidden_layer_sizes=params['hidden_layer_sizes'])
+    mlp = MLPRegressor(
+        activation=params["activation"], hidden_layer_sizes=params["hidden_layer_sizes"]
+    )
 
-    score = cross_val_score(mlp, x, y, scoring='r2', cv=5).mean()
+    score = cross_val_score(mlp, x, y, scoring="r2", cv=5).mean()
 
-    return {'loss': -score, 'status': STATUS_OK}
+    return {"loss": -score, "status": STATUS_OK}
 
 
 class MultiLayerPerceptron:
@@ -39,15 +43,17 @@ class MultiLayerPerceptron:
 
         # model itself
         self.model = MLPRegressor(
-            activation='relu',
+            activation="relu",
             alpha=0.0001,
-            batch_size='auto',
+            batch_size="auto",
             beta_1=0.9,
             beta_2=0.999,
             early_stopping=True,
             epsilon=1e-08,
-            hidden_layer_sizes=tuple(self.hidden_layer_size for _ in range(self.hidden_layer_number)),
-            learning_rate='adaptive',
+            hidden_layer_sizes=tuple(
+                self.hidden_layer_size for _ in range(self.hidden_layer_number)
+            ),
+            learning_rate="adaptive",
             learning_rate_init=0.001,
             max_iter=self.max_iter,
             momentum=0.9,
@@ -55,11 +61,11 @@ class MultiLayerPerceptron:
             power_t=0.5,
             random_state=None,
             shuffle=True,
-            solver='adam',
+            solver="adam",
             tol=1e-5,
             validation_fraction=0.1,
             verbose=False,
-            warm_start=False
+            warm_start=False,
         )
         self.model_name = "Multilayer Perceptron"
 
@@ -200,13 +206,22 @@ class MultiLayerPerceptron:
         the user inputs
         """
 
-        if self.feature_encoding_method == 'binary':
-            self.encoded_train, self.encoded_test, self.encoded_query = \
-                feature_encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
+        if self.feature_encoding_method == "binary":
+            self.encoded_train, self.encoded_test, self.encoded_query = (
+                feature_encoders.encode_one_hot(
+                    self.training_data, self.testing_data, self.querying_data
+                )
+            )
 
-        elif self.feature_encoding_method == 'kmer':
-            self.encoded_train, self.encoded_test, self.encoded_query = \
-                feature_encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
+        elif self.feature_encoding_method == "kmer":
+            self.encoded_train, self.encoded_test, self.encoded_query = (
+                feature_encoders.encode_kmer(
+                    self.training_data,
+                    self.testing_data,
+                    self.querying_data,
+                    self.kmer_size,
+                )
+            )
 
     def normalize_features(self):
         """
@@ -214,19 +229,33 @@ class MultiLayerPerceptron:
         the user inputs
         """
 
-        if self.data_normalization_algorithm == 'zscore':
-            self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
-                self.z_score_target_normaliser = \
-                data_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+        if self.data_normalization_algorithm == "zscore":
+            (
+                self.normalized_train,
+                self.normalized_test,
+                self.z_score_feature_normaliser,
+                self.z_score_target_normaliser,
+            ) = data_normalizers.z_score_normalization(
+                self.encoded_train, self.encoded_test
+            )
             if self.encoded_query is not None:
-                self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
+                self.normalized_query = self.z_score_feature_normaliser.transform(
+                    self.encoded_query
+                )
 
-        elif self.data_normalization_algorithm == 'minmax':
-            self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
-                self.min_max_target_normaliser = \
-                data_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+        elif self.data_normalization_algorithm == "minmax":
+            (
+                self.normalized_train,
+                self.normalized_test,
+                self.min_max_feature_normaliser,
+                self.min_max_target_normaliser,
+            ) = data_normalizers.min_max_normalization(
+                self.encoded_train, self.encoded_test
+            )
             if self.encoded_query is not None:
-                self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
+                self.normalized_query = self.min_max_feature_normaliser.transform(
+                    self.encoded_query
+                )
 
     def train_model(self):
         """
@@ -241,54 +270,101 @@ class MultiLayerPerceptron:
         # Apply dimensionality reduction (if unsupervised learning is enabled)
         if self.use_unsupervised == "yes":
             # PCA
-            if self.dimensionality_reduction_algorithm == 'PCA':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_pca(self.normalized_train, self.normalized_test,
-                                                        self.normalized_query)
+            if self.dimensionality_reduction_algorithm == "PCA":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_pca(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
             # UMAP
-            elif self.dimensionality_reduction_algorithm == 'UMAP':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_umap(self.normalized_train, self.normalized_test,
-                                                         self.normalized_query)
+            elif self.dimensionality_reduction_algorithm == "UMAP":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_umap(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
             # t-SNE
-            elif self.dimensionality_reduction_algorithm == 't-SNE':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_tsne(self.normalized_train, self.normalized_test,
-                                                         self.normalized_query)
+            elif self.dimensionality_reduction_algorithm == "t-SNE":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_tsne(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
         # Apply feature selection (if enabled)
         if self.use_feature_select == "yes":
             # f-score
             if self.feature_selection_algorithm == "F-score":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.f_score_selection(self.normalized_train, self.normalized_test,
-                                                        self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.f_score_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # weight importance
             elif self.feature_selection_algorithm == "Weight Importance":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.weight_importance_selection(self.model, self.normalized_train,
-                                                                  self.normalized_test,
-                                                                  self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.weight_importance_selection(
+                    self.model,
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # mutual information
             elif self.feature_selection_algorithm == "Mutual Information":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
-                                                                   self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.mutual_information_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # PCA
             elif self.feature_selection_algorithm == "PCA":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
-                                                    self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.pca_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
         # Prepare the training data
-        x_train = self.selected_train if self.selected_train is not None else \
-            self.normalized_train.drop('protein', axis=1)
-        y_train = self.normalized_train['protein']
+        x_train = (
+            self.selected_train
+            if self.selected_train is not None
+            else self.normalized_train.drop("protein", axis=1)
+        )
+        y_train = self.normalized_train["protein"]
 
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
@@ -296,12 +372,15 @@ class MultiLayerPerceptron:
             # set up the parameter space for hyper-opt
             hidden_layer_sizes = [100, 150, 200, 250, 300, 350, 400]
             hidden_layer_numbers = list(range(1, 6))
-            hidden_layers = tuple(hidden_layer_size for hidden_layer_size in hidden_layer_sizes
-                                  for _ in hidden_layer_numbers)
+            hidden_layers = tuple(
+                hidden_layer_size
+                for hidden_layer_size in hidden_layer_sizes
+                for _ in hidden_layer_numbers
+            )
 
             space = {
-                'activation': hp.choice('activation', ['relu', 'tanh']),
-                'hidden_layer_sizes': hp.choice('hidden_layer_sizes', hidden_layers)
+                "activation": hp.choice("activation", ["relu", "tanh"]),
+                "hidden_layer_sizes": hp.choice("hidden_layer_sizes", hidden_layers),
             }
 
             # Initialize trials object to store details of each iteration
@@ -311,13 +390,18 @@ class MultiLayerPerceptron:
             objective_with_data = partial(hyper_opt_func, x=x_train, y=y_train)
 
             # Run the optimizer
-            best = fmin(fn=objective_with_data, space=space, algo=tpe.suggest, max_evals=self.hyper_opt_iterations,
-                        trials=trials)
+            best = fmin(
+                fn=objective_with_data,
+                space=space,
+                algo=tpe.suggest,
+                max_evals=self.hyper_opt_iterations,
+                trials=trials,
+            )
 
             # Select the best model
             self.model = MLPRegressor(
-                activation=['relu', 'tanh'][best['activation']],
-                hidden_layer_sizes=hidden_layers[best['hidden_layer_sizes']]
+                activation=["relu", "tanh"][best["activation"]],
+                hidden_layer_sizes=hidden_layers[best["hidden_layer_sizes"]],
             )
 
         # Initialize arrays to store metrics for each fold
@@ -352,9 +436,17 @@ class MultiLayerPerceptron:
             rmse_per_fold.append(np.sqrt(mean_squared_error(y_test_fold, predictions)))
             r2_per_fold.append(r2_score(y_test_fold, predictions))
             mae_per_fold.append(mean_absolute_error(y_test_fold, predictions))
-            two_fold_error_per_fold.append(np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)))
+            two_fold_error_per_fold.append(
+                np.mean(
+                    (predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)
+                )
+            )
             percentage_2fold_error_per_fold.append(
-                np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)) * 100)
+                np.mean(
+                    (predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)
+                )
+                * 100
+            )
 
         # Calculate the average and standard deviation for each metric
 
@@ -372,7 +464,9 @@ class MultiLayerPerceptron:
 
         # Calculate Percentage within 2-Fold Error
         self.training_percentage_2fold_error = np.mean(percentage_2fold_error_per_fold)
-        self.training_percentage_2fold_error_std = np.std(percentage_2fold_error_per_fold)
+        self.training_percentage_2fold_error_std = np.std(
+            percentage_2fold_error_per_fold
+        )
 
         # Calculate 2-fold error
         self.training_2fold_error = np.mean(two_fold_error_per_fold)
@@ -390,22 +484,28 @@ class MultiLayerPerceptron:
         """
 
         # Prepare the test data
-        x_test = self.selected_test if self.selected_test is not None else self.normalized_test.drop('protein', axis=1)
-        y_test = self.normalized_test['protein']
+        x_test = (
+            self.selected_test
+            if self.selected_test is not None
+            else self.normalized_test.drop("protein", axis=1)
+        )
+        y_test = self.normalized_test["protein"]
 
         # Get the scaler (to un-normalise the predictions)
         scaler = None
-        if self.data_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == "zscore":
             scaler = self.z_score_target_normaliser
 
-        elif self.data_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == "minmax":
             scaler = self.min_max_target_normaliser
 
         # Make predictions using the trained model
         test_predictions = self.model.predict(x_test)
 
         # Un-normalise the predictions
-        self.model_predictions = scaler.inverse_transform(test_predictions.reshape(-1, 1)).flatten().tolist()
+        self.model_predictions = (
+            scaler.inverse_transform(test_predictions.reshape(-1, 1)).flatten().tolist()
+        )
 
         # Calculate RMSE for test data
         self.testing_RMSE = np.sqrt(mean_squared_error(y_test, test_predictions))
@@ -417,11 +517,15 @@ class MultiLayerPerceptron:
         self.testing_MAE = mean_absolute_error(y_test, test_predictions)
 
         # Calculate Percentage within 2-Fold Error for test data
-        self.testing_percentage_2fold_error = \
-            np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)) * 100
+        self.testing_percentage_2fold_error = (
+            np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2))
+            * 100
+        )
 
         # Calculate 2-fold error
-        self.testing_2fold_error = np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2))
+        self.testing_2fold_error = np.mean(
+            (test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)
+        )
 
         self.tested_model = True
 
@@ -432,10 +536,10 @@ class MultiLayerPerceptron:
         """
 
         scaler = None
-        if self.data_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == "zscore":
             scaler = self.z_score_target_normaliser
 
-        elif self.data_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == "minmax":
             scaler = self.min_max_target_normaliser
 
         normalized_x_df = pd.DataFrame(self.normalized_query)
@@ -445,12 +549,18 @@ class MultiLayerPerceptron:
         normalized_predictions = self.model.predict(normalized_x_df)
 
         # Convert predictions back to original scale
-        predictions_original_scale = scaler.inverse_transform(normalized_predictions.reshape(-1, 1))
+        predictions_original_scale = scaler.inverse_transform(
+            normalized_predictions.reshape(-1, 1)
+        )
 
         # Convert predictions to a DataFrame
-        self.query_predictions = pd.DataFrame(predictions_original_scale, columns=['protein'])
+        self.query_predictions = pd.DataFrame(
+            predictions_original_scale, columns=["protein"]
+        )
 
         # Concatenate the raw data DataFrame with the predictions DataFrame
-        self.model_query_created_file = pd.concat([self.querying_data['sequence'], self.query_predictions], axis=1)
+        self.model_query_created_file = pd.concat(
+            [self.querying_data["sequence"], self.query_predictions], axis=1
+        )
 
         self.queried_model = True

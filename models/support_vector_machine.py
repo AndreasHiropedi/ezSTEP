@@ -1,16 +1,18 @@
-import dimension_reduction_methods
-import feature_encoders
-import data_normalizers
-import feature_selectors
+from functools import partial
 
 import numpy as np
 import pandas as pd
-
-from functools import partial
-from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.svm import SVR
+
+from utils import (
+    data_normalizers,
+    feature_encoders,
+    feature_selectors,
+    unsupervised_learning,
+)
 
 
 def hyper_opt_func(params, x, y):
@@ -18,14 +20,11 @@ def hyper_opt_func(params, x, y):
     This function performs the hyperparameter optimisation
     """
 
-    svr = SVR(
-        C=params['C'],
-        epsilon=params['epsilon']
-    )
+    svr = SVR(C=params["C"], epsilon=params["epsilon"])
 
-    score = cross_val_score(svr, x, y, scoring='r2', cv=5).mean()
+    score = cross_val_score(svr, x, y, scoring="r2", cv=5).mean()
 
-    return {'loss': -score, 'status': STATUS_OK}
+    return {"loss": -score, "status": STATUS_OK}
 
 
 class SupportVectorMachine:
@@ -36,16 +35,12 @@ class SupportVectorMachine:
 
     def __init__(self):
         # model parameters
-        self.kernel = 'rbf'
+        self.kernel = "rbf"
         self.C = 30
         self.epsilon = 0.5
 
         # model itself
-        self.model = SVR(
-            kernel=self.kernel,
-            C=self.C,
-            epsilon=self.epsilon
-        )
+        self.model = SVR(kernel=self.kernel, C=self.C, epsilon=self.epsilon)
         self.model_name = "Support Vector Machine"
 
         # model data
@@ -185,13 +180,22 @@ class SupportVectorMachine:
         the user inputs
         """
 
-        if self.feature_encoding_method == 'binary':
-            self.encoded_train, self.encoded_test, self.encoded_query = \
-                feature_encoders.encode_one_hot(self.training_data, self.testing_data, self.querying_data)
+        if self.feature_encoding_method == "binary":
+            self.encoded_train, self.encoded_test, self.encoded_query = (
+                feature_encoders.encode_one_hot(
+                    self.training_data, self.testing_data, self.querying_data
+                )
+            )
 
-        elif self.feature_encoding_method == 'kmer':
-            self.encoded_train, self.encoded_test, self.encoded_query = \
-                feature_encoders.encode_kmer(self.training_data, self.testing_data, self.querying_data, self.kmer_size)
+        elif self.feature_encoding_method == "kmer":
+            self.encoded_train, self.encoded_test, self.encoded_query = (
+                feature_encoders.encode_kmer(
+                    self.training_data,
+                    self.testing_data,
+                    self.querying_data,
+                    self.kmer_size,
+                )
+            )
 
     def normalize_features(self):
         """
@@ -199,19 +203,33 @@ class SupportVectorMachine:
         the user inputs
         """
 
-        if self.data_normalization_algorithm == 'zscore':
-            self.normalized_train, self.normalized_test, self.z_score_feature_normaliser, \
-                self.z_score_target_normaliser = \
-                data_normalizers.z_score_normalization(self.encoded_train, self.encoded_test)
+        if self.data_normalization_algorithm == "zscore":
+            (
+                self.normalized_train,
+                self.normalized_test,
+                self.z_score_feature_normaliser,
+                self.z_score_target_normaliser,
+            ) = data_normalizers.z_score_normalization(
+                self.encoded_train, self.encoded_test
+            )
             if self.encoded_query is not None:
-                self.normalized_query = self.z_score_feature_normaliser.transform(self.encoded_query)
+                self.normalized_query = self.z_score_feature_normaliser.transform(
+                    self.encoded_query
+                )
 
-        elif self.data_normalization_algorithm == 'minmax':
-            self.normalized_train, self.normalized_test, self.min_max_feature_normaliser, \
-                self.min_max_target_normaliser = \
-                data_normalizers.min_max_normalization(self.encoded_train, self.encoded_test)
+        elif self.data_normalization_algorithm == "minmax":
+            (
+                self.normalized_train,
+                self.normalized_test,
+                self.min_max_feature_normaliser,
+                self.min_max_target_normaliser,
+            ) = data_normalizers.min_max_normalization(
+                self.encoded_train, self.encoded_test
+            )
             if self.encoded_query is not None:
-                self.normalized_query = self.min_max_feature_normaliser.transform(self.encoded_query)
+                self.normalized_query = self.min_max_feature_normaliser.transform(
+                    self.encoded_query
+                )
 
     def train_model(self):
         """
@@ -226,54 +244,101 @@ class SupportVectorMachine:
         # Apply dimensionality reduction (if unsupervised learning is enabled)
         if self.use_unsupervised == "yes":
             # PCA
-            if self.dimensionality_reduction_algorithm == 'PCA':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_pca(self.normalized_train, self.normalized_test,
-                                                        self.normalized_query)
+            if self.dimensionality_reduction_algorithm == "PCA":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_pca(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
             # UMAP
-            elif self.dimensionality_reduction_algorithm == 'UMAP':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_umap(self.normalized_train, self.normalized_test,
-                                                         self.normalized_query)
+            elif self.dimensionality_reduction_algorithm == "UMAP":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_umap(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
             # t-SNE
-            elif self.dimensionality_reduction_algorithm == 't-SNE':
-                self.unsupervised_train, self.unsupervised_test, self.unsupervised_query = \
-                    dimension_reduction_methods.use_tsne(self.normalized_train, self.normalized_test,
-                                                         self.normalized_query)
+            elif self.dimensionality_reduction_algorithm == "t-SNE":
+                (
+                    self.unsupervised_train,
+                    self.unsupervised_test,
+                    self.unsupervised_query,
+                ) = unsupervised_learning.use_tsne(
+                    self.normalized_train, self.normalized_test, self.normalized_query
+                )
 
         # Apply feature selection (if enabled)
         if self.use_feature_select == "yes":
             # f-score
             if self.feature_selection_algorithm == "F-score":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.f_score_selection(self.normalized_train, self.normalized_test,
-                                                        self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.f_score_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # weight importance
             elif self.feature_selection_algorithm == "Weight Importance":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.weight_importance_selection(self.model, self.normalized_train,
-                                                                  self.normalized_test,
-                                                                  self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.weight_importance_selection(
+                    self.model,
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # mutual information
             elif self.feature_selection_algorithm == "Mutual Information":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.mutual_information_selection(self.normalized_train, self.normalized_test,
-                                                                   self.normalized_query, self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.mutual_information_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
             # PCA
             elif self.feature_selection_algorithm == "PCA":
-                self.selected_train, self.selected_test, self.selected_query, self.selected_features = \
-                    feature_selectors.pca_selection(self.normalized_train, self.normalized_test, self.normalized_query,
-                                                    self.feature_number)
+                (
+                    self.selected_train,
+                    self.selected_test,
+                    self.selected_query,
+                    self.selected_features,
+                ) = feature_selectors.pca_selection(
+                    self.normalized_train,
+                    self.normalized_test,
+                    self.normalized_query,
+                    self.feature_number,
+                )
 
         # Prepare the training data
-        x_train = self.selected_train if self.selected_train is not None else \
-            self.normalized_train.drop('protein', axis=1)
-        y_train = self.normalized_train['protein']
+        x_train = (
+            self.selected_train
+            if self.selected_train is not None
+            else self.normalized_train.drop("protein", axis=1)
+        )
+        y_train = self.normalized_train["protein"]
 
         # Apply hyperparameter optimisation (if enabled)
         if self.use_hyper_opt == "yes":
@@ -283,8 +348,8 @@ class SupportVectorMachine:
             epsilon_choice = np.arange(0.1, 2, 0.1)
 
             space = {
-                'C': hp.choice('C', c_choice),
-                'epsilon': hp.choice('epsilon', epsilon_choice)
+                "C": hp.choice("C", c_choice),
+                "epsilon": hp.choice("epsilon", epsilon_choice),
             }
 
             # Initialize trials object to store details of each iteration
@@ -294,13 +359,17 @@ class SupportVectorMachine:
             objective_with_data = partial(hyper_opt_func, x=x_train, y=y_train)
 
             # Run the optimizer
-            best = fmin(fn=objective_with_data, space=space, algo=tpe.suggest, max_evals=self.hyper_opt_iterations,
-                        trials=trials)
+            best = fmin(
+                fn=objective_with_data,
+                space=space,
+                algo=tpe.suggest,
+                max_evals=self.hyper_opt_iterations,
+                trials=trials,
+            )
 
             # Select the best model
             self.model = SVR(
-                C=c_choice[best['C']],
-                epsilon=epsilon_choice[best['epsilon']]
+                C=c_choice[best["C"]], epsilon=epsilon_choice[best["epsilon"]]
             )
 
         # Initialize arrays to store metrics for each fold
@@ -335,9 +404,17 @@ class SupportVectorMachine:
             rmse_per_fold.append(np.sqrt(mean_squared_error(y_test_fold, predictions)))
             r2_per_fold.append(r2_score(y_test_fold, predictions))
             mae_per_fold.append(mean_absolute_error(y_test_fold, predictions))
-            two_fold_error_per_fold.append(np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)))
+            two_fold_error_per_fold.append(
+                np.mean(
+                    (predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)
+                )
+            )
             percentage_2fold_error_per_fold.append(
-                np.mean((predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)) * 100)
+                np.mean(
+                    (predictions / y_test_fold <= 2) & (y_test_fold / predictions <= 2)
+                )
+                * 100
+            )
 
         # Calculate the average and standard deviation for each metric
 
@@ -355,7 +432,9 @@ class SupportVectorMachine:
 
         # Calculate Percentage within 2-Fold Error
         self.training_percentage_2fold_error = np.mean(percentage_2fold_error_per_fold)
-        self.training_percentage_2fold_error_std = np.std(percentage_2fold_error_per_fold)
+        self.training_percentage_2fold_error_std = np.std(
+            percentage_2fold_error_per_fold
+        )
 
         # Calculate 2-fold error
         self.training_2fold_error = np.mean(two_fold_error_per_fold)
@@ -373,22 +452,28 @@ class SupportVectorMachine:
         """
 
         # Prepare the test data
-        x_test = self.selected_test if self.selected_test is not None else self.normalized_test.drop('protein', axis=1)
-        y_test = self.normalized_test['protein']
+        x_test = (
+            self.selected_test
+            if self.selected_test is not None
+            else self.normalized_test.drop("protein", axis=1)
+        )
+        y_test = self.normalized_test["protein"]
 
         # Get the scaler (to un-normalise the predictions)
         scaler = None
-        if self.data_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == "zscore":
             scaler = self.z_score_target_normaliser
 
-        elif self.data_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == "minmax":
             scaler = self.min_max_target_normaliser
 
         # Make predictions using the trained model
         test_predictions = self.model.predict(x_test)
 
         # Un-normalise the predictions
-        self.model_predictions = scaler.inverse_transform(test_predictions.reshape(-1, 1)).flatten().tolist()
+        self.model_predictions = (
+            scaler.inverse_transform(test_predictions.reshape(-1, 1)).flatten().tolist()
+        )
 
         # Calculate RMSE for test data
         self.testing_RMSE = np.sqrt(mean_squared_error(y_test, test_predictions))
@@ -400,11 +485,15 @@ class SupportVectorMachine:
         self.testing_MAE = mean_absolute_error(y_test, test_predictions)
 
         # Calculate Percentage within 2-Fold Error for test data
-        self.testing_percentage_2fold_error = \
-            np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)) * 100
+        self.testing_percentage_2fold_error = (
+            np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2))
+            * 100
+        )
 
         # Calculate 2-fold error
-        self.testing_2fold_error = np.mean((test_predictions / y_test <= 2) & (y_test / test_predictions <= 2))
+        self.testing_2fold_error = np.mean(
+            (test_predictions / y_test <= 2) & (y_test / test_predictions <= 2)
+        )
 
         self.tested_model = True
 
@@ -415,10 +504,10 @@ class SupportVectorMachine:
         """
 
         scaler = None
-        if self.data_normalization_algorithm == 'zscore':
+        if self.data_normalization_algorithm == "zscore":
             scaler = self.z_score_target_normaliser
 
-        elif self.data_normalization_algorithm == 'minmax':
+        elif self.data_normalization_algorithm == "minmax":
             scaler = self.min_max_target_normaliser
 
         normalized_x_df = pd.DataFrame(self.normalized_query)
@@ -428,12 +517,18 @@ class SupportVectorMachine:
         normalized_predictions = self.model.predict(normalized_x_df)
 
         # Convert predictions back to original scale
-        predictions_original_scale = scaler.inverse_transform(normalized_predictions.reshape(-1, 1))
+        predictions_original_scale = scaler.inverse_transform(
+            normalized_predictions.reshape(-1, 1)
+        )
 
         # Convert predictions to a DataFrame
-        self.query_predictions = pd.DataFrame(predictions_original_scale, columns=['protein'])
+        self.query_predictions = pd.DataFrame(
+            predictions_original_scale, columns=["protein"]
+        )
 
         # Concatenate the raw data DataFrame with the predictions DataFrame
-        self.model_query_created_file = pd.concat([self.querying_data['sequence'], self.query_predictions], axis=1)
+        self.model_query_created_file = pd.concat(
+            [self.querying_data["sequence"], self.query_predictions], axis=1
+        )
 
         self.queried_model = True
