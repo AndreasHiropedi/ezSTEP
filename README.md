@@ -93,6 +93,13 @@ python main.py
 
 This command will create a localhost link, which, when clicked, will redirect you to your local instance of the app.
 
+**Optional:** since the code creates a ```.db``` file locally, the data from one session to another may persist. To avoid this, run these commands in order to start each iteration with a clean slate:
+
+```sh
+rm ezstep.db
+python main.py
+```
+
 ## Citations
 
 If you found *ezSTEP* useful, please kindly cite the following paper:
