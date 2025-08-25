@@ -11,12 +11,9 @@ def create_layout():
 
     return html.Div(
         children=[
-            html.H1(
-                'Disclaimer',
-                id='disclaimer-header'
-            ),
+            html.H1("Disclaimer", id="disclaimer-header"),
             disclaimer_text(),
-            app_footer()
+            app_footer(),
         ]
     )
 
@@ -29,34 +26,30 @@ def app_footer():
     # Determine the absolute path of the current file (e.g., main_page.py)
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    # Construct the absolute path to the image file
-    uni_image_path = os.path.join(current_directory, 'assets', 'eduni-logo.png')
+    # Go one level up to the root folder
+    root_directory = os.path.abspath(os.path.join(current_directory, ".."))
+
+    # Construct the absolute path to the image in the assets folder
+    uni_image_path = os.path.join(root_directory, "assets", "eduni-logo.png")
+
     # Open the image, read it, and encode it into Base64
-    encoded_uni_image = base64.b64encode(open(uni_image_path, 'rb').read()).decode()
+    encoded_uni_image = base64.b64encode(open(uni_image_path, "rb").read()).decode()
 
     return html.Footer(
-        id='app-footer',
+        id="app-footer",
         children=[
             # University logo
             html.A(
-                children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_uni_image}'
-                    )
-                ],
-                href='https://homepages.inf.ed.ac.uk/doyarzun/',
-                target='_blank'
+                children=[html.Img(src=f"data:image/png;base64,{encoded_uni_image}")],
+                href="https://homepages.inf.ed.ac.uk/doyarzun/",
+                target="_blank",
             ),
-
             # Copyright
             html.H3(
                 "Biomolecular Control Group 2024",
-            )
+            ),
         ],
-        style={
-            'background': 'white',
-            'color': 'black'
-        }
+        style={"background": "white", "color": "black"},
     )
 
 
@@ -66,45 +59,37 @@ def disclaimer_text():
     """
 
     return html.Div(
-        id='disclaimer-text',
+        id="disclaimer-text",
         children=[
             html.H2(
-                'Privacy Disclaimer',
-                style={
-                    'margin-left': '40px',
-                    'font-size': '20pt'
-                }
+                "Privacy Disclaimer", style={"margin-left": "40px", "font-size": "20pt"}
             ),
             html.P(
                 "Please be advised that this web-app does not store or retain any personal data or information "
                 "entered during your session. All data is deleted and cannot be recovered once you close "
                 "this browser tab. We respect your privacy and ensure that your session remains confidential.",
                 style={
-                    'margin-top': '40px',
-                    'margin-left': '40px',
-                    'margin-right': '40px',
-                    'font-size': '12pt',
-                    'margin-bottom': '20px'
-                }
+                    "margin-top": "40px",
+                    "margin-left": "40px",
+                    "margin-right": "40px",
+                    "font-size": "12pt",
+                    "margin-bottom": "20px",
+                },
             ),
             html.H2(
-                'Dataset Disclaimer',
-                style={
-                    'margin-left': '40px',
-                    'font-size': '20pt'
-                }
+                "Dataset Disclaimer", style={"margin-left": "40px", "font-size": "20pt"}
             ),
             html.P(
                 "The example datasets provided within this platform are obtained from publicly available sources. "
                 "These datasets are intended for demonstration and educational purposes only, and were obtained from "
                 "the Cambray et al. (2018) paper.",
                 style={
-                    'margin-top': '40px',
-                    'margin-left': '40px',
-                    'margin-right': '40px',
-                    'font-size': '12pt',
-                    'margin-bottom': '20px'
-                }
-            )
-        ]
+                    "margin-top": "40px",
+                    "margin-left": "40px",
+                    "margin-right": "40px",
+                    "font-size": "12pt",
+                    "margin-bottom": "20px",
+                },
+            ),
+        ],
     )

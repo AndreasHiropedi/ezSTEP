@@ -1175,3 +1175,39 @@
     100% { transform: rotate(360deg); }
 }
 
+/* === HEADER CLEANUP === */
+#app-header {
+    width: 100%;
+    height: 60px !important;
+    background: black;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 40px; /* <-- bigger spacing between elements */
+}
+
+/* Default logo sizing */
+#app-header img {
+    height: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* App logo slightly larger */
+#app-logo > img {
+    height: 40px !important;
+}
+
+/* About Us link styling */
+#about-us {
+    font-size: 14px;
+    font-family: sans-serif;
+    color: white;
+    text-decoration: none;
+    margin-left: auto; /* push it + GitHub logo to the right */
+}
+
+/* GitHub logo styling */
+.github-logo {
+    height: 28px !important;
+}

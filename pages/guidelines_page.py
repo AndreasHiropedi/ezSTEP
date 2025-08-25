@@ -11,12 +11,9 @@ def create_layout():
 
     return html.Div(
         children=[
-            html.H1(
-                'User Guidelines',
-                id='guidelines-header'
-            ),
+            html.H1("User Guidelines", id="guidelines-header"),
             user_guide(),
-            app_footer()
+            app_footer(),
         ]
     )
 
@@ -29,34 +26,30 @@ def app_footer():
     # Determine the absolute path of the current file (e.g., main_page.py)
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
+    # Go one level up to the root folder
+    root_directory = os.path.abspath(os.path.join(current_directory, ".."))
+
     # Construct the absolute path to the image file
-    uni_image_path = os.path.join(current_directory, 'assets', 'eduni-logo.png')
+    uni_image_path = os.path.join(root_directory, "assets", "eduni-logo.png")
+
     # Open the image, read it, and encode it into Base64
-    encoded_uni_image = base64.b64encode(open(uni_image_path, 'rb').read()).decode()
+    encoded_uni_image = base64.b64encode(open(uni_image_path, "rb").read()).decode()
 
     return html.Footer(
-        id='app-footer',
+        id="app-footer",
         children=[
             # University logo
             html.A(
-                children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_uni_image}'
-                    )
-                ],
-                href='https://homepages.inf.ed.ac.uk/doyarzun/',
-                target='_blank'
+                children=[html.Img(src=f"data:image/png;base64,{encoded_uni_image}")],
+                href="https://homepages.inf.ed.ac.uk/doyarzun/",
+                target="_blank",
             ),
-
             # Copyright
             html.H3(
                 "Biomolecular Control Group 2024",
-            )
+            ),
         ],
-        style={
-            'background': 'white',
-            'color': 'black'
-        }
+        style={"background": "white", "color": "black"},
     )
 
 
@@ -70,23 +63,33 @@ def user_guide():
     # Determine the absolute path of the current file (e.g., main_page.py)
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
-    # Construct the absolute path to the image file
-    upload_image_path = os.path.join(current_directory, 'assets', 'upload.png')
-    # Open the image, read it, and encode it into Base64
-    encoded_upload_image = base64.b64encode(open(upload_image_path, 'rb').read()).decode()
+    # Go one level up to the root folder
+    root_directory = os.path.abspath(os.path.join(current_directory, ".."))
 
     # Construct the absolute path to the image file
-    input_image_path = os.path.join(current_directory, 'assets', 'inputs.png')
+    upload_image_path = os.path.join(root_directory, "assets", "upload.png")
+
     # Open the image, read it, and encode it into Base64
-    encoded_input_image = base64.b64encode(open(input_image_path, 'rb').read()).decode()
+    encoded_upload_image = base64.b64encode(
+        open(upload_image_path, "rb").read()
+    ).decode()
 
     # Construct the absolute path to the image file
-    output_image_path = os.path.join(current_directory, 'assets', 'outputs.png')
+    input_image_path = os.path.join(root_directory, "assets", "inputs.png")
+
     # Open the image, read it, and encode it into Base64
-    encoded_output_image = base64.b64encode(open(output_image_path, 'rb').read()).decode()
+    encoded_input_image = base64.b64encode(open(input_image_path, "rb").read()).decode()
+
+    # Construct the absolute path to the image file
+    output_image_path = os.path.join(root_directory, "assets", "outputs.png")
+
+    # Open the image, read it, and encode it into Base64
+    encoded_output_image = base64.b64encode(
+        open(output_image_path, "rb").read()
+    ).decode()
 
     return html.Div(
-        id='user-guide',
+        id="user-guide",
         children=[
             html.H1("User Guidelines"),
             html.P(
@@ -95,11 +98,11 @@ def user_guide():
                 "specific information about the individual tools available. "
             ),
             html.Div(
-                id='info-wrapper',
+                id="info-wrapper",
                 children=[
                     # General information
                     html.Div(
-                        id='general-info',
+                        id="general-info",
                         children=[
                             html.H4("1. General information"),
                             html.Hr(),
@@ -123,25 +126,24 @@ def user_guide():
                                     "steps have occurred, the user will be able to visualise the model "
                                     "output (see more in the 'Model outputs' section). For "
                                     "more detailed information on each specific subsection, see the "
-                                    "information below. "
+                                    "information below. ",
                                 ]
-                            )
+                            ),
                         ],
                         style={
-                            'background': '#f8d7da',
-                            'color': '#721c24',
-                            'borderColor': '#f5c6cb'
-                        }
+                            "background": "#f8d7da",
+                            "color": "#721c24",
+                            "borderColor": "#f5c6cb",
+                        },
                     ),
-
                     # File upload
                     html.Div(
-                        id='file-upload',
+                        id="file-upload",
                         children=[
                             html.H4("2. File upload"),
                             html.Hr(),
                             html.Img(
-                                src=f'data:image/png;base64,{encoded_upload_image}'
+                                src=f"data:image/png;base64,{encoded_upload_image}"
                             ),
                             html.P(
                                 "As can be seen in the image above, this section contains three upload boxes. "
@@ -167,23 +169,22 @@ def user_guide():
                                 "uploaded training dataset. Therefore, it is worth noting that, if the length of the "
                                 "text input is less than 5 sequences long, even if the sequences are valid, the input "
                                 "will be rendered invalid. "
-                            )
+                            ),
                         ],
                         style={
-                            'background': '#e2e3e5',
-                            'color': '#383d41',
-                            'borderColor': '#d6d8db'
-                        }
+                            "background": "#e2e3e5",
+                            "color": "#383d41",
+                            "borderColor": "#d6d8db",
+                        },
                     ),
-
                     # Model input parameters
                     html.Div(
-                        id='model-input',
+                        id="model-input",
                         children=[
                             html.H4("3. Model input parameters"),
                             html.Hr(),
                             html.Img(
-                                src=f'data:image/png;base64,{encoded_input_image}'
+                                src=f"data:image/png;base64,{encoded_input_image}"
                             ),
                             html.P(
                                 "In this section, the user gets to select a model and input all the "
@@ -205,23 +206,22 @@ def user_guide():
                                 "specific model (see image). More information about the specifics of "
                                 "model inputs can be found "
                                 "in the user guidelines on the individual model input pages."
-                            )
+                            ),
                         ],
                         style={
-                            'background': '#cce5ff',
-                            'color': '#004085',
-                            'borderColor': '#b8daff'
-                        }
+                            "background": "#cce5ff",
+                            "color": "#004085",
+                            "borderColor": "#b8daff",
+                        },
                     ),
-
                     # Model output visualisations
                     html.Div(
-                        id='model-output',
+                        id="model-output",
                         children=[
                             html.H4("4. Model outputs"),
                             html.Hr(),
                             html.Img(
-                                src=f'data:image/png;base64,{encoded_output_image}'
+                                src=f"data:image/png;base64,{encoded_output_image}"
                             ),
                             html.P(
                                 children=[
@@ -253,15 +253,15 @@ def user_guide():
                                 "enable/ disable them by clicking on the respective item in the legend. Additionally, "
                                 "all graphs provide features such as zooming in/ out, saving the graph as a PNG to "
                                 "the user's local device, and selecting to focus only on certain regions of the graph."
-                            )
+                            ),
                         ],
                         style={
-                            'background': '#fff3cd',
-                            'color': '#856404',
-                            'borderColor': '#ffeeba'
-                        }
+                            "background": "#fff3cd",
+                            "color": "#856404",
+                            "borderColor": "#ffeeba",
+                        },
                     ),
-                ]
-            )
-        ]
+                ],
+            ),
+        ],
     )

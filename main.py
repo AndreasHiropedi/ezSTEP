@@ -1,7 +1,6 @@
 import base64
 import io
 import os
-import time
 import uuid
 from urllib.parse import urlparse
 
@@ -9,7 +8,7 @@ import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Dash, Input, Output, State, callback, clientside_callback, dcc, html
-from flask import send_from_directory, session
+from flask import Response, session
 from flask_apscheduler import APScheduler
 
 from config import SECRET_KEY
@@ -71,41 +70,36 @@ def app_header():
     return html.Header(
         id="app-header",
         children=[
-            # Dash logo display
+            # Dash logo
             html.A(
-                id="dash-logo",
-                children=[
-                    html.Img(src=f"data:image/png;base64,{encoded_plotly_image}")
-                ],
+                html.Img(src=f"data:image/png;base64,{encoded_plotly_image}"),
                 href="https://plotly.com",
                 target="_blank",
+                id="dash-logo",
             ),
             # App logo
             html.A(
+                html.Img(src=f"data:image/png;base64,{encoded_logo_image}"),
+                href="/",
                 id="app-logo",
-                children=[
-                    html.Img(src=f"data:image/png;base64,{encoded_logo_image}"),
-                ],
-                href="/ezSTEP/",
             ),
-            # About us page
+            # About Us page
             html.A(
-                id="about-us",
-                children=["About Us"],
-                href="/ezSTEP/about-us/",
+                "About Us",
+                href="/about-us/",
                 target="_blank",
+                id="about-us",
             ),
-            # GitHub repo link
+            # GitHub logo (clickable)
             html.A(
-                id="github-link",
-                children=["View on GitHub"],
+                html.Img(
+                    src=f"data:image/png;base64,{encoded_github_image}",
+                    className="github-logo",
+                ),
                 href="https://github.com/AndreasHiropedi/ezSTEP",
                 target="_blank",
             ),
-            # GitHub logo
-            html.Img(src=f"data:image/png;base64,{encoded_github_image}"),
         ],
-        style={"background": "black", "color": "white"},
     )
 
 
@@ -161,19 +155,19 @@ def user_info():
                     html.A(
                         "example_train_data.csv",
                         download="example_train_data.csv",
-                        href="/downloadable_data/example_train_data.csv",
+                        href="/data_processing/datasets/example_train_data.csv",
                         style={"margin-left": "280px"},
                     ),
                     html.A(
                         "example_test_data.csv",
                         download="example_test_data.csv",
-                        href="/downloadable_data/example_test_data.csv",
+                        href="/data_processing/datasets/example_test_data.csv",
                         style={"margin-left": "220px"},
                     ),
                     html.A(
                         "example_query_data.csv",
                         download="example_query_data.csv",
-                        href="/downloadable_data/example_query_data.csv",
+                        href="/data_processing/datasets/example_query_data.csv",
                         style={"margin-left": "220px"},
                     ),
                 ],
@@ -455,7 +449,7 @@ def model_input_ref(model_key, session_id):
 
     return html.A(
         children=[html.H4(f"{model_key} input parameters", id="model-inputs-ref")],
-        href=f"/ezSTEP/model-input/{model_key}",
+        href=f"/model-input/{model_key}",
         target="_blank",
     )
 
@@ -468,7 +462,7 @@ def output_metric_ref():
 
     return html.A(
         children=[html.H4("View output statistics plot", id="metric-plot-ref")],
-        href=f"/ezSTEP/output-statistics/output-graph",
+        href=f"/output-statistics/output-graph",
         target="_blank",
     )
 
@@ -481,7 +475,7 @@ def model_output_ref(model_key):
 
     return html.A(
         children=[html.H4(f"{model_key} output", id="model-outputs-ref")],
-        href=f"/ezSTEP/model-output/{model_key}",
+        href=f"/model-output/{model_key}",
         target="_blank",
     )
 
@@ -1931,7 +1925,17 @@ def download_file(filename):
     """
 
     directory = os.path.join(os.getcwd(), "data_processing/datasets/")
-    return send_from_directory(directory, filename, as_attachment=True)
+
+    file_path = os.path.join(directory, filename)
+
+    with open(file_path, "rb") as f:
+        data = f.read()
+
+    return Response(
+        data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
 
 
 @callback(Output("session-id", "data"), [Input("url", "pathname")])
@@ -1958,6 +1962,7 @@ def create_or_fetch_session_id(pathname):
 
     try:
         db.get_user_session_data(session["user_session_id"])
+
     except Exception:
         # Initialize empty values in Redis for this session ID
         data = {

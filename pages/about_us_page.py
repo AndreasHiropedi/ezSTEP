@@ -11,13 +11,10 @@ def create_layout():
 
     return html.Div(
         children=[
-            html.H1(
-                'About Us',
-                id='about-us-header'
-            ),
+            html.H1("About Us", id="about-us-header"),
             about_us(),
             useful_links(),
-            app_footer()
+            app_footer(),
         ]
     )
 
@@ -30,34 +27,30 @@ def app_footer():
     # Determine the absolute path of the current file (e.g., main_page.py)
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
+    # Go one level up to the root folder
+    root_directory = os.path.abspath(os.path.join(current_directory, ".."))
+
     # Construct the absolute path to the image file
-    uni_image_path = os.path.join(current_directory, 'assets', 'eduni-logo.png')
+    uni_image_path = os.path.join(root_directory, "assets", "eduni-logo.png")
+
     # Open the image, read it, and encode it into Base64
-    encoded_uni_image = base64.b64encode(open(uni_image_path, 'rb').read()).decode()
+    encoded_uni_image = base64.b64encode(open(uni_image_path, "rb").read()).decode()
 
     return html.Footer(
-        id='app-footer',
+        id="app-footer",
         children=[
             # University logo
             html.A(
-                children=[
-                    html.Img(
-                        src=f'data:image/png;base64,{encoded_uni_image}'
-                    )
-                ],
-                href='https://homepages.inf.ed.ac.uk/doyarzun/',
-                target='_blank'
+                children=[html.Img(src=f"data:image/png;base64,{encoded_uni_image}")],
+                href="https://homepages.inf.ed.ac.uk/doyarzun/",
+                target="_blank",
             ),
-
             # Copyright
             html.H3(
                 "Biomolecular Control Group 2024",
-            )
+            ),
         ],
-        style={
-            'background': 'white',
-            'color': 'black'
-        }
+        style={"background": "white", "color": "black"},
     )
 
 
@@ -68,46 +61,34 @@ def useful_links():
     """
 
     return html.Div(
-        id='useful-links',
+        id="useful-links",
         children=[
-            html.H2(
-                'Useful links',
-                style={
-                    'margin-left': '40px',
-                    'font-size': '20pt'
-                }
-            ),
+            html.H2("Useful links", style={"margin-left": "40px", "font-size": "20pt"}),
             html.A(
                 children=[
                     html.H4(
                         "1. User guidelines",
-                        id='guidelines-ref',
-                        style={
-                            'margin-left': '60px',
-                            'font-size': '16pt'
-                        }
+                        id="guidelines-ref",
+                        style={"margin-left": "60px", "font-size": "16pt"},
                     )
                 ],
-                href='/ezSTEP/user-guidelines/',
-                target='_blank'
+                href="/user-guidelines/",
+                target="_blank",
             ),
             user_guidelines_explanation(),
             html.A(
                 children=[
                     html.H4(
                         "2. Disclaimer",
-                        id='disclaimer-ref',
-                        style={
-                            'margin-left': '60px',
-                            'font-size': '16pt'
-                        }
+                        id="disclaimer-ref",
+                        style={"margin-left": "60px", "font-size": "16pt"},
                     )
                 ],
-                href='/ezSTEP/disclaimer/',
-                target='_blank'
+                href="/disclaimer/",
+                target="_blank",
             ),
-            disclaimer_explanation()
-        ]
+            disclaimer_explanation(),
+        ],
     )
 
 
@@ -117,7 +98,7 @@ def user_guidelines_explanation():
     """
 
     return html.Div(
-        id='guidelines-about-us-section',
+        id="guidelines-about-us-section",
         children=[
             html.P(
                 "This first link redirects the user to a separate page containing a series of guidelines on the "
@@ -125,13 +106,13 @@ def user_guidelines_explanation():
                 "information to easily find their way around the platform, as well as clarify any questions users "
                 "may have.",
                 style={
-                    'margin-left': '60px',
-                    'margin-right': '40px',
-                    'font-size': '12pt',
-                    'margin-bottom': '20px'
-                }
+                    "margin-left": "60px",
+                    "margin-right": "40px",
+                    "font-size": "12pt",
+                    "margin-bottom": "20px",
+                },
             )
-        ]
+        ],
     )
 
 
@@ -141,20 +122,20 @@ def disclaimer_explanation():
     """
 
     return html.Div(
-        id='disclaimer-about-us-section',
+        id="disclaimer-about-us-section",
         children=[
             html.P(
                 "This second link redirects the user to a disclaimer page, which we have created to show that "
                 "we only retain information provided by the users on our servers whilst they are using the app, and "
                 "that information is deleted once they close the app in their browser. ",
                 style={
-                    'margin-left': '60px',
-                    'margin-right': '40px',
-                    'font-size': '12pt',
-                    'margin-bottom': '20px'
-                }
+                    "margin-left": "60px",
+                    "margin-right": "40px",
+                    "font-size": "12pt",
+                    "margin-bottom": "20px",
+                },
             )
-        ]
+        ],
     )
 
 
@@ -164,15 +145,15 @@ def about_us():
     """
 
     return html.Div(
-        id='about-us-section',
+        id="about-us-section",
         children=[
             html.H2(
-                'Who we are',
+                "Who we are",
                 style={
-                    'margin-left': '40px',
-                    'font-size': '20pt',
-                    'margin-top': '20px'
-                }
+                    "margin-left": "40px",
+                    "font-size": "20pt",
+                    "margin-top": "20px",
+                },
             ),
             html.P(
                 "The Biomolecular control group is a research group located at the School of Informatics and the "
@@ -184,14 +165,12 @@ def about_us():
                 "stochastic analysis and network theory. The group lead is Diego Oyarzún and includes research "
                 "students and postdocs. ",
                 style={
-                    'margin-left': '40px',
-                    'margin-right': '40px',
-                    'font-size': '12pt',
-                    'margin-bottom': '20px'
-                }
-            )
+                    "margin-left": "40px",
+                    "margin-right": "40px",
+                    "font-size": "12pt",
+                    "margin-bottom": "20px",
+                },
+            ),
         ],
-        style={
-            'margin-top': '30px'
-        }
+        style={"margin-top": "30px"},
     )
