@@ -12,6 +12,7 @@ from dash import Dash, Input, Output, State, callback, clientside_callback, dcc,
 from flask import send_from_directory, session
 from flask_apscheduler import APScheduler
 
+from config import SECRET_KEY
 from database import db
 from pages import (
     about_us_page,
@@ -28,7 +29,7 @@ server = my_app.server
 my_app.config.suppress_callback_exceptions = True
 
 # Set a secret key for the user session
-server.secret_key = "my_secret_key"
+server.secret_key = SECRET_KEY
 
 # Initialize the scheduler with the Flask server
 scheduler = APScheduler()
@@ -1923,18 +1924,18 @@ clientside_callback(
 )
 
 
-@server.route("/downloadable_data/<path:filename>")
+@server.route("/data_processing/datasets/<path:filename>")
 def download_file(filename):
     """
     This callback correctly downloads all the example CSV files for the server.
     """
 
-    directory = os.path.join(os.getcwd(), "downloadable_data")
+    directory = os.path.join(os.getcwd(), "data_processing/datasets/")
     return send_from_directory(directory, filename, as_attachment=True)
 
 
 @callback(Output("session-id", "data"), [Input("url", "pathname")])
-def create_or_fetch_session_id(_pathname):
+def create_or_fetch_session_id(pathname):
     """
     This callback sets the session ID for each user
     """
@@ -1976,23 +1977,16 @@ def create_or_fetch_session_id(_pathname):
 
 def cleanup_old_session_data():
     """
-    This function removes any entries in the REDIS database that have
+    This function removes any entries in the SQLite database that have
     been inactive for a significant period of time.
     """
 
-    current_time = int(time.time())
-    time_limit = 1800
+    time_limit = 3600  # 1 hour
 
-    # Iterate over timestamp keys to find old data
-    for key in db.redis_client.scan_iter("session:timestamp:*"):
-        # Check if key hasn't been accessed within the time limit
-        last_access_time = int(db.redis_client.get(key))
-        if current_time - last_access_time > time_limit:
-            # Extract session_id from the key
-            session_id = key.split(":")[-1]
-            # Delete both the data and timestamp
-            db.redis_client.delete(f"session:data:{session_id}")
-            db.redis_client.delete(f"session:timestamp:{session_id}")
+    deleted_count = db.cleanup_old_sessions(time_limit)
+
+    if deleted_count > 0:
+        print(f"Cleaned up {deleted_count} old sessions")
 
 
 # Schedule the cleanup task

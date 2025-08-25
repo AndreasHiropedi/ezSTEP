@@ -8,3 +8,7 @@ database/__pycache__/
 models/__pycache__/
 pages/__pycache__/
 utils/__pycache__/
+*.db
+*.sqlite
+*.sqlite3
+ezstep.db
