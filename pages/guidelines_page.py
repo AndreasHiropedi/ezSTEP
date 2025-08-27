@@ -90,176 +90,129 @@ def user_guide():
 
     return html.Div(
         id="user-guide",
+        className="responsive-guidelines-container",
         children=[
-            html.H1("User Guidelines"),
             html.P(
                 "Below are some guidelines and information about how the platform works. It includes some "
                 "general information about the structure and layout of the app, as well as some more "
-                "specific information about the individual tools available. "
+                "specific information about the individual tools available.",
+                className="responsive-guidelines-intro",
             ),
             html.Div(
                 id="info-wrapper",
+                className="responsive-info-wrapper",
                 children=[
                     # General information
                     html.Div(
                         id="general-info",
+                        className="responsive-info-card general-info-card",
                         children=[
-                            html.H4("1. General information"),
-                            html.Hr(),
+                            html.H4(
+                                "1. General information",
+                                className="responsive-card-title",
+                            ),
+                            html.Hr(className="responsive-card-divider"),
                             html.P(
-                                children=[
-                                    "The app consists of three sections: ",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   1. File upload",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   2. Model input parameters",
-                                    html.Br(),
-                                    html.Br(),
-                                    "   3. Model outputs",
-                                    html.Br(),
-                                    html.Br(),
-                                    "In order for the user to see the model output, their inputted "
-                                    "parameters for the selected model, as well as their uploaded "
-                                    "dataset, must be first validated and then processed. Once these "
-                                    "steps have occurred, the user will be able to visualise the model "
-                                    "output (see more in the 'Model outputs' section). For "
-                                    "more detailed information on each specific subsection, see the "
-                                    "information below. ",
-                                ]
+                                "The app consists of three sections: File upload, Model input parameters, and Model outputs. "
+                                "In order for the user to see the model output, their inputted parameters for the selected model, "
+                                "as well as their uploaded dataset, must be first validated and then processed. Once these steps "
+                                "have occurred, the user will be able to visualise the model output (see more in the 'Model outputs' section). "
+                                "For more detailed information on each specific subsection, see the information below.",
+                                className="responsive-card-text",
                             ),
                         ],
-                        style={
-                            "background": "#f8d7da",
-                            "color": "#721c24",
-                            "borderColor": "#f5c6cb",
-                        },
                     ),
                     # File upload
                     html.Div(
                         id="file-upload",
+                        className="responsive-info-card file-upload-card",
                         children=[
-                            html.H4("2. File upload"),
-                            html.Hr(),
+                            html.H4(
+                                "2. File upload", className="responsive-card-title"
+                            ),
+                            html.Hr(className="responsive-card-divider"),
                             html.Img(
-                                src=f"data:image/png;base64,{encoded_upload_image}"
+                                src=f"data:image/png;base64,{encoded_upload_image}",
+                                className="responsive-guidelines-image",
                             ),
                             html.P(
                                 "As can be seen in the image above, this section contains three upload boxes. "
-                                "The required fields are for uploading "
-                                "the training and testing data (in order to train the selected model), and the "
-                                "optional field is for uploading a dataset for querying the model on unlabelled data. "
-                                "For each of the three fields, the user has a choice of how they wish to "
-                                "upload the data: they can either upload a file, or paste their data in a "
-                                "textbox. If they choose to upload a file, they must ensure the file "
-                                "contains at least one column with all the sequence data, and one column "
-                                "with all the labels information, with these two columns being matched. If "
-                                "they choose to use the textbox, they must ensure the data is formatted in "
-                                "the following order: sequence + separator (such as , or | or ;) + label + "
-                                "new line character. If the user fails to ensure these conditions, then "
-                                "the app will not be able to process their inputted data and will inform the user. "
-                                "However, it is worth noting "
-                                "that these conditions only apply for training and testing, since for the querying "
-                                "data the user will only need to provide the sequences (in the format of one sequence "
-                                "per line)."
+                                "The required fields are for uploading the training and testing data (in order to train the selected model), "
+                                "and the optional field is for uploading a dataset for querying the model on unlabelled data. "
+                                "For each of the three fields, the user has a choice of how they wish to upload the data: "
+                                "they can either upload a file, or paste their data in a textbox.",
+                                className="responsive-card-text",
                             ),
                             html.P(
-                                "NOTE: for the training process, we always perform 5-fold cross validation on the "
-                                "uploaded training dataset. Therefore, it is worth noting that, if the length of the "
-                                "text input is less than 5 sequences long, even if the sequences are valid, the input "
-                                "will be rendered invalid. "
+                                "If they choose to upload a file, they must ensure the file contains at least one column with all the sequence data, "
+                                "and one column with all the labels information, with these two columns being matched. If they choose to use the textbox, "
+                                "they must ensure the data is formatted in the following order: sequence + separator (such as , or | or ;) + label + new line character.",
+                                className="responsive-card-text",
+                            ),
+                            html.P(
+                                "NOTE: for the training process, we always perform 5-fold cross validation on the uploaded training dataset. "
+                                "Therefore, if the length of the text input is less than 5 sequences long, even if the sequences are valid, "
+                                "the input will be rendered invalid.",
+                                className="responsive-card-text card-note",
                             ),
                         ],
-                        style={
-                            "background": "#e2e3e5",
-                            "color": "#383d41",
-                            "borderColor": "#d6d8db",
-                        },
                     ),
                     # Model input parameters
                     html.Div(
                         id="model-input",
+                        className="responsive-info-card model-input-card",
                         children=[
-                            html.H4("3. Model input parameters"),
-                            html.Hr(),
+                            html.H4(
+                                "3. Model input parameters",
+                                className="responsive-card-title",
+                            ),
+                            html.Hr(className="responsive-card-divider"),
                             html.Img(
-                                src=f"data:image/png;base64,{encoded_input_image}"
+                                src=f"data:image/png;base64,{encoded_input_image}",
+                                className="responsive-guidelines-image",
                             ),
                             html.P(
-                                "In this section, the user gets to select a model and input all the "
-                                "necessary information in order to train and test that model. This "
-                                "information will be used together with the datasets uploaded (see the previous "
-                                "section for more details) in order to train the models and visualise the "
-                                "output (see the 'Model Outputs' section for more). The user "
-                                "will also be able to add more than one model, but will need to input all "
-                                "the necessary information for each model added. There will also be an  "
-                                "option that will allow the user to choose whether or not they wish to  "
-                                "optimise the model's hyperparameters or not."
+                                "In this section, the user gets to select a model and input all the necessary information "
+                                "in order to train and test that model. This information will be used together with the datasets uploaded "
+                                "(see the previous section for more details) in order to train the models and visualise the output.",
+                                className="responsive-card-text",
                             ),
                             html.P(
-                                "The user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added (see image). "
-                                "In order to input all the necessary "
-                                "information, the user will need to click on these hyperlinks individually, "
-                                "which will prompt them to a new page where they can input all the data for a "
-                                "specific model (see image). More information about the specifics of "
-                                "model inputs can be found "
-                                "in the user guidelines on the individual model input pages."
+                                "The user will see one (or more) hyperlink(s) depending on the number of models they have added. "
+                                "In order to input all the necessary information, the user will need to click on these hyperlinks individually, "
+                                "which will prompt them to a new page where they can input all the data for a specific model.",
+                                className="responsive-card-text",
                             ),
                         ],
-                        style={
-                            "background": "#cce5ff",
-                            "color": "#004085",
-                            "borderColor": "#b8daff",
-                        },
                     ),
                     # Model output visualisations
                     html.Div(
                         id="model-output",
+                        className="responsive-info-card model-output-card",
                         children=[
-                            html.H4("4. Model outputs"),
-                            html.Hr(),
+                            html.H4(
+                                "4. Model outputs", className="responsive-card-title"
+                            ),
+                            html.Hr(className="responsive-card-divider"),
                             html.Img(
-                                src=f"data:image/png;base64,{encoded_output_image}"
+                                src=f"data:image/png;base64,{encoded_output_image}",
+                                className="responsive-guidelines-image",
                             ),
                             html.P(
-                                children=[
-                                    "Once the data has been uploaded and the user has set all the input parameters, "
-                                    "the visualisations for the specific model, along with a spider plot showing "
-                                    "several output statistics, are generated. These statistics are calculated for "
-                                    "each model, and these are all displayed in the spider plot for each model "
-                                    "(see image). "
-                                    "The four main summary statistics used are: "
-                                    "Root Mean Squared Error (RMSE), "
-                                    "R-squared, "
-                                    "Mean Absolute Error (MAE), "
-                                    "and Percentage (%) within 2-fold error."
-                                ]
+                                "Once the data has been uploaded and the user has set all the input parameters, "
+                                "the visualisations for the specific model, along with a spider plot showing several output statistics, are generated. "
+                                "The four main summary statistics used are: Root Mean Squared Error (RMSE), R-squared, "
+                                "Mean Absolute Error (MAE), and Percentage (%) within 2-fold error.",
+                                className="responsive-card-text",
                             ),
                             html.P(
                                 "Similarly to model inputs, the user will see one (or more) hyperlink(s) depending on "
-                                "the number of models they have added (see image). "
-                                "On each of these pages, there will be several "
-                                "graphs displayed (such as a scatter plot of predicted versus actual values, or bar "
-                                "charts showing the feature correlation to the target variable (protein)), along with "
-                                "a summary of the user's selected inputs and the model's performance in training and "
-                                "testing. Depending on the additional inputs the user provides (such as query data, or "
-                                "enabling feature selection), additional graphs will be generated and displayed on "
-                                "these individual pages."
-                                "All plots available in this app are interactive, "
-                                "and using the legend on the side, the user can select "
-                                "which models they wish to have displayed in the graph, and they can simply "
-                                "enable/ disable them by clicking on the respective item in the legend. Additionally, "
-                                "all graphs provide features such as zooming in/ out, saving the graph as a PNG to "
-                                "the user's local device, and selecting to focus only on certain regions of the graph."
+                                "the number of models they have added. On each of these pages, there will be several graphs displayed, "
+                                "along with a summary of the user's selected inputs and the model's performance. All plots are interactive, "
+                                "with features such as zooming, saving as PNG, and focusing on specific regions.",
+                                className="responsive-card-text",
                             ),
                         ],
-                        style={
-                            "background": "#fff3cd",
-                            "color": "#856404",
-                            "borderColor": "#ffeeba",
-                        },
                     ),
                 ],
             ),
