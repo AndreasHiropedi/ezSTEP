@@ -143,11 +143,12 @@ def user_info():
     return html.Div(
         id="user-info",
         children=[
-            html.H1("User Information"),
+            html.H1("User Information", className="responsive-user-info-title"),
             html.P(
                 "All information regarding the functionality of the app can be found on the 'About us' page, "
                 "accessible through the button above. However, if you just want to get started right away, "
-                "you can download and use the example datasets we provided below, or alternatively upload your own."
+                "you can download and use the example datasets we provided below, or alternatively upload your own.",
+                className="responsive-user-info-text",
             ),
             html.Div(
                 id="example-files-container",
@@ -156,24 +157,25 @@ def user_info():
                         "example_train_data.csv",
                         download="example_train_data.csv",
                         href="/data_processing/datasets/example_train_data.csv",
-                        style={"margin-left": "280px"},
+                        className="responsive-download-link",
                     ),
                     html.A(
                         "example_test_data.csv",
                         download="example_test_data.csv",
                         href="/data_processing/datasets/example_test_data.csv",
-                        style={"margin-left": "220px"},
+                        className="responsive-download-link",
                     ),
                     html.A(
                         "example_query_data.csv",
                         download="example_query_data.csv",
                         href="/data_processing/datasets/example_query_data.csv",
-                        style={"margin-left": "220px"},
+                        className="responsive-download-link",
                     ),
                 ],
-                style={"margin-top": "25px", "margin-bottom": "15px"},
+                className="responsive-download-container",
             ),
         ],
+        className="responsive-user-info",
     )
 
 
@@ -192,20 +194,24 @@ def tabs_container():
                 label="Upload datasets",
                 value="upload datasets",
                 selected_style={"background": "grey", "color": "white"},
+                className="responsive-tab",
             ),
             dcc.Tab(
                 id="tab-input",
                 label="Model input parameters",
                 value="model input parameters",
                 selected_style={"background": "grey", "color": "white"},
+                className="responsive-tab",
             ),
             dcc.Tab(
                 id="tab-output",
                 label="Model outputs",
                 value="model outputs",
                 selected_style={"background": "grey", "color": "white"},
+                className="responsive-tab",
             ),
         ],
+        className="responsive-tabs-container",
     )
 
 
@@ -246,12 +252,7 @@ def training_data_upload_card():
                                     )
                                 ],
                                 multiple=False,
-                                style={
-                                    "width": "97.5%",
-                                    "height": "80px",
-                                    "textAlign": "center",
-                                    "border": "2px dashed black",
-                                },
+                                className="dash-uploader",
                             )
                         ],
                     ),
@@ -312,12 +313,7 @@ def testing_data_upload_card():
                             )
                         ],
                         multiple=False,
-                        style={
-                            "width": "97.5%",
-                            "height": "80px",
-                            "textAlign": "center",
-                            "border": "2px dashed black",
-                        },
+                        className="dash-uploader",
                     ),
                     html.P(
                         "or paste it in the box below",
@@ -359,7 +355,7 @@ def query_data_upload_card():
                 id="card-body",
                 children=[
                     html.P(
-                        "Upload your model querying data",
+                        "Upload your querying data",
                         style={"text-align": "center", "font-size": "14pt"},
                     ),
                     dcc.Upload(
@@ -376,12 +372,7 @@ def query_data_upload_card():
                             )
                         ],
                         multiple=False,
-                        style={
-                            "width": "97.5%",
-                            "height": "80px",
-                            "textAlign": "center",
-                            "border": "2px dashed black",
-                        },
+                        className="dash-uploader",
                     ),
                     html.P(
                         "or paste it in the box below",
@@ -423,12 +414,18 @@ def output_statistics_card():
                 children=[
                     html.P(
                         "Click the hyperlink below to view the plot of all testing output statistics "
-                        "for all existing models."
+                        "for all existing models.",
+                        className="centered-text",
                     ),
-                    output_metric_ref(),
+                    html.Div(
+                        output_metric_ref(),
+                        className="centered-content",
+                    ),
                 ],
+                className="centered-card-body",
             ),
         ],
+        className="responsive-output-statistics-card",
     )
 
 
@@ -537,27 +534,27 @@ def update_training_output(content, name, stored_train_file_name, session_data):
         )
 
         success_message = html.Div(
-            [f"File {name} uploaded successfully!"],
+            [f"File uploaded successfully!"],
             style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} is not compatible!"],
+            [f"File is not compatible!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} use the wrong column names!"],
+            [f"File use the wrong column names!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File uses data in the wrong format!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
-            [f"File {name} is too large or sequences are too long!"],
+            [f"File is too large or sequences are too long!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
@@ -1025,27 +1022,27 @@ def update_testing_output(content, name, stored_test_file_name, session_data):
         )
 
         success_message = html.Div(
-            [f"File {name} uploaded successfully!"],
+            [f"File uploaded successfully!"],
             style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} is not compatible!"],
+            [f"File is not compatible!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} uses the wrong column names!"],
+            [f"File uses the wrong column names!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File uses data in the wrong format!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
-            [f"File {name} is too large or sequences are too long!"],
+            [f"File is too large or sequences are too long!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
@@ -1485,7 +1482,7 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         )
 
         success_message = html.Div(
-            [f"File {file} uploaded successfully!"],
+            [f"File uploaded successfully!"],
             style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
@@ -1505,27 +1502,27 @@ def update_querying_output(content, name, stored_query_file_name, session_data):
         )
 
         success_message = html.Div(
-            [f"File {name} uploaded successfully!"],
+            [f"File uploaded successfully!"],
             style={"font-weight": "bold", "color": "green", "font-size": "12pt"},
         )
 
         wrong_format_message = html.Div(
-            [f"File {name} is not compatible!"],
+            [f"File is not compatible!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         wrong_columns_message = html.Div(
-            [f"File {name} uses the wrong column names!"],
+            [f"File uses the wrong column names!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         invalid_data_message = html.Div(
-            [f"File {name} uses data in the wrong format!"],
+            [f"File uses data in the wrong format!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
         limit_exceeded_message = html.Div(
-            [f"File {name} is too large or sequences are too long!"],
+            [f"File is too large or sequences are too long!"],
             style={"font-weight": "bold", "color": "red", "font-size": "12pt"},
         )
 
@@ -1705,32 +1702,46 @@ def render_tabs_content(selected_tab, stored_count, session_data):
                     children=[
                         dbc.Col(
                             children=[training_data_upload_card()],
-                            md=3,
-                            style={"margin-left": "50px", "margin-right": "50px"},
+                            xs=12,
+                            sm=12,
+                            md=6,
+                            lg=4,
+                            xl=4,
+                            className="upload-card-col",
                         ),
                         dbc.Col(
                             children=[testing_data_upload_card()],
-                            md=5,
-                            style={"margin-left": "50px", "margin-right": "50px"},
+                            xs=12,
+                            sm=12,
+                            md=6,
+                            lg=4,
+                            xl=4,
+                            className="upload-card-col",
                         ),
                         dbc.Col(
                             children=[query_data_upload_card()],
-                            md=3,
-                            style={"margin-left": "80px", "margin-right": "80px"},
+                            xs=12,
+                            sm=12,
+                            md=12,
+                            lg=4,
+                            xl=4,
+                            className="upload-card-col",
                         ),
                     ],
                     justify="center",
+                    className="responsive-card-row",
                 ),
             ],
             style={"background": "white", "color": "black"},
             fluid=True,
+            className="responsive-upload-container",
         )
 
     # Model inputs tab
     elif selected_tab == "model input parameters":
         # If we switch tabs, this restores the previous state (so that all models created are preserved)
         if stored_count and len(models_list) < 5:
-            return dbc.Row(
+            return dbc.Container(
                 id="tabs-content-input",
                 children=[
                     model_input_ref(model_key, session_id)
@@ -1741,42 +1752,84 @@ def render_tabs_content(selected_tab, stored_count, session_data):
                         "Add a new model",
                         id="button",
                         n_clicks=stored_count["n_clicks"],
+                        className="responsive-add-button",
                     )
                 ],
+                fluid=True,
+                className="responsive-input-container",
             )
 
         # If we created more than five models, remove the option to add a new model (remove the add button)
         elif len(models_list) >= 5:
-            return dbc.Row(
+            return dbc.Container(
                 id="tabs-content-input",
                 children=[
                     model_input_ref(model_key, session_id)
                     for model_key in models_list.keys()
                 ],
+                fluid=True,
+                className="responsive-input-container",
             )
 
         # Initial state
         else:
-            return dbc.Row(
+            return dbc.Container(
                 id="tabs-content-input",
                 children=[
                     # This creates the initial layout with one model
                     model_input_ref("Model 1", session_id),
-                    html.Button("Add a new model", id="button", n_clicks=1),
+                    html.Button(
+                        "Add a new model",
+                        id="button",
+                        n_clicks=1,
+                        className="responsive-add-button",
+                    ),
                 ],
+                fluid=True,
+                className="responsive-input-container",
             )
 
     # Model outputs
     elif selected_tab == "model outputs":
-        return dbc.Row(
+        return dbc.Container(
             id="tabs-content-output",
-            children=[output_statistics_card(), html.Div(id="table-container")]
-            + [model_output_ref(model_key) for model_key in models_list.keys()],
+            children=[
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            output_statistics_card(),
+                            xs=12,
+                            sm=12,
+                            md=8,
+                            lg=6,
+                            xl=6,
+                            className="stats-card-col",
+                        )
+                    ],
+                    justify="center",
+                ),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                model_output_ref(model_key)
+                                for model_key in models_list.keys()
+                            ],
+                            xs=12,
+                            className="output-refs-col",
+                        )
+                    ],
+                    justify="center",
+                ),
+                html.Div(id="table-container"),
+            ],
+            fluid=True,
+            className="responsive-output-container",
         )
 
     # Validation check
     else:
-        return "No content available."
+        return html.Div("No content available.", className="no-content-message")
 
 
 @callback(
@@ -1828,8 +1881,26 @@ def add_new_model_tab(n_clicks, current_children, stored_count, session_data):
     # Check if a new model has been added
     if n_clicks > stored_count["n_clicks"]:
         stored_count["n_clicks"] = n_clicks
-        children = current_children + [model_input_ref(model_key, session_id)]
-        return children, stored_count
+
+        # Remove the last element (which should be the button) and add new model ref
+        children_without_button = current_children[:-1]  # Remove last element (button)
+        children_without_button.append(model_input_ref(model_key, session_id))
+
+        # Add button back at the end if we have less than 5 models
+        user_data = db.get_user_session_data(session_id)
+        models_list = user_data["MODELS_LIST"]
+
+        if len(models_list) < 5:
+            children_without_button.append(
+                html.Button(
+                    "Add a new model",
+                    id="button",
+                    n_clicks=n_clicks,
+                    className="responsive-add-button",
+                )
+            )
+
+        return children_without_button, stored_count
 
     # If there has been no new model added
     return dash.no_update, dash.no_update

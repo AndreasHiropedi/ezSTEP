@@ -25,36 +25,69 @@ def create_layout(model_count):
         children=[
             html.Div(
                 id="input-page-header",
-                children=[html.H1(children=[f"Model {model_count} parameters"])],
+                children=[
+                    html.H1(
+                        children=[f"Model {model_count} parameters"],
+                        className="page-title",
+                    )
+                ],
+                className="responsive-page-header",
             ),
             html.Div(
                 id="input-page-contents",
                 children=[
-                    html.Div(
-                        id="input-cards-container",
-                        children=[
-                            dbc.Col(
-                                children=[model_input_parameters_card(model_count)],
-                                style={"width": "40%", "margin-left": "30px"},
-                            ),
-                            dbc.Col(
-                                children=[
-                                    model_input_feature_selection_card(model_count),
-                                    model_input_unsupervised_learning_card(model_count),
-                                    model_input_hyperparameter_optimisation_card(
-                                        model_count
+                    dbc.Container(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        children=[
+                                            model_input_parameters_card(model_count)
+                                        ],
+                                        xs=12,
+                                        md=8,
+                                        lg=6,
+                                        xl=5,
+                                        className="main-card-col",
+                                    ),
+                                    dbc.Col(
+                                        children=[
+                                            model_input_feature_selection_card(
+                                                model_count
+                                            ),
+                                            model_input_unsupervised_learning_card(
+                                                model_count
+                                            ),
+                                            model_input_hyperparameter_optimisation_card(
+                                                model_count
+                                            ),
+                                        ],
+                                        xs=12,
+                                        md=4,
+                                        lg=6,
+                                        xl=7,
+                                        className="side-cards-col",
                                     ),
                                 ],
-                                style={"width": "30%", "margin-left": "200px"},
+                                justify="center",
+                                className="input-cards-row",
+                            ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            submit_button(model_count),
+                                            delete_button(model_count),
+                                        ],
+                                        xs=12,
+                                        className="button-row-col",
+                                    ),
+                                ],
+                                justify="center",
+                                className="button-row",
                             ),
                         ],
-                    ),
-                    html.Div(
-                        id="button-wrapper",
-                        children=[
-                            submit_button(model_count),
-                            delete_button(model_count),
-                        ],
+                        fluid=True,
                     ),
                     delete_model_popup(model_count),
                     confirm_deleted_model_popup(model_count),
@@ -63,19 +96,12 @@ def create_layout(model_count):
                     file_validation_popup(model_count),
                     dcc.Loading(
                         id={"type": "loading-animation", "index": model_count},
-                        style={
-                            "top": "480px",
-                            "width": "33%",
-                            "margin-left": "200px",
-                            "position": "fixed",
-                            "background": "white",
-                            "color": "black",
-                            "border": "3px solid black",
-                        },
+                        className="responsive-loading",
                     ),
                     confirmation_popup(model_count),
                     completion_popup(model_count),
                 ],
+                className="responsive-page-contents",
             ),
             html.Div(
                 id={"type": "dummy-div", "index": model_count},
@@ -86,6 +112,7 @@ def create_layout(model_count):
                 style={"display": "none"},
             ),
         ],
+        className="responsive-input-page",
     )
 
 
@@ -98,6 +125,7 @@ def submit_button(model_count):
         "Submit model selection",
         id={"type": "submit-button", "index": model_count},
         n_clicks=0,
+        className="responsive-submit-button",
         style={
             "margin-top": "40px",
             "font-size": "16pt",
@@ -106,7 +134,6 @@ def submit_button(model_count):
             "border": "1px solid black",
             "color": "white",
             "background": "blue",
-            "margin-left": "500px",
             "padding": "0.75rem 1.25rem",
             "cursor": "pointer",
         },
@@ -122,6 +149,7 @@ def delete_button(model_count):
         "Delete model",
         id={"type": "delete-button", "index": model_count},
         n_clicks=0,
+        className="responsive-delete-button",
         style={
             "margin-top": "40px",
             "font-size": "16pt",
@@ -130,7 +158,6 @@ def delete_button(model_count):
             "border": "1px solid black",
             "color": "white",
             "background": "red",
-            "margin-left": "70px",
             "padding": "0.75rem 1.25rem",
             "cursor": "pointer",
         },

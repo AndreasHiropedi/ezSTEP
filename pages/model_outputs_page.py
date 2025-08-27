@@ -36,15 +36,26 @@ def create_layout(model_count, session_data):
             children=[
                 html.Div(
                     id="output-page-header",
-                    children=[html.H1(children=[f"Model {model_count} output"])],
+                    children=[
+                        html.H1(
+                            children=[f"Model {model_count} output"],
+                            className="page-title",
+                        )
+                    ],
+                    className="responsive-page-header",
                 ),
                 html.Div(
                     id="output-page-contents",
                     children=[
-                        "No content available since the model hasn't been created or initiated."
+                        html.P(
+                            "No content available since the model hasn't been created or initiated.",
+                            className="no-content-message",
+                        )
                     ],
+                    className="responsive-page-contents",
                 ),
             ],
+            className="responsive-output-page",
         )
 
     return html.Div(
@@ -52,114 +63,142 @@ def create_layout(model_count, session_data):
         children=[
             html.Div(
                 id="output-page-header",
-                children=[html.H1(children=[f"Model {model_count} output"])],
+                children=[
+                    html.H1(
+                        children=[f"Model {model_count} output"],
+                        className="page-title",
+                    )
+                ],
+                className="responsive-page-header",
             ),
             html.Div(
                 id="output-page-contents",
                 children=[
-                    model_summary_card(model_count, session_data),
-                    dbc.Row(
-                        children=[
-                            dbc.Col(
-                                children=[
-                                    output_statistics_card(model_count, session_data)
-                                ],
-                                md=4,
-                            ),
-                            dbc.Col(
-                                children=[
-                                    predicted_versus_actual_card(
-                                        model_count, session_data
+                    dbc.Container(
+                        [
+                            # Summary card - full width
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        model_summary_card(model_count, session_data),
+                                        xs=12,
+                                        className="summary-card-col",
                                     )
                                 ],
-                                md=3,
+                                className="summary-row",
+                            ),
+                            # Statistics and predictions - responsive columns
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        output_statistics_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                    dbc.Col(
+                                        predicted_versus_actual_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                ],
+                                className="charts-row",
+                            ),
+                            # Feature correlation charts
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        training_feature_correlation_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                    dbc.Col(
+                                        testing_feature_correlation_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                ],
+                                className="charts-row",
+                            ),
+                            # Query data and additional plots
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        querying_feature_correlation_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                    dbc.Col(
+                                        querying_file_download_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                ],
+                                className="charts-row",
+                            ),
+                            # Advanced plots
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        explained_variance_plot_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                    dbc.Col(
+                                        unsupervised_learning_plot_card(
+                                            model_count, session_data
+                                        ),
+                                        xs=12,
+                                        md=6,
+                                        lg=6,
+                                        xl=6,
+                                        className="chart-card-col",
+                                    ),
+                                ],
+                                className="charts-row",
                             ),
                         ],
-                        justify="center",
-                        style={
-                            "display": "flex",
-                            "width": "100%",
-                        },
-                    ),
-                    dbc.Row(
-                        children=[
-                            dbc.Col(
-                                children=[
-                                    training_feature_correlation_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=4,
-                            ),
-                            dbc.Col(
-                                children=[
-                                    testing_feature_correlation_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=3,
-                            ),
-                        ],
-                        justify="center",
-                        style={
-                            "display": "flex",
-                            "width": "100%",
-                        },
-                    ),
-                    dbc.Row(
-                        children=[
-                            dbc.Col(
-                                children=[
-                                    querying_feature_correlation_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=4,
-                            ),
-                            dbc.Col(
-                                children=[
-                                    querying_file_download_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=3,
-                            ),
-                        ],
-                        justify="center",
-                        style={
-                            "display": "flex",
-                            "width": "100%",
-                        },
-                    ),
-                    dbc.Row(
-                        children=[
-                            dbc.Col(
-                                children=[
-                                    explained_variance_plot_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=4,
-                            ),
-                            dbc.Col(
-                                children=[
-                                    unsupervised_learning_plot_card(
-                                        model_count, session_data
-                                    )
-                                ],
-                                md=3,
-                            ),
-                        ],
-                        justify="center",
-                        style={
-                            "display": "flex",
-                            "width": "100%",
-                            "margin-bottom": "50px",
-                        },
+                        fluid=True,
                     ),
                 ],
+                className="responsive-page-contents",
             ),
         ],
+        className="responsive-output-page",
     )
 
 
