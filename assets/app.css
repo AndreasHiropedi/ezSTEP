@@ -826,3 +826,9 @@ button {
     }
 }
 
+/* ========== MODEL INPUTS PAGE RESPONSIVE STYLES ========== */
+
+#input-page-header h1 {
+    text-align: center;
+    margin: 1rem auto;
+}
