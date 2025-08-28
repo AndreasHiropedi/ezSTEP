@@ -746,3 +746,83 @@ button {
 }
 #model-output h4 { color: #996600; }
 #model-output p { font-weight: bold; }
+
+/* ========== MODEL OUTPUTS PAGE RESPONSIVE STYLES ========== */
+
+#output-page-header h1 {
+    text-align: center;
+    margin: 1rem auto;
+}
+
+/* Keep original table card centered */
+.summary-row {
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.summary-card-col .card {
+    width: 83.5% !important;
+    margin: 50px auto !important;  /* <-- replaces margin-left */
+    border: 2px solid black !important;
+}
+
+
+/* Chart Cards Row */
+.charts-row {
+    display: flex;
+    flex-wrap: wrap;  /* allow wrapping to next row */
+    justify-content: center; /* optional: centers if last row has <2 cards */
+    margin: 2rem auto;
+    max-width: 1600px;
+    padding: 0 2rem;
+}
+
+.chart-card-col {
+    margin-bottom: 2rem;
+    padding: 0;
+    display: flex;              /* make column a flex container */
+    justify-content: center;    /* center the card inside the column */
+}
+
+/* Cards fit within columns */
+.chart-card-col .card {
+    flex: 1;  /* makes the card fill the column */
+    margin: 0 1rem !important;
+    border: 2px solid black !important;
+    background: white !important;
+    color: black !important;
+}
+
+
+/* Fix card headers */
+.chart-card-col .card .card-header {
+    background: rgb(228, 228, 228) !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: center !important;
+}
+
+/* Mobile - stack cards */
+@media screen and (max-width: 767px) {
+    .summary-card-col .card {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    .chart-card-col .card {
+        margin: 0 0.5rem !important;
+    }
+    .charts-row {
+        padding: 0 1rem;
+    }
+}
+
+/* Desktop - 2 columns accounting for all spacing */
+@media screen and (min-width: 768px) {
+    .charts-row .col-md-6 {
+        flex: 0 1 calc(50% - 2rem);  /* allow shrinking if only 1 */
+        max-width: 600px;            /* optional: limit width of single cards */
+        display: flex;
+        justify-content: center;     /* keep the card centered */
+    }
+}
+

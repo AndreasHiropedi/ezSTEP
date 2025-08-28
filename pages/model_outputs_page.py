@@ -30,6 +30,7 @@ def create_layout(model_count, session_data):
     # Check if model has been created successfully
     model_key = f"Model {model_count}"
 
+    # Case when model is missing
     if models_list[model_key] is None:
         return html.Div(
             id="output-page",
@@ -58,9 +59,36 @@ def create_layout(model_count, session_data):
             className="responsive-output-page",
         )
 
+    chart_cards = [
+        output_statistics_card(model_count, session_data),
+        predicted_versus_actual_card(model_count, session_data),
+        training_feature_correlation_card(model_count, session_data),
+        testing_feature_correlation_card(model_count, session_data),
+        querying_feature_correlation_card(model_count, session_data),
+        querying_file_download_card(model_count, session_data),
+        unsupervised_learning_plot_card(model_count, session_data),
+        explained_variance_plot_card(model_count, session_data),
+    ]
+
+    # Only keep cards that exist
+    visible_chart_cards = [card for card in chart_cards if card is not None]
+
+    # Full-width if only one card, half-width if multiple
+    col_width = 12 if len(visible_chart_cards) == 1 else 6
+
+    # Build chart row dynamically
+    charts_row = dbc.Row(
+        [
+            dbc.Col(card, xs=12, md=col_width, className="chart-card-col")
+            for card in visible_chart_cards
+        ],
+        className="charts-row",
+    )
+
     return html.Div(
         id="output-page",
         children=[
+            # Header
             html.Div(
                 id="output-page-header",
                 children=[
@@ -71,12 +99,13 @@ def create_layout(model_count, session_data):
                 ],
                 className="responsive-page-header",
             ),
+            # Contents
             html.Div(
                 id="output-page-contents",
                 children=[
                     dbc.Container(
                         [
-                            # Summary card - full width
+                            # Summary card row
                             dbc.Row(
                                 [
                                     dbc.Col(
@@ -87,110 +116,8 @@ def create_layout(model_count, session_data):
                                 ],
                                 className="summary-row",
                             ),
-                            # Statistics and predictions - responsive columns
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        output_statistics_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                    dbc.Col(
-                                        predicted_versus_actual_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                ],
-                                className="charts-row",
-                            ),
-                            # Feature correlation charts
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        training_feature_correlation_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                    dbc.Col(
-                                        testing_feature_correlation_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                ],
-                                className="charts-row",
-                            ),
-                            # Query data and additional plots
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        querying_feature_correlation_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                    dbc.Col(
-                                        querying_file_download_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                ],
-                                className="charts-row",
-                            ),
-                            # Advanced plots
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        explained_variance_plot_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                    dbc.Col(
-                                        unsupervised_learning_plot_card(
-                                            model_count, session_data
-                                        ),
-                                        xs=12,
-                                        md=6,
-                                        lg=6,
-                                        xl=6,
-                                        className="chart-card-col",
-                                    ),
-                                ],
-                                className="charts-row",
-                            ),
+                            # Chart cards row (auto-centered)
+                            charts_row,
                         ],
                         fluid=True,
                     ),
@@ -455,10 +382,9 @@ def output_statistics_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "120px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
         },
     )
 
@@ -545,10 +471,9 @@ def predicted_versus_actual_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "160px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
         },
     )
 
@@ -612,10 +537,9 @@ def training_feature_correlation_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "120px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
         },
     )
 
@@ -711,10 +635,9 @@ def testing_feature_correlation_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "160px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
         },
     )
 
@@ -814,10 +737,9 @@ def querying_feature_correlation_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "120px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
         },
     )
 
@@ -957,10 +879,9 @@ def querying_file_download_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "160px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
+            "width": "100%",
             "height": "498.5px",
         },
     )
@@ -1004,12 +925,9 @@ def explained_variance_plot_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "120px",
-            "margin-right": "40px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
-            "height": "100%",
+            "width": "100%",
         },
     )
 
@@ -1275,11 +1193,9 @@ def unsupervised_learning_plot_card(model_count, session_data):
             ),
         ],
         style={
-            "margin-left": "120px",
             "border": "2px solid black",
             "margin-top": "50px",
-            "width": "550px",
-            "height": "100%",
+            "width": "100%",
         },
     )
 
@@ -1316,6 +1232,9 @@ def initial_pca_plot(model):
     figure.update_layout(
         xaxis_title="First Principal Component",
         yaxis_title="Second Principal Component",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
     )
 
     return figure
@@ -1350,7 +1269,13 @@ def initial_tsne_plot(model):
     )
 
     # Update the figure layout
-    figure.update_layout(xaxis_title="Component 1", yaxis_title="Component 2")
+    figure.update_layout(
+        xaxis_title="Component 1",
+        yaxis_title="Component 2",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
 
     return figure
 
@@ -1384,7 +1309,13 @@ def initial_umap_plot(model):
     )
 
     # Update the figure layout
-    figure.update_layout(xaxis_title="Component 1", yaxis_title="Component 2")
+    figure.update_layout(
+        xaxis_title="Component 1",
+        yaxis_title="Component 2",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
 
     return figure
 
@@ -1498,6 +1429,9 @@ def update_pca_graph(svd_solver, whiten, session_data):
     figure.update_layout(
         xaxis_title="First Principal Component",
         yaxis_title="Second Principal Component",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
     )
 
     return figure
@@ -1566,7 +1500,13 @@ def update_tsne_plot(perplexity, learning_rate, session_data):
     )
 
     # Update the figure layout
-    figure.update_layout(xaxis_title="Component 1", yaxis_title="Component 2")
+    figure.update_layout(
+        xaxis_title="Component 1",
+        yaxis_title="Component 2",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
 
     return figure
 
@@ -1632,6 +1572,12 @@ def update_umap_plot(n_neighbors, min_dist, session_data):
     )
 
     # Update the figure layout
-    figure.update_layout(xaxis_title="Component 1", yaxis_title="Component 2")
+    figure.update_layout(
+        xaxis_title="Component 1",
+        yaxis_title="Component 2",
+        autosize=True,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
 
     return figure
