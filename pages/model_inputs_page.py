@@ -38,20 +38,18 @@ def create_layout(model_count):
                 children=[
                     dbc.Container(
                         [
+                            # Main cards row - similar to model outputs structure
                             dbc.Row(
                                 [
+                                    # Left column - Input parameters card (fixed width)
                                     dbc.Col(
-                                        children=[
-                                            model_input_parameters_card(model_count)
-                                        ],
-                                        xs=12,
-                                        md=8,
-                                        lg=6,
-                                        xl=5,
+                                        model_input_parameters_card(model_count),
+                                        width=6,
                                         className="main-card-col",
                                     ),
+                                    # Right column - Optional cards (fixed width)
                                     dbc.Col(
-                                        children=[
+                                        [
                                             model_input_feature_selection_card(
                                                 model_count
                                             ),
@@ -62,28 +60,32 @@ def create_layout(model_count):
                                                 model_count
                                             ),
                                         ],
-                                        xs=12,
-                                        md=4,
-                                        lg=6,
-                                        xl=7,
+                                        width=6,
                                         className="side-cards-col",
                                     ),
                                 ],
-                                justify="center",
                                 className="input-cards-row",
                             ),
+                            # Buttons row - centered like in model outputs
                             dbc.Row(
                                 [
                                     dbc.Col(
-                                        [
-                                            submit_button(model_count),
-                                            delete_button(model_count),
-                                        ],
+                                        html.Div(
+                                            [
+                                                submit_button(model_count),
+                                                delete_button(model_count),
+                                            ],
+                                            style={
+                                                "display": "flex",
+                                                "justify-content": "center",
+                                                "align-items": "center",
+                                                "gap": "20px",
+                                                "margin-top": "40px",
+                                            },
+                                        ),
                                         xs=12,
-                                        className="button-row-col",
                                     ),
                                 ],
-                                justify="center",
                                 className="button-row",
                             ),
                         ],
@@ -127,7 +129,6 @@ def submit_button(model_count):
         n_clicks=0,
         className="responsive-submit-button",
         style={
-            "margin-top": "40px",
             "font-size": "16pt",
             "font-weight": "bold",
             "text-align": "center",
@@ -151,7 +152,6 @@ def delete_button(model_count):
         n_clicks=0,
         className="responsive-delete-button",
         style={
-            "margin-top": "40px",
             "font-size": "16pt",
             "font-weight": "bold",
             "text-align": "center",
@@ -669,6 +669,12 @@ def model_input_parameters_card(model_count):
                 ],
             ),
         ],
+        style={
+            "border": "2px solid black",
+            "background": "white",
+            "color": "black",
+            "margin": "20px 0",
+        },
     )
 
 
@@ -1159,8 +1165,9 @@ def enable_feature_selection(answer):
             "background": "white",
             "color": "black",
             "width": "100%",
-            "margin-top": "20px",
+            "margin": "0 0 20px 0",
             "border": "2px solid black",
+            "box-shadow": "0 2px 4px rgba(0,0,0,0.1)",
         }
 
     elif answer == "no":
@@ -1183,8 +1190,9 @@ def enable_unsupervised(answer):
             "background": "white",
             "color": "black",
             "width": "100%",
-            "margin-top": "20px",
+            "margin": "0 0 20px 0",
             "border": "2px solid black",
+            "box-shadow": "0 2px 4px rgba(0,0,0,0.1)",
         }
 
     elif answer == "no":
@@ -1207,8 +1215,9 @@ def enable_hyperopt(answer):
             "background": "white",
             "color": "black",
             "width": "100%",
-            "margin-top": "20px",
+            "margin": "0 0 20px 0",
             "border": "2px solid black",
+            "box-shadow": "0 2px 4px rgba(0,0,0,0.1)",
         }
 
     elif answer == "no":

@@ -852,3 +852,80 @@ button {
     text-align: center;
     margin: 1rem auto;
 }
+
+/* Force horizontal layout */
+.input-cards-row {
+    margin: 2rem 0;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Left column - main parameters card */
+.main-card-col {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    padding-right: 15px;
+    padding-left: 20px;
+}
+
+/* Right column - optional cards */
+.side-cards-col {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    padding-left: 15px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main input parameters card styling */
+#parameters-card {
+    width: 100% !important;
+    border: 2px solid black !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Optional cards styling */
+.side-cards-col .card {
+    width: 100% !important;
+    margin: 0 0 20px 0 !important;
+    border: 2px solid black !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Button row styling */
+.button-row {
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+/* Mobile responsive - stack only on small screens */
+@media screen and (max-width: 767px) {
+    .input-cards-row {
+        flex-wrap: wrap !important;
+    }
+    
+    .main-card-col,
+    .side-cards-col {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Ensure consistent card header styling */
+#parameters-card .card-header,
+.side-cards-col .card .card-header {
+    background: rgb(228, 228, 228) !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    border-bottom: 1px solid #ddd !important;
+}
