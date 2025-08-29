@@ -176,38 +176,58 @@ def delete_model_popup(model_count):
                 dbc.ModalTitle(f"Are you sure you want to delete model {model_count}?"),
                 close_button=False,
                 id="delete-modal-header",
+                style={"text-align": "center"},
             ),
             html.Hr(style={"height": "3px", "color": "black", "background": "black"}),
             dbc.ModalBody(
                 children=[
-                    dbc.Button(
-                        html.H4(
-                            "Yes", style={"font-size": "12pt", "margin-top": "5px"}
-                        ),
-                        id={"type": "yes-button", "index": model_count},
-                        n_clicks=0,
+                    html.Div(
+                        children=[
+                            dbc.Button(
+                                html.H4(
+                                    "Yes",
+                                    style={"font-size": "12pt", "margin": "0"},
+                                ),
+                                id={"type": "yes-button", "index": model_count},
+                                n_clicks=0,
+                                style={
+                                    "margin-right": "10px",
+                                    "border": "2px solid black",
+                                    "cursor": "pointer",
+                                    "height": "35px",
+                                    "background": "blue",
+                                    "color": "white",
+                                    "display": "flex",
+                                    "align-items": "center",
+                                    "justify-content": "center",
+                                },
+                            ),
+                            dbc.Button(
+                                html.H4(
+                                    "No",
+                                    style={"font-size": "12pt", "margin": "0"},
+                                ),
+                                id={"type": "no-button", "index": model_count},
+                                n_clicks=0,
+                                style={
+                                    "margin-left": "10px",
+                                    "border": "2px solid black",
+                                    "cursor": "pointer",
+                                    "height": "35px",
+                                    "background": "red",
+                                    "color": "white",
+                                    "display": "flex",
+                                    "align-items": "center",
+                                    "justify-content": "center",
+                                },
+                            ),
+                        ],
                         style={
-                            "margin-left": "60px",
-                            "border": "2px solid black",
-                            "cursor": "pointer",
-                            "height": "35px",
-                            "background": "blue",
-                            "color": "white",
+                            "display": "flex",
+                            "justify-content": "center",
+                            "align-items": "center",
                         },
-                    ),
-                    dbc.Button(
-                        html.H4("No", style={"font-size": "12pt", "margin-top": "5px"}),
-                        id={"type": "no-button", "index": model_count},
-                        n_clicks=0,
-                        style={
-                            "margin-right": "60px",
-                            "border": "2px solid black",
-                            "cursor": "pointer",
-                            "height": "35px",
-                            "background": "red",
-                            "color": "white",
-                        },
-                    ),
+                    )
                 ],
                 id="delete-modal-body",
             ),
@@ -248,9 +268,7 @@ def confirm_deleted_model_popup(model_count):
                         f"please refresh the app's main tab (entitled BioNetTrain). You may now close this tab."
                     ),
                     dbc.Button(
-                        html.H4(
-                            "Close", style={"font-size": "12pt", "margin-top": "5px"}
-                        ),
+                        html.H4("Close", style={"font-size": "12pt", "margin": "0"}),
                         id={"type": "close-button", "index": model_count},
                         n_clicks=0,
                         style={
@@ -261,6 +279,9 @@ def confirm_deleted_model_popup(model_count):
                             "background": "blue",
                             "color": "white",
                             "margin-bottom": "20px",
+                            "display": "flex",
+                            "align-items": "center",
+                            "justify-content": "center",
                         },
                     ),
                 ],
@@ -296,24 +317,60 @@ def submit_model_popup(model_count):
                     dbc.ModalTitle(f"Create model {model_count} using given input")
                 ],
                 close_button=False,
+                style={"text-align": "center"},
             ),
             dbc.ModalBody(
                 id="submit-modal-body",
                 children=[
-                    dbc.Button(
-                        html.H4(
-                            "Create", style={"font-size": "12pt", "margin-top": "5px"}
-                        ),
-                        id={"type": "create-button", "index": model_count},
-                        n_clicks=0,
+                    html.Div(
+                        children=[
+                            dbc.Button(
+                                html.H4(
+                                    "Create",
+                                    style={"font-size": "12pt", "margin": "0"},
+                                ),
+                                id={"type": "create-button", "index": model_count},
+                                n_clicks=0,
+                                style={
+                                    "margin-right": "10px",
+                                    "border": "2px solid black",
+                                    "cursor": "pointer",
+                                    "height": "40px",
+                                    "background": "blue",
+                                    "color": "white",
+                                    "display": "flex",
+                                    "align-items": "center",
+                                    "justify-content": "center",
+                                },
+                            ),
+                            dbc.Button(
+                                html.H4(
+                                    "Close",
+                                    style={"font-size": "12pt", "margin": "0"},
+                                ),
+                                id={
+                                    "type": "close-submit-button",
+                                    "index": model_count,
+                                },
+                                n_clicks=0,
+                                style={
+                                    "margin-left": "10px",
+                                    "border": "2px solid black",
+                                    "cursor": "pointer",
+                                    "height": "40px",
+                                    "background": "red",
+                                    "color": "white",
+                                    "display": "flex",
+                                    "align-items": "center",
+                                    "justify-content": "center",
+                                },
+                            ),
+                        ],
                         style={
+                            "display": "flex",
+                            "justify-content": "center",
+                            "align-items": "center",
                             "margin-top": "20px",
-                            "margin-left": "190px",
-                            "border": "2px solid black",
-                            "cursor": "pointer",
-                            "height": "40px",
-                            "background": "blue",
-                            "color": "white",
                             "margin-bottom": "20px",
                         },
                     )
@@ -372,7 +429,7 @@ def completion_popup(model_count, opened=False):
             ),
             dbc.ModalBody(
                 dbc.Button(
-                    html.H4("Close", style={"font-size": "12pt", "margin-top": "5px"}),
+                    html.H4("Close", style={"font-size": "12pt", "margin": "0"}),
                     id={"type": "close-complete-button", "index": model_count},
                     n_clicks=0,
                     style={
@@ -382,7 +439,9 @@ def completion_popup(model_count, opened=False):
                         "height": "40px",
                         "background": "blue",
                         "color": "white",
-                        "margin-bottom": "20px",
+                        "display": "flex",
+                        "align-items": "center",
+                        "justify-content": "center",
                     },
                 ),
                 id="complete-modal-body",
@@ -440,7 +499,7 @@ def confirmation_popup(model_count):
             ),
             dbc.ModalBody(
                 dbc.Button(
-                    html.H4("Close", style={"font-size": "12pt", "margin-top": "5px"}),
+                    html.H4("Close", style={"font-size": "12pt", "margin": "0"}),
                     id={"type": "close-reconfirm-model-button", "index": model_count},
                     n_clicks=0,
                     style={
@@ -451,6 +510,9 @@ def confirmation_popup(model_count):
                         "background": "blue",
                         "color": "white",
                         "margin-bottom": "20px",
+                        "display": "flex",
+                        "align-items": "center",
+                        "justify-content": "center",
                     },
                 ),
                 id="complete-modal-body",
@@ -493,9 +555,7 @@ def input_validation_popup(model_count):
                         f"an invalid value in the input fields. Please check your inputs and try again."
                     ),
                     dbc.Button(
-                        html.H4(
-                            "Close", style={"font-size": "12pt", "margin-top": "5px"}
-                        ),
+                        html.H4("Close", style={"font-size": "12pt", "margin": "0"}),
                         id={"type": "close-alert-button", "index": model_count},
                         n_clicks=0,
                         style={
@@ -506,6 +566,9 @@ def input_validation_popup(model_count):
                             "background": "blue",
                             "color": "white",
                             "margin-bottom": "20px",
+                            "display": "flex",
+                            "align-items": "center",
+                            "justify-content": "center",
                         },
                     ),
                 ],
@@ -549,9 +612,7 @@ def file_validation_popup(model_count):
                         "back to the main page and try again."
                     ),
                     dbc.Button(
-                        html.H4(
-                            "Close", style={"font-size": "12pt", "margin-top": "5px"}
-                        ),
+                        html.H4("Close", style={"font-size": "12pt", "margin": "0"}),
                         id={"type": "close-file-button", "index": model_count},
                         n_clicks=0,
                         style={
@@ -562,6 +623,9 @@ def file_validation_popup(model_count):
                             "background": "blue",
                             "color": "white",
                             "margin-bottom": "20px",
+                            "display": "flex",
+                            "align-items": "center",
+                            "justify-content": "center",
                         },
                     ),
                 ],
@@ -1575,6 +1639,7 @@ def check_dataset_change(current_model, training_data, testing_data, querying_da
         Input({"type": "hyper-opt-question", "index": MATCH}, "value"),
         Input({"type": "iteration-number-input", "index": MATCH}, "value"),
         Input({"type": "create-button", "index": MATCH}, "n_clicks"),
+        Input({"type": "close-submit-button", "index": MATCH}, "n_clicks"),
         Input({"type": "close-complete-button", "index": MATCH}, "n_clicks"),
     ],
     [
@@ -1604,6 +1669,7 @@ def press_submit_button(
     hyperopt_ans,
     hyperopt_iterations,
     create_button_clicks,
+    close_submit_button_clicks,
     close_button_clicks,
     is_submit_open,
     is_invalid_open,
@@ -1684,8 +1750,11 @@ def press_submit_button(
 
             return [], False, False, False, False, True
 
-    # If we close the confirmation pop-up
-    elif close_button_clicks >= submit_clicks:
+    # If we close the confirmation pop-up or close the submit popup
+    elif (
+        close_button_clicks >= submit_clicks
+        or close_submit_button_clicks >= submit_clicks
+    ):
         return [], False, False, False, False, False
 
     # if the model has already been created successfully, inform the user

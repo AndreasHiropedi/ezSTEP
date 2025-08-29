@@ -826,6 +826,26 @@ button {
     }
 }
 
+/* ========== MODAL TITLE STYLING ========== */
+.modal-title {
+    font-size: clamp(16px, 2vw, 20px) !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    width: 100%;
+}
+
+.modal-header {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+#delete-modal-header .modal-title,
+#submit-modal-header .modal-title {
+    font-size: clamp(16px, 2vw, 20px) !important;
+    font-weight: bold !important;
+    text-align: center !important;
+}
+
 /* ========== MODEL INPUTS PAGE RESPONSIVE STYLES ========== */
 
 #input-page-header h1 {
