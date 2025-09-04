@@ -755,12 +755,6 @@ def model_selection_dropdown(model_count):
                     {"label": "Support Vector Machine", "value": "svm"},
                     {"label": "Ridge Regressor", "value": "rr"},
                 ],
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
                 searchable=False,
                 persistence=True,
             ),
@@ -785,12 +779,6 @@ def feature_encoder_dropdown(model_count):
                     {"label": "Binary (one-hot)", "value": "binary"},
                 ],
                 searchable=False,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
                 persistence=True,
             ),
         ],
@@ -817,12 +805,6 @@ def kmer_size_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
             ),
         ],
         style={"display": "none"},
@@ -871,12 +853,6 @@ def data_normalization_dropdown(model_count):
                     {"label": "ZScore", "value": "zscore"},
                     {"label": "MinMax", "value": "minmax"},
                 ],
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
                 searchable=False,
                 persistence=True,
             ),
@@ -930,12 +906,6 @@ def feature_selection_algorithm_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "20px",
-                },
             ),
         ],
     )
@@ -998,12 +968,6 @@ def feature_number_input(model_count):
                 min=1,
                 step=1,
                 persistence=True,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
             ),
         ],
     )
@@ -1057,12 +1021,6 @@ def dimension_reduction_algorithm_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "20px",
-                },
             ),
         ],
     )
@@ -1138,12 +1096,6 @@ def hyperparameter_optimisation_number_input(model_count):
                 max=50,
                 step=1,
                 persistence=True,
-                style={
-                    "width": "91.5%",
-                    "font-size": "12pt",
-                    "text-align": "center",
-                    "margin-left": "32px",
-                },
             ),
         ],
     )

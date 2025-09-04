@@ -929,3 +929,344 @@ button {
     text-align: center !important;
     border-bottom: 1px solid #ddd !important;
 }
+
+/* ========== RESPONSIVE DROPDOWN STYLES FOR INPUT PAGE ========== */
+
+/* Base responsive dropdown styling */
+.dash-dropdown {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: var(--base-font-size) !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.dash-dropdown .Select-control {
+    font-size: var(--base-font-size) !important;
+    text-align: center !important;
+    min-height: 40px !important;
+    border: 1px solid #ccc !important;
+}
+
+.dash-dropdown .Select-placeholder,
+.dash-dropdown .Select-value-label {
+    font-size: var(--base-font-size) !important;
+    text-align: center !important;
+}
+
+/* Input fields responsive styling */
+.dash-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: var(--base-font-size) !important;
+    text-align: center !important;
+    padding: clamp(8px, 1vh, 12px) clamp(12px, 2vw, 16px) !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    min-height: 40px !important;
+}
+
+/* Form container responsive styling */
+.form-group,
+.input-container {
+    width: 100%;
+    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    padding: 0;
+}
+
+/* Form labels responsive styling */
+.form-label,
+#select-model,
+#select-encoder,
+#select-kmer,
+#select-normalization,
+#select-feature,
+#select-algorithm,
+#select-feature-number,
+#use-unsupervised,
+#use-hyper-opt,
+#select-dimension-algorithm,
+#select-iteration-number {
+    font-size: clamp(12px, 1.4vw, 16px) !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    color: black !important;
+    display: block !important;
+    text-align: left !important;
+}
+
+/* Radio button containers */
+.dash-radio-items {
+    font-size: var(--base-font-size) !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+.dash-radio-items label {
+    font-size: var(--base-font-size) !important;
+    margin-right: clamp(20px, 4vw, 50px) !important;
+    margin-left: clamp(20px, 4vw, 50px) !important;
+}
+
+/* ========== RESPONSIVE TOOLTIP STYLING ========== */
+
+/* Base tooltip styling */
+.tooltip {
+    background: #2c3e50 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vw, 16px) !important;
+    font-size: clamp(11px, 1.2vw, 14px) !important;
+    line-height: 1.4 !important;
+    max-width: clamp(250px, 40vw, 350px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    z-index: 9999 !important;
+    font-family: 'Open Sans', sans-serif !important;
+    text-align: left !important;
+}
+
+/* Bootstrap tooltip classes */
+.bs-tooltip-top .arrow::before,
+.bs-tooltip-auto[x-placement^="top"] .arrow::before {
+    border-top-color: #2c3e50 !important;
+}
+
+.bs-tooltip-bottom .arrow::before,
+.bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
+    border-bottom-color: #2c3e50 !important;
+}
+
+.bs-tooltip-left .arrow::before,
+.bs-tooltip-auto[x-placement^="left"] .arrow::before {
+    border-left-color: #2c3e50 !important;
+}
+
+.bs-tooltip-right .arrow::before,
+.bs-tooltip-auto[x-placement^="right"] .arrow::before {
+    border-right-color: #2c3e50 !important;
+}
+
+/* Tooltip inner content */
+.tooltip-inner {
+    background: #2c3e50 !important;
+    color: white !important;
+    border-radius: 6px !important;
+    padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vw, 16px) !important;
+    font-size: clamp(11px, 1.2vw, 14px) !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+    max-width: none !important;
+}
+
+/* Dash Bootstrap Components tooltip styling */
+.dash-tooltip,
+.dash-bootstrap-tooltip {
+    background: #2c3e50 !important;
+    color: white !important;
+    border: 1px solid #34495e !important;
+    border-radius: 8px !important;
+    padding: clamp(10px, 2vh, 14px) clamp(14px, 2.5vw, 18px) !important;
+    font-size: clamp(12px, 1.3vw, 15px) !important;
+    line-height: 1.5 !important;
+    max-width: clamp(280px, 45vw, 400px) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    z-index: 9999 !important;
+    font-weight: 400 !important;
+}
+
+/* Tooltip content paragraphs */
+.tooltip p,
+.tooltip-inner p,
+.dash-tooltip p {
+    margin: 0 0 0.5rem 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: white !important;
+}
+
+.tooltip p:last-child,
+.tooltip-inner p:last-child,
+.dash-tooltip p:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Tooltip lists */
+.tooltip ul,
+.tooltip-inner ul,
+.dash-tooltip ul {
+    margin: 0.5rem 0 !important;
+    padding-left: 1.2rem !important;
+    color: white !important;
+}
+
+.tooltip li,
+.tooltip-inner li,
+.dash-tooltip li {
+    margin-bottom: 0.3rem !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: white !important;
+}
+
+.tooltip li:last-child,
+.tooltip-inner li:last-child,
+.dash-tooltip li:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Superscript styling in tooltips */
+.tooltip sup,
+.tooltip-inner sup,
+.dash-tooltip sup {
+    font-size: 0.8em !important;
+    color: #ecf0f1 !important;
+    font-weight: 500 !important;
+}
+
+/* Enhanced tooltip buttons */
+#tooltip-target-norm,
+#tooltip-target-select,
+#tooltip-target-hyperopt {
+    height: clamp(20px, 3vh, 25px) !important;
+    width: clamp(20px, 3vh, 25px) !important;
+    font-size: clamp(10px, 1.2vw, 12px) !important;
+    margin-left: 0.5rem !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #3498db !important;
+    color: white !important;
+    border: 2px solid #2980b9 !important;
+    cursor: help !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease !important;
+}
+
+#tooltip-target-norm:hover,
+#tooltip-target-select:hover,
+#tooltip-target-hyperopt:hover {
+    background: #2980b9 !important;
+    border-color: #21618c !important;
+    transform: scale(1.1) !important;
+}
+
+/* Mobile tooltip adjustments */
+@media screen and (max-width: 768px) {
+    .tooltip,
+    .dash-tooltip {
+        font-size: 13px !important;
+        padding: 12px 16px !important;
+        max-width: 90vw !important;
+        border-radius: 6px !important;
+    }
+    
+    .tooltip-inner {
+        font-size: 13px !important;
+        padding: 12px 16px !important;
+    }
+    
+    #tooltip-target-norm,
+    #tooltip-target-select,
+    #tooltip-target-hyperopt {
+        height: 30px !important;
+        width: 30px !important;
+        font-size: 12px !important;
+        margin-left: 0.8rem !important;
+    }
+}
+
+/* Large screen tooltip adjustments */
+@media screen and (min-width: 1440px) {
+    .tooltip,
+    .dash-tooltip {
+        font-size: 14px !important;
+        padding: 14px 18px !important;
+        max-width: 400px !important;
+    }
+    
+    .tooltip-inner {
+        font-size: 14px !important;
+        padding: 14px 18px !important;
+    }
+}
+
+/* Card body padding responsive */
+#card-body-input {
+    padding: clamp(1rem, 3vw, 2rem) !important;
+}
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+    .dash-dropdown .Select-control {
+        min-height: 44px !important; /* Larger touch targets */
+        font-size: 14px !important;
+    }
+    
+    .dash-input,
+    .dash-input input,
+    input[type="number"] {
+        min-height: 44px !important;
+        font-size: 14px !important;
+    }
+    
+    .dash-radio-items label {
+        margin-right: 15px !important;
+        margin-left: 15px !important;
+        font-size: 14px !important;
+    }
+    
+    #tooltip-target-norm,
+    #tooltip-target-select,
+    #tooltip-target-hyperopt {
+        height: 30px !important;
+        width: 30px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Tablet adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .dash-dropdown .Select-control {
+        font-size: 15px !important;
+    }
+    
+    .dash-input,
+    .dash-input input,
+    input[type="number"] {
+        font-size: 15px !important;
+    }
+}
+
+/* Large screen adjustments */
+@media screen and (min-width: 1440px) {
+    .dash-dropdown .Select-control {
+        font-size: 16px !important;
+    }
+    
+    .dash-input,
+    .dash-input input,
+    input[type="number"] {
+        font-size: 16px !important;
+    }
+    
+    .form-label,
+    #select-model,
+    #select-encoder,
+    #select-kmer,
+    #select-normalization,
+    #select-feature,
+    #select-algorithm,
+    #select-feature-number,
+    #use-unsupervised,
+    #use-hyper-opt,
+    #select-dimension-algorithm,
+    #select-iteration-number {
+        font-size: 16px !important;
+    }
+}
