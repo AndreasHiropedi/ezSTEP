@@ -12,3 +12,4 @@ utils/__pycache__/
 *.sqlite
 *.sqlite3
 ezstep.db
+.idea

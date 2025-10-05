@@ -1270,3 +1270,10 @@ button {
         font-size: 16px !important;
     }
 }
+
+/* ========== MAKE GRAPHS COMPACT AND SQUARE-LIKE ========== */
+.js-plotly-plot {
+    width: 100% !important;
+    height: 450px !important;  /* Much shorter than before */
+    min-height: 450px !important;
+}

@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 import umap
+from ansi2html.style import color
 from dash import MATCH, Input, Output, State, callback, dash_table, dcc, html
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -501,7 +502,9 @@ def predicted_versus_actual_graph(model):
 
     # Customize layout
     figure.update_layout(
-        xaxis_title="Actual Values", yaxis_title="Predicted Values", showlegend=False
+        xaxis_title="Actual Values",
+        yaxis_title="Predicted Values",
+        showlegend=True,
     )
 
     return figure
@@ -1092,16 +1095,25 @@ def unsupervised_learning_plot_card(model_count, session_data):
                 html.Div(
                     children=[
                         html.Label("Learning Rate:", style={"margin-left": "20px"}),
-                        # Target component for the tooltip
+                        # Updated tooltip button to match input page styling
                         dbc.Button(
                             "?",
-                            id="tooltip-target-tsne",
+                            id={"type": "tooltip-target-tsne", "index": model_count},
                             style={
                                 "height": "25px",
+                                "width": "25px",
                                 "font-size": "12pt",
                                 "color": "white",
-                                "background": "blue",
-                                "border": "0px",
+                                "background": "#3498db",
+                                "border": "2px solid #2980b9",
+                                "border-radius": "50%",
+                                "padding": "0",
+                                "display": "inline-flex",
+                                "align-items": "center",
+                                "justify-content": "center",
+                                "cursor": "help",
+                                "font-weight": "bold",
+                                "margin-left": "0.5rem",
                             },
                         ),
                         # Attach tooltip to the target component
@@ -1112,9 +1124,9 @@ def unsupervised_learning_plot_card(model_count, session_data):
                                     style={"margin-top": "5px", "margin-bottom": "5px"},
                                 )
                             ],
-                            target="tooltip-target-tsne",
+                            target={"type": "tooltip-target-tsne", "index": model_count},
                             placement="bottom",
-                            id="tooltip-tsne",
+                            id={"type": "tooltip-tsne", "index": model_count},
                         ),
                         dcc.Input(
                             id={"type": "learning-rate-input", "index": model_count},
