@@ -757,6 +757,7 @@ def model_selection_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="rf"
             ),
         ],
     )
@@ -780,6 +781,7 @@ def feature_encoder_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="kmer"
             ),
         ],
     )
@@ -805,6 +807,7 @@ def kmer_size_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="4"
             ),
         ],
         style={"display": "none"},
@@ -855,6 +858,7 @@ def data_normalization_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="minmax"
             ),
         ],
     )
@@ -876,7 +880,7 @@ def feature_selection_question(model_count):
                     {"label": "Yes", "value": "yes"},
                     {"label": "No", "value": "no"},
                 ],
-                value="no",
+                value="yes",
                 inline=True,
                 labelStyle={"margin-right": "50px", "margin-left": "50px"},
                 style={"width": "60%", "font-size": "14pt", "text-align": "center"},
@@ -906,6 +910,7 @@ def feature_selection_algorithm_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="Mutual Information"
             ),
         ],
     )
@@ -967,6 +972,7 @@ def feature_number_input(model_count):
                 type="number",
                 min=1,
                 step=1,
+                value=20,
                 persistence=True,
             ),
         ],
@@ -990,7 +996,7 @@ def use_unsupervised_learning_question(model_count):
                     {"label": "Yes", "value": "yes"},
                     {"label": "No", "value": "no"},
                 ],
-                value="no",
+                value="yes",
                 inline=True,
                 labelStyle={"margin-right": "50px", "margin-left": "50px"},
                 style={"width": "60%", "font-size": "14pt", "text-align": "center"},
@@ -1021,6 +1027,7 @@ def dimension_reduction_algorithm_dropdown(model_count):
                 ],
                 searchable=False,
                 persistence=True,
+                value="PCA"
             ),
         ],
     )
@@ -1044,7 +1051,7 @@ def hyperparameter_optimisation_question(model_count):
                     {"label": "Yes", "value": "yes"},
                     {"label": "No", "value": "no"},
                 ],
-                value="no",
+                value="yes",
                 inline=True,
                 labelStyle={"margin-right": "50px", "margin-left": "50px"},
                 style={"width": "60%", "font-size": "14pt", "text-align": "center"},
@@ -1094,6 +1101,7 @@ def hyperparameter_optimisation_number_input(model_count):
                 type="number",
                 min=1,
                 max=50,
+                value=15,
                 step=1,
                 persistence=True,
             ),
