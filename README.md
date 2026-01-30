@@ -6,16 +6,6 @@
 
 *ezSTEP* (Sequence-to-expression Predictor) is a machine-learning platform with a web-based user interface that enables the construction of automated machine-learning pipelines for computational analysis and predictions using regression.
 
-## Accessibility
-
-*ezSTEP* can be accessed in two different ways:
-
-- our web app can currently be accessed using the following link: http://calbuco.inf.ed.ac.uk/ezSTEP (will become depricated in the future!)
-
-- However, given that the above link will become depricated, our web app will then be hosted on the nihito platform (currently not on the platform), which users can access using the following link (will need to register): https://platform.nihito.io
-
-- alternatively, users can install the app on their own local machine, and run it there (see the instructions below)
-
 ## Methods
 
 Below you can see an outline of the pipeline used in our app. These are all the steps that our platform performs based on the user's inputs, and the underlying computations are abstracted from the user to ensure a nice and user-friendly experience.
