@@ -20,7 +20,7 @@ Below we provide a breakdown of the most important files and folders in this rep
 
   - ```main.py```: this contains the code for the main entry point for the app, as well as for the layout of the home page, which is the first page the user sees when launching the app
 
-  - ```config.py```: this is a configuration file used to set up the environment for launching the app, both locally and on the nihito platform
+  - ```config.py```: this is a configuration file used to set up the environment for launching the app
 
   - ```.env```: this contains the actual environment configurations
 
